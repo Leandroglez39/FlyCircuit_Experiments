@@ -629,8 +629,8 @@ class Matrix:
                 for n in neighbors:
                     
                     count += 1
-                    if count == 1000000000:
-                        print('1000M operations calculated in participation coefficient')
+                    if count == 100000000:
+                        print('100M operations calculated in participation coefficient')
                         count = 0
 
                     if n in subgraph.nodes():
@@ -675,8 +675,8 @@ class Matrix:
             for ri in commList:
                 # iterate through all commnunities
                 for si in ri:
-                    if count == 1000000000:
-                        print('1000M operations calculated in withinCommunityDegree')
+                    if count == 100000000:
+                        print('100M operations calculated in withinCommunityDegree')
                         count = 0
                     # identify the Ci 
                     if vi in si:
@@ -944,13 +944,13 @@ if __name__ == '__main__':
 
     # print(m.communities_length(sorted_community))
 
-    # communities = m.load_all_communities('louvain')
+    communities = m.load_all_communities('louvain')
 
-    # m.apply_measures_to_communities_nodes('louvain', communities)
+    m.apply_measures_to_communities_nodes('louvain', communities)
 
-    # m.save_attributed_graph()
+    m.save_attributed_graph()
 
-    # print(datetime.datetime.now())
+    print(datetime.datetime.now())
     
     
 
