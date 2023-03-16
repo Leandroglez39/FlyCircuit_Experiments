@@ -944,13 +944,13 @@ if __name__ == '__main__':
 
     # print(m.communities_length(sorted_community))
 
-    communities = m.load_all_communities('louvain')
+    # communities = m.load_all_communities('louvain')
 
-    m.apply_measures_to_communities_nodes('louvain', communities)
+    # m.apply_measures_to_communities_nodes('louvain', communities)
 
-    m.save_attributed_graph()
+    # m.save_attributed_graph()
 
-    print(datetime.datetime.now())
+    # print(datetime.datetime.now())
     
     
 
