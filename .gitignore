@@ -1,0 +1,8 @@
+data/
+venv/
+venvlinux/
+.devcontainer/
+envCDLib
+envNX
+.vscode/
+*.png
