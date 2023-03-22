@@ -103,7 +103,7 @@ class Matrix:
         with open(f'./dataset/adym_{count}.pkl', 'wb') as f:
             pickle.dump(self.ady_list, f)
    
-    def save_matrix_obj(self, path = './dataset/graph_19k_3.5m.pkl'):
+    def save_graph_obj(self, path = './dataset/graph-1.x.pkl'):
         
         with open(path, 'wb') as f:
             pickle.dump(self.G, f)
@@ -399,7 +399,9 @@ class Matrix:
             communities = []
             for path in paths:
                 with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
-                    communities.append(pickle.load(f))
+                    community = pickle.load(f)
+                    sorted_community = sorted(community, key = lambda x: len(x), reverse = True)
+                    communities.append(sorted_community)
 
             return communities
         if algorithm == 'lpa':
@@ -435,7 +437,7 @@ class Matrix:
 
             for path in paths:
                 with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
-                    communities.append((pickle.load(f), path))
+                    communities.append(pickle.load(f))
         
             
             return communities
@@ -610,6 +612,9 @@ class Matrix:
         '''
 
         data_nodes = {}
+        
+        start_time = datetime.datetime.now()
+
         count = 0
         
         for node in self.G.nodes():
@@ -629,12 +634,15 @@ class Matrix:
                 for n in neighbors:
                     
                     count += 1
-                    if count == 100000000:
-                        print('100M operations calculated in participation coefficient')
+                    if count == 10000000:
+                        print('10M operations calculated in participation coefficient')
+                        print('Time for 10M operations: ' + str(datetime.datetime.now() - start_time))
                         count = 0
+                        start_time = datetime.datetime.now()
 
                     if n in subgraph.nodes():
                         k_i_s += 1
+                        continue
 
                 suma += (k_i_s / k_i) ** 2 # type: ignore
 
@@ -642,11 +650,30 @@ class Matrix:
 
         return data_nodes
 
+    def insert_measure_dict(self, measure: str, dict: dict):
+
+        '''
+        This function is for insert a measure to the nodes of the graph.
+
+        Parameters
+        ----------
+        measure : str
+            The name of the measure.
+        dict : dict
+            A dict with the values of the measure.
+        '''
+
+        for node in self.G.nodes():
+            self.G.nodes[node][measure] = dict[node]
+    
     # Begining of Horacio's Region
 
-    def edgeWithinComm(self, vi, si, w):
+    def edgeWithinComm(self, vi, si, w, directed):
         sugSi = nx.subgraph(self.G, si)
-        ki = sugSi.degree(vi, weight = w)
+        if not directed:
+            ki = sugSi.degree(vi, weight = w)
+        else:
+            ki = sugSi.out_degree(vi, weight = w)
         return ki
 
     def degMeanByCommunity(self, si, w):
@@ -665,51 +692,106 @@ class Matrix:
         desv = math.sqrt(sum/len(si))
         return desv
 
-    def withinCommunityDegree(self, w, commList):
-        count = 0
-        itera = 0
-        vertexWithinDict = dict()
+    def withinCommunityDegree(self, w, commList, algName, directed):
+        zi = dict()
+        run_community_mean = dict()
+        run_community_vi = dict()
+        run_community_desv = dict()
+
+        # iterate through all runs
+        for run_i in range(0, len(commList)):
+            clustering_i = commList[run_i]
+            # iterate through all commnunities
+            for c_j in range(0, len(clustering_i)):
+                sumMean = 0
+                key_RunComm = (run_i, c_j)
+                for vi in clustering_i[c_j]:
+                    key_RunCommVi = (run_i, c_j, vi)
+                    if key_RunCommVi not in run_community_vi:
+                        ki = self.edgeWithinComm(vi, clustering_i[c_j], w, directed)
+                        run_community_vi[key_RunCommVi] = ki
+                        sumMean += ki
+                if key_RunComm not in run_community_mean:
+                    ciMean = sumMean/len(clustering_i[c_j])
+                    run_community_mean[key_RunComm] = ciMean
+        # ki, mean(si) -> DONE
+        print('ki, mean(si) -> DONE')
+
+        # iterate through all runs
+        for run_i in range(0, len(commList)):
+            clustering_i = commList[run_i]
+            # iterate through all commnunities
+            for c_j in range(0, len(clustering_i)):
+                sumDesv = 0
+                key_runC = (run_i, c_j)
+                meanCj = run_community_mean[key_runC]
+                for vi in clustering_i[c_j]:
+                    key_RunCVi = (run_i, c_j, vi)
+                    kVi = run_community_vi[key_RunCVi]
+                    sumDesv += math.pow((kVi - meanCj), 2)
+                if key_runC not in run_community_desv:
+                    desvCj = math.sqrt(sumDesv/len(clustering_i[c_j]))
+                    run_community_desv[key_runC] = desvCj
+        print('desviation -> DONE')
+        # print(run_community_vi)
+
+        
         # iterate through all vertex
         for vi in self.G.nodes:
             # iterate through all runs
-            for ri in commList:
+            for run_i in range(0, len(commList)):
+                clustering_i = commList[run_i]
                 # iterate through all commnunities
-                for si in ri:
-                    if count == 100000000:
-                        print('100M operations calculated in withinCommunityDegree')
-                        count = 0
+                for c_j in range(0, len(clustering_i)):
                     # identify the Ci 
-                    if vi in si:
-                        desv = self.standDesvCommunity(si, w)
-                        ki = self.edgeWithinComm(vi, si, w)
-                        degMeanCi = self.degMeanByCommunity(si, w)
-                        zi = (ki - degMeanCi)/desv
-                        if vi not in vertexWithinDict:
+                    if vi in clustering_i[c_j]:
+                        desvSi = run_community_desv[(run_i, c_j)]
+                        ziValue = 0
+                        if desvSi != 0:
+                            meanSi = run_community_mean[(run_i, c_j)]
+                            ki = run_community_vi[(run_i, c_j, vi)]
+                            ziValue = (ki - meanSi)/desvSi
+                        if vi not in zi:
                             listTupleValue = []
-                            listTupleValue.append(zi)
-                            vertexWithinDict[vi] = listTupleValue
+                            listTupleValue.append(ziValue)
+                            zi[vi] = listTupleValue
                         else:
-                            vertexWithinDict[vi].append(zi)
+                            zi[vi].append(ziValue)
                         break
-                print('Iteration: ' + str(itera) + ' of ' + str(len(commList)))
-                itera += 1
-            # s = 0 
-            # for v in vertexWithinDict[vi]:
-            #     s += v            
-            # result = s/len(vertexWithinDict[vi])
+        
+            # count+=1
+            # print('vertex: ', vi, ' Done', ' numbers of items: ', count)
+        print('zi -> DONE')
 
-        #print(vertexWithinDict)
-        return vertexWithinDict
-        # writterFileDictMeansWithin(vertexWithinDict, 'withinDegreeMeanDictByVertex')
+        direct = 'directed_' if directed else 'notDirected_'
+        weg = 'weighted' if w == 'weight' else 'notWeighted'
+        nameFile = 'within_' + algName + '_' + direct + weg
+        # create a binary pickle file 
+        f = open('./dataset/outputs/' + nameFile ,"wb")
 
-        # # create a binary pickle file 
-        # f = open("withinDict.pkl","wb")
+        # write the python object (dict) to pickle file
+        pickle.dump(zi, f)
 
-        # # write the python object (dict) to pickle file
-        # pickle.dump(vertexWithinDict,f)
+        # close file
+        f.close()
 
-        # # close file
-        # f.close()
+    def calculateWithin(self, algList = ['louvain', 'greedy', 'lpa', 'infomap'], wegList = ['weight', 'none'], directList = [True, False]):
+        for alg_i in algList:
+            for weg_j in wegList:
+                for direct_k in directList:
+                    commList =  m.load_all_communities(alg_i)
+                    if alg_i == 'infomap':
+                        commListModified = []
+                        for ci in commList:
+                            commListModified.append(ci['communities'])
+                        self.withinCommunityDegree(weg_j, commListModified, alg_i, direct_k)
+                    else:
+                        self.withinCommunityDegree(weg_j, commList, alg_i, direct_k)
+                    print('finish Directed: ', direct_k)
+                print('finish Weight: ', weg_j)
+            print('finish Algorithm: ', alg_i)
+
+
 
 
 
@@ -721,15 +803,16 @@ class Matrix:
 
         for i in range(len(communities)):            
                 
-                
+            start_time = datetime.datetime.now()
             iter_number = i
-            iter_communities = communities[i]
+            iter_communities = communities[i]['communities'] if algorithm == 'infomap' else communities[i]
             data_participation = {}
             community_number = 0
 
             data_participation = self.participation_coefficient(iter_communities)
 
-            print('Participation coefficient calculated for community ' + str(i) + ' of ' + str(len(communities)) + ' communities.')
+            print('Participation coefficient calculated for community ' + str(i) + ' of ' + str(len(communities)) + ' run of ' + algorithm + ' algorithm')
+            print('Time for participation coefficient: ' + str(datetime.datetime.now() - start_time))
 
             for k, v in data_participation.items():
 
@@ -745,47 +828,55 @@ class Matrix:
                         self.G.nodes[k]['data'][(algorithm, str(iter_number), str(community_number))] = {'participation_coefficient': v} # type: ignore
                     else:
                         self.G.nodes[k]['data'][(algorithm, str(iter_number), str(community_number))]['participation_coefficient'] = v
-                    
-        data_whiting_degree = self.withinCommunityDegree('None', communities)
-
         
-        data_withing_degree_weighted = self.withinCommunityDegree('weight', communities)
+        # Withing Region
 
+        # start_time = datetime.datetime.now()       
+        # data_whiting_degree = self.withinCommunityDegree('None', communities)
+        # print('Time for whiting degree: ' + str(datetime.datetime.now() - start_time))
         
-        community_number = 0
+        # start_time = datetime.datetime.now()
+        # data_withing_degree_weighted = self.withinCommunityDegree('weight', communities)
+        # print('Time for whiting degree weighted: ' + str(datetime.datetime.now() - start_time))
 
-        for k, v in data_whiting_degree.items():
+        # self.save_attributed_graph()
+        # print('Graph saved with whiting degree and participation coefficient')
+        # print('*******************************************************')
+        
+        # community_number = 0
 
-            for j in range(len(v)):
-                for i in range(len(communities[j])):
-                    if k in communities[j][i]:
-                        community_number = i
-                        break
+        # for k, v in data_whiting_degree.items():
+
+        #     for j in range(len(v)):
+        #         for i in range(len(communities[j])):
+        #             if k in communities[j][i]:
+        #                 community_number = i
+        #                 break
                                 
-                if 'data' not in self.G.nodes[k].keys():
-                    self.G.nodes[k]['data'] = {(algorithm, str(j), str(community_number)): {'whiting_degree': v[j]}} # type: ignore        
-                else:
-                    if (algorithm, str(j), str(community_number)) not in self.G.nodes[k]['data'].keys():
-                        self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))] = {'whiting_degree': v[j]}
-                    else:
-                        self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))]['whiting_degree'] = v[j]
+        #         if 'data' not in self.G.nodes[k].keys():
+        #             self.G.nodes[k]['data'] = {(algorithm, str(j), str(community_number)): {'whiting_degree': v[j]}} # type: ignore        
+        #         else:
+        #             if (algorithm, str(j), str(community_number)) not in self.G.nodes[k]['data'].keys():
+        #                 self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))] = {'whiting_degree': v[j]}
+        #             else:
+        #                 self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))]['whiting_degree'] = v[j]
 
-        for k, v in data_withing_degree_weighted.items():
+        # for k, v in data_withing_degree_weighted.items():
 
-            for j in range(len(v)):
-                for i in range(len(communities[j])):
-                    if k in communities[j][i]:
-                        community_number = i
-                        break
-                if 'data' not in self.G.nodes[k].keys():
-                    self.G.nodes[k]['data'] = {(algorithm, str(j), str(community_number)): {'whiting_degree_weighted': v[j]}} # type: ignore        
-                else:
-                    if (algorithm, str(j), str(community_number)) not in self.G.nodes[k]['data'].keys():
-                        self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))] = {'whiting_degree_weighted': v[j]}
-                    else:
-                        self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))]['whiting_degree_weighted'] = v[j]
+        #     for j in range(len(v)):
+        #         for i in range(len(communities[j])):
+        #             if k in communities[j][i]:
+        #                 community_number = i
+        #                 break
+        #         if 'data' not in self.G.nodes[k].keys():
+        #             self.G.nodes[k]['data'] = {(algorithm, str(j), str(community_number)): {'whiting_degree_weighted': v[j]}} # type: ignore        
+        #         else:
+        #             if (algorithm, str(j), str(community_number)) not in self.G.nodes[k]['data'].keys():
+        #                 self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))] = {'whiting_degree_weighted': v[j]}
+        #             else:
+        #                 self.G.nodes[k]['data'][(algorithm, str(j), str(community_number))]['whiting_degree_weighted'] = v[j]
 
-
+        # end Whiting Region
                     
                         
 
@@ -929,13 +1020,54 @@ if __name__ == '__main__':
     #m.load_ady_matrix(30)    
     #m.insert_weighted_edges()
     # m.sava_matrix_obj()
-    m.load_matrix_obj(path='dataset/attributed_graph.pkl')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
     print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
+
+    algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
+
+    for algorithm in algorithms:
+        
+        communities = m.load_all_communities(algorithm)
+
+        wdnw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_directed_notWeighted', 'rb'))
+        wdw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_directed_weighted', 'rb'))
+        wunw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_notDirected_notWeighted', 'rb'))
+        wuw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_notDirected_weighted', 'rb'))
+
+        files = [(wdnw, 'withing_directed_notWeighted'), (wdw, 'withing_directed_Weighted'), (wunw, 'withing_notDirected_notWeighted'), (wuw,  'withing_notDirected_Weighted')]
+
+        for data, name in files:
+            for k, v in data.items():
+                
+                for i in range(len(v)):
+
+                    community = communities[i]
+                    community_number = 0
+
+                    if algorithm == 'infomap':
+                        for j in range(len(community['communities'])):                        
+                            if k in community['communities'][j]:
+                                community_number = j
+                                break
+                    else:
+                        for j in range(len(community)):                        
+                            if k in community[j]:
+                                community_number = j
+                                break
+                        
+                    key = (algorithm, str(i), str(community_number))
+                    if key not in m.G.nodes[k]['data'].keys():
+                        m.G.nodes[k]['data'][(algorithm, str(i), str(community_number))] = {name: v[i]} # type: ignore
+                    else:
+                        m.G.nodes[k]['data'][(algorithm, str(i), str(community_number))][name] = v[i]
+        
+    m.save_graph_obj(path='dataset/attributed_graph-1.4.fly')
     
-    
+    print(m.G.nodes['104198-F-000000'])
+
     # run_and_save_algorithm(m, 'infomap', params= [], seed=[1,2,3,4,5,6,7,8,9,10], n= 10)
     
     # communities = algorithms.infomap(m.G, flags='--seed 23').communities
@@ -944,11 +1076,28 @@ if __name__ == '__main__':
 
     # print(m.communities_length(sorted_community))
 
-    communities = m.load_all_communities('louvain')
+        
+    # community = communities[0]
 
-    m.apply_measures_to_communities_nodes('louvain', communities)
+    # sorted_community = sorted(community, key=lambda x: len(x), reverse=True)
 
-    m.save_attributed_graph()
+    # for i in range(len(community)):        
+    #         print(len(sorted_community[i]))
+    
+
+    # m.apply_measures_to_communities_nodes('greedy', communities)
+
+    # communities = m.load_all_communities('lpa')
+
+    # m.apply_measures_to_communities_nodes('lpa', communities)
+
+    # communities = m.load_all_communities('infomap')
+
+    # m.apply_measures_to_communities_nodes('infomap', communities)
+
+    # m.save_graph_obj(path='dataset/attributed_graph-1.3.pkl')
+
+    # print(m.G.nodes['104198-F-000008'])
 
     print(datetime.datetime.now())
     
