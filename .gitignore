@@ -5,3 +5,4 @@ envCDLib
 envNX
 .vscode/
 *.png
+*.fly
