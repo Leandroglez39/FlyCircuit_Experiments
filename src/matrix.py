@@ -1025,46 +1025,6 @@ if __name__ == '__main__':
     print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
-
-    algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
-
-    for algorithm in algorithms:
-        
-        communities = m.load_all_communities(algorithm)
-
-        wdnw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_directed_notWeighted', 'rb'))
-        wdw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_directed_weighted', 'rb'))
-        wunw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_notDirected_notWeighted', 'rb'))
-        wuw = pickle.load(open('dataset/outputs/FlyCircuitResult/within_'+ algorithm + '_notDirected_weighted', 'rb'))
-
-        files = [(wdnw, 'withing_directed_notWeighted'), (wdw, 'withing_directed_Weighted'), (wunw, 'withing_notDirected_notWeighted'), (wuw,  'withing_notDirected_Weighted')]
-
-        for data, name in files:
-            for k, v in data.items():
-                
-                for i in range(len(v)):
-
-                    community = communities[i]
-                    community_number = 0
-
-                    if algorithm == 'infomap':
-                        for j in range(len(community['communities'])):                        
-                            if k in community['communities'][j]:
-                                community_number = j
-                                break
-                    else:
-                        for j in range(len(community)):                        
-                            if k in community[j]:
-                                community_number = j
-                                break
-                        
-                    key = (algorithm, str(i), str(community_number))
-                    if key not in m.G.nodes[k]['data'].keys():
-                        m.G.nodes[k]['data'][(algorithm, str(i), str(community_number))] = {name: v[i]} # type: ignore
-                    else:
-                        m.G.nodes[k]['data'][(algorithm, str(i), str(community_number))][name] = v[i]
-        
-    m.save_graph_obj(path='dataset/attributed_graph-1.4.fly')
     
     print(m.G.nodes['104198-F-000000'])
 
