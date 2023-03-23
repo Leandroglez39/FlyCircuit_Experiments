@@ -791,6 +791,15 @@ class Matrix:
                 print('finish Weight: ', weg_j)
             print('finish Algorithm: ', alg_i)
 
+    def edgeMetricsExport(self, pathFile):
+        with open(pathFile, 'w') as f:
+            for u,v in self.G.edges:
+                f.write(u + ', ' + v + ', ' + str(self.G.edges[u,v]['weight']) + ', ' + str(self.G.edges[u,v]['edge_betweenes']))
+                f.write('\n')
+                
+        
+
+        
 
 
 
@@ -1025,8 +1034,8 @@ if __name__ == '__main__':
     print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
-    
-    print(m.G.nodes['104198-F-000000'])
+
+    m.edgeMetricsExport(pathFile='output/edgesMEasure.csv')
 
     # run_and_save_algorithm(m, 'infomap', params= [], seed=[1,2,3,4,5,6,7,8,9,10], n= 10)
     

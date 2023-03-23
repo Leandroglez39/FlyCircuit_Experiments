@@ -6,3 +6,4 @@ envNX
 .vscode/
 *.png
 *.fly
+output/edgesMeasure.csv
