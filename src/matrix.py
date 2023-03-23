@@ -1100,7 +1100,7 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    m.save_attributed_graph_to_csv(path='output/attributed_graph-1.4.1.csv')
+    print(m.G.nodes['Gad1-F-100876']['data'])
 
     print(datetime.datetime.now())
     
