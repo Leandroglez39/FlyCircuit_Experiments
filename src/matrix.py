@@ -930,7 +930,53 @@ class Matrix:
                 
         #             conductance_dict[(ci, cj)] = data_conductance
         
+    def save_attributed_graph_to_csv(self, path: str = 'dataset/outputs/attributed_graph.csv'):
 
+        columns = ['id', 'degree', 'in_degree', 'out_degree', 'weight', 'in_weight', 'out_weight']
+
+        columns.extend(self.G.nodes['104198-F-000000'].keys())
+
+        columns.remove('data')
+
+        keys = self.G.nodes['104198-F-000000']['data'].keys()
+
+        for alg, iter, ci in keys:
+            columns.append(alg + '_' + iter + '_' + ci)
+
+        for alg, iter, ci in keys:
+            columns.append(alg + '_' + iter + '_' + ci + '_participation_coefficient')
+            columns.append(alg + '_' + iter + '_' + ci + '_whiting_directed_weighted')
+            columns.append(alg + '_' + iter + '_' + ci + '_whiting_directed_notweighted')
+            columns.append(alg + '_' + iter + '_' + ci + '_whiting_notdirected_weighted')
+            columns.append(alg + '_' + iter + '_' + ci + '_whiting_notdirected_notweighted')
+            
+
+        df = pd.DataFrame(columns=columns)
+
+        for node in self.G.nodes():
+
+            data  = {'id': node,  'degree': self.G.degree(node), 'in_degree': self.G.in_degree(node), 'out_degree': self.G.out_degree(node), 
+                            'weight': self.G.degree(node, weight='weight'), 'in_weight': self.G.in_degree(node, weight='weight'), 'out_weight': self.G.out_degree(node, weight='weight'), 
+                            'eigenvector_centrality': self.G.nodes[node]['eigenvector_centrality'], 'eigenvector_centrality_weighted': self.G.nodes[node]['eigenvector_centrality_weighted'],
+                            'pagerank': self.G.nodes[node]['pagerank'], 'degree_centrality': self.G.nodes[node]['degree_centrality'], 'core_number': self.G.nodes[node]['core_number'],
+                            'closeness_centrality': self.G.nodes[node]['closeness_centrality'], 'clustering_coefficient': self.G.nodes[node]['clustering_coefficient'], 
+                            'vertex_betweenes': self.G.nodes[node]['vertex_betweenes']}
+            
+            for alg, iter, ci in self.G.nodes[node]['data'].keys():
+                data[alg + '_' + iter + '_' + ci] = ci
+                data[alg + '_' + iter + '_' + ci + '_participation_coefficient'] = self.G.nodes[node]['data'][(alg, iter, ci)]['participation_coefficient']
+                data[alg + '_' + iter + '_' + ci + '_whiting_directed_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_Weighted']
+                data[alg + '_' + iter + '_' + ci + '_whiting_directed_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_notWeighted']
+                data[alg + '_' + iter + '_' + ci + '_whiting_notdirected_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_Weighted']
+                data[alg + '_' + iter + '_' + ci + '_whiting_notdirected_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_notWeighted']
+
+            
+
+            df.loc[len(df)] = data
+
+        df.to_csv(path, index=False)
+
+        
 
 def save_all_communities_tocsv(algorithm: str, communities: list):
 
@@ -1053,8 +1099,8 @@ if __name__ == '__main__':
     print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
-
     
+    m.save_attributed_graph_to_csv(path='output/attributed_graph-1.4.1.csv')
 
     print(datetime.datetime.now())
     
