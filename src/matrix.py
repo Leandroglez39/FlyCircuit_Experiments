@@ -941,14 +941,14 @@ class Matrix:
         keys = self.G.nodes['104198-F-000000']['data'].keys()
 
         for alg, iter, ci in keys:
-            columns.append(alg + '_' + iter + '_' + ci)
+            columns.append(alg + '_' + iter + '_' + 'ci')
 
         for alg, iter, ci in keys:
-            columns.append(alg + '_' + iter + '_' + ci + '_participation_coefficient')
-            columns.append(alg + '_' + iter + '_' + ci + '_whiting_directed_weighted')
-            columns.append(alg + '_' + iter + '_' + ci + '_whiting_directed_notweighted')
-            columns.append(alg + '_' + iter + '_' + ci + '_whiting_notdirected_weighted')
-            columns.append(alg + '_' + iter + '_' + ci + '_whiting_notdirected_notweighted')
+            columns.append(alg + '_' + iter + '_' + 'ci' + '_participation_coefficient')
+            columns.append(alg + '_' + iter + '_' + 'ci' + '_whiting_directed_weighted')
+            columns.append(alg + '_' + iter + '_' + 'ci' + '_whiting_directed_notweighted')
+            columns.append(alg + '_' + iter + '_' + 'ci' + '_whiting_notdirected_weighted')
+            columns.append(alg + '_' + iter + '_' + 'ci' + '_whiting_notdirected_notweighted')
             
 
         df = pd.DataFrame(columns=columns)
@@ -963,12 +963,12 @@ class Matrix:
                             'vertex_betweenes': self.G.nodes[node]['vertex_betweenes']}
             
             for alg, iter, ci in self.G.nodes[node]['data'].keys():
-                data[alg + '_' + iter + '_' + ci] = ci
-                data[alg + '_' + iter + '_' + ci + '_participation_coefficient'] = self.G.nodes[node]['data'][(alg, iter, ci)]['participation_coefficient']
-                data[alg + '_' + iter + '_' + ci + '_whiting_directed_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_Weighted']
-                data[alg + '_' + iter + '_' + ci + '_whiting_directed_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_notWeighted']
-                data[alg + '_' + iter + '_' + ci + '_whiting_notdirected_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_Weighted']
-                data[alg + '_' + iter + '_' + ci + '_whiting_notdirected_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_notWeighted']
+                data[alg + '_' + iter + '_' + 'ci'] = ci
+                data[alg + '_' + iter + '_' + 'ci' + '_participation_coefficient'] = self.G.nodes[node]['data'][(alg, iter, ci)]['participation_coefficient']
+                data[alg + '_' + iter + '_' + 'ci' + '_whiting_directed_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_Weighted']
+                data[alg + '_' + iter + '_' + 'ci' + '_whiting_directed_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_directed_notWeighted']
+                data[alg + '_' + iter + '_' + 'ci' + '_whiting_notdirected_weighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_Weighted']
+                data[alg + '_' + iter + '_' + 'ci' + '_whiting_notdirected_notweighted'] = self.G.nodes[node]['data'][(alg, iter, ci)]['withing_notDirected_notWeighted']
 
             
 
@@ -1100,7 +1100,8 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    print(m.G.nodes['Gad1-F-100876']['data'])
+    m.save_attributed_graph_to_csv('output/attributed_graph-1.4.1.csv')
+    #print(m.G.nodes['Gad1-F-100876']['data'])
 
     print(datetime.datetime.now())
     
