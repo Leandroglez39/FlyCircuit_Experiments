@@ -1085,12 +1085,14 @@ def small(communities: list):
 
     return com
 
-def apply_central_dispersion_measures(path):
+def apply_central_dispersion_measures(path: str):
 
-    data = pd.read_csv('output/edgesMeasure.csv', header=0)
+    data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
 
-    data = data[[' weight', ' edge_betweenness']]
-      
+    #data = data[[' weight', ' edge_betweenness']]
+
+    data = data[['degree', 'in_degree', 'out_degree', 'weight', 'in_weight', 'out_weight', 'eigenvector_centrality', 'eigenvector_centrality_weighted', 'pagerank', 'degree_centrality', 'core_number', 'closeness_centrality', 'clustering_coefficient', 'vertex_betweenes']]
+
     #Calculate summary statistics
     summary = data.describe()
     
@@ -1106,14 +1108,14 @@ def apply_central_dispersion_measures(path):
     sw_test_results = pd.DataFrame({'shapiro_w': []})
     for col in data.columns:
         sw, p = stats.shapiro(data[col])
-        sw_test_results.loc[col] = [sw]
+        sw_test_results.loc[col] = [p]
 
    
     # Add the Shapiro-Wilk test results to the original DataFrame
     summary.loc['shapiro_w'] = sw_test_results['shapiro_w']
 
     # Export summary statistics to a CSV file
-    summary.to_csv('summary.edge.csv')
+    summary.to_csv(path)
 
 
 
@@ -1132,10 +1134,11 @@ if __name__ == '__main__':
 
     #data = pd.read_csv('output/summary_vertex.csv', header=0)
 
+    apply_central_dispersion_measures('output/summary_vertex1.1.csv')
     # Plot a histogram of the data in a three ranges
-    plt.hist(data['degree'], bins=3, range=(0, 4039)) 
+    #plt.hist(data['degree'], bins=3, range=(0, 4039)) 
     #plt.hist(data['degree'], bins=20)
-    plt.show()
+    #plt.show()
     
     #plt.boxplot(data['weight'])
     #plt.show()
