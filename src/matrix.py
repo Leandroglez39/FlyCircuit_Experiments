@@ -1132,20 +1132,20 @@ if __name__ == '__main__':
     
     data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
 
-    #data = pd.read_csv('output/summary_vertex.csv', header=0)
+    #data = pd.read_csv('output/edgesMeasure.csv', header=0)
 
-    apply_central_dispersion_measures('output/summary_vertex1.1.csv')
+    
     # Plot a histogram of the data in a three ranges
     #plt.hist(data['degree'], bins=3, range=(0, 4039)) 
-    #plt.hist(data['degree'], bins=20)
-    #plt.show()
+    # plt.hist(data['core_number'], bins=20)
+    # plt.show()
     
-    #plt.boxplot(data['weight'])
-    #plt.show()
+    # plt.boxplot(data['core_number'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
+    # plt.show()
 
     # Plot a Q-Q plot to check if the data is normally distributed
-    #stats.probplot(data['degree'], dist="norm", plot=plt)
-    #plt.show()
+    # stats.probplot(data['degree'], dist="norm", plot=plt, )
+    # plt.show()
     
 
     print(datetime.datetime.now())
