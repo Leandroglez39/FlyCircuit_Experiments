@@ -86,3 +86,6 @@
 ´´´bash
 sudo apt-get install python3.*-tk
 ´´´
+
+* `https://www.youtube.com/watch?v=1EeMPaeAEoI` Normalidad 1 (Skewness/Kurtosis - qqnorm)
+
