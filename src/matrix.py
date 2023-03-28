@@ -1128,20 +1128,22 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-       
+    data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
 
-    # Plot a histogram of the data
-    # plt.hist(data['degree'], bins=20)
-    # plt.show()
+    #data = pd.read_csv('output/summary_vertex.csv', header=0)
+
+    # Plot a histogram of the data in a three ranges
+    plt.hist(data['degree'], bins=3, range=(0, 4039)) 
+    #plt.hist(data['degree'], bins=20)
+    plt.show()
     
+    #plt.boxplot(data['weight'])
+    #plt.show()
 
-    # # Plot a Q-Q plot to check if the data is normally distributed
-    # stats.probplot(data['degree'], dist="norm", plot=plt)
-    # plt.show()
-    # # Perform a Shapiro-Wilk test to determine the normality of the data
-    # w, p_value = stats.shapiro(data['degree'])
-    # print("Shapiro-Wilk test statistic:", w)
-    # print("p-value:", p_value)
+    # Plot a Q-Q plot to check if the data is normally distributed
+    #stats.probplot(data['degree'], dist="norm", plot=plt)
+    #plt.show()
+    
 
     print(datetime.datetime.now())
     
