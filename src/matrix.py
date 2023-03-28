@@ -9,6 +9,8 @@ import multiprocessing
 import os
 import datetime
 import math
+import numpy as np
+import scipy.stats as stats
 
 
 
@@ -1083,14 +1085,40 @@ def small(communities: list):
 
     return com
 
-   
+def apply_central_dispersion_measures(path):
+
+    data = pd.read_csv('output/edgesMeasure.csv', header=0)
+
+    data = data[[' weight', ' edge_betweenness']]
+      
+    #Calculate summary statistics
+    summary = data.describe()
     
+
+    # Add mean, median, mode, variance, standard deviation, skewness, and kurtosis
+    summary.loc['mean'] = data.mean()
+    summary.loc['median'] = data.median()
+    summary.loc['mode'] = data.mode().iloc[0]
+    summary.loc['variance'] = data.var()    
+    summary.loc['skewness'] = data.skew()
+    summary.loc['kurtosis'] = data.kurtosis()
+
+    sw_test_results = pd.DataFrame({'shapiro_w': []})
+    for col in data.columns:
+        sw, p = stats.shapiro(data[col])
+        sw_test_results.loc[col] = [sw]
+
+   
+    # Add the Shapiro-Wilk test results to the original DataFrame
+    summary.loc['shapiro_w'] = sw_test_results['shapiro_w']
+
+    # Export summary statistics to a CSV file
+    summary.to_csv('summary.edge.csv')
+
 
 
 if __name__ == '__main__':
     
-
-    measures = ['eigenvector_centrality', 'pagerank', 'degree_centrality', 'core_number']
 
     m = Matrix([], {},[])
     
@@ -1100,8 +1128,20 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    m.save_attributed_graph_to_csv('output/attributed_graph-1.4.1.csv')
-    #print(m.G.nodes['Gad1-F-100876']['data'])
+       
+
+    # Plot a histogram of the data
+    # plt.hist(data['degree'], bins=20)
+    # plt.show()
+    
+
+    # # Plot a Q-Q plot to check if the data is normally distributed
+    # stats.probplot(data['degree'], dist="norm", plot=plt)
+    # plt.show()
+    # # Perform a Shapiro-Wilk test to determine the normality of the data
+    # w, p_value = stats.shapiro(data['degree'])
+    # print("Shapiro-Wilk test statistic:", w)
+    # print("p-value:", p_value)
 
     print(datetime.datetime.now())
     
