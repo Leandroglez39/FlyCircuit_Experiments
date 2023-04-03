@@ -15,6 +15,7 @@ import scipy.stats as stats
 
 
 
+
 @dataclass
 class Matrix:
     """    
@@ -54,7 +55,7 @@ class Matrix:
         '''
         Export graph to csv file for Cosmos viewer
         '''
-        nx.write_edgelist(self.G, path, delimiter=",", data=['weight'])
+        nx.write_edgelist(self.G, path, delimiter=",", data=['weight']) # type: ignore
 
     def export_graph_to_csv_size(self, size):
 
@@ -80,14 +81,14 @@ class Matrix:
 
         self.G_small = G
 
-        nx.write_edgelist(G, f"0set_size{str(size)}.csv", delimiter=",", data=['weight'])
-        nx.write_gexf(G, f"0set_size{str(size)}.gexf")
-    
-    def export_graph_to_graphml(self, path = "./dataset/graph_19k_3.5m.gml"):
-        nx.write_graphml(self.G, path)
+        nx.readwrite.edgelist.write_edgelist(G, f"0set_size{str(size)}.csv", delimiter=",", data=['weight'])        
+        nx.gexf.write_gexf(G, f"0set_size{str(size)}.gexf")
+        
+    def export_graph_to_graphml(self, path = "./dataset/graph_19k_3.5m.gml"):        
+        nx.graphml.write_graphml(self.G, path)
 
-    def export_graph_to_adjlist(self, path = "./dataset/graph_19k_3.5m.adyl"):
-        nx.write_adjlist(self.G, path)
+    def export_graph_to_adjlist(self, path = "./dataset/graph_19k_3.5m.adyl"):        
+        nx.adjlist.write_adjlist(self.G, path)
 
     def load_ady_matrix(self, count = 0):
 
@@ -124,8 +125,8 @@ class Matrix:
         with open(path, 'w') as f:
             for node in self.G.nodes:
                 
-                f.write(f'{node},{str(nx.degree(self.G, node))},{str(self.G.in_degree[node])},{str(self.G.out_degree[node])},')
-                f.write(str(self.G.degree(node, weight='weight')) + ',')
+                f.write(f'{node},{str(nx.degree(self.G, node))},{str(self.G.in_degree[node])},{str(self.G.out_degree[node])},') # type: ignore
+                f.write(str(self.G.degree(node, weight='weight')) + ',') # type: ignore
                 f.write(str(self.G.in_degree(node, weight='weigth')) + ',')
                 f.write(str(self.G.out_degree(node, weight='weigth')) + ',')
                 f.write(str(self.G.nodes[node]['eigenvector_centrality']) + ',')
@@ -182,7 +183,8 @@ class Matrix:
     def lpa_wrapper(self, G, weight = 'weight', seed = 1):
 
         import networkx.algorithms.community as nx_comm
-        return list(nx_comm.asyn_lpa_communities(G, weight, seed))
+        return list(nx_comm.asyn_lpa_communities(G, weight, seed)) # type: ignore
+        
 
     def asyn_lpa_concurrent(self, weight = 'weight', seed = None , n = 10):
         
@@ -590,7 +592,7 @@ class Matrix:
         
         if 'core_number' in measure:
 
-            data = nx.core_number(self.G)           
+            data = nx.core_number(self.G)            # type: ignore
 
             for node in self.G.nodes():
                 self.G.nodes[node]['core_number'] = data[node] # type: ignore
@@ -621,15 +623,15 @@ class Matrix:
         
         for node in self.G.nodes():
 
-            k_i = self.G.degree(nbunch=node)
+            k_i = self.G.degree(nbunch=node) # type: ignore
 
             suma = 0
             
-            neighbors = list(nx.neighbors(self.G, node))
+            neighbors = list(nx.neighbors(self.G, node)) # type: ignore
 
             for community in communities:
 
-                subgraph = nx.subgraph(self.G, community)
+                subgraph = nx.subgraph(self.G, community) # type: ignore
                                 
                 k_i_s = 0
 
@@ -671,25 +673,25 @@ class Matrix:
     # Begining of Horacio's Region
 
     def edgeWithinComm(self, vi, si, w, directed):
-        sugSi = nx.subgraph(self.G, si)
+        sugSi = nx.subgraph(self.G, si) # type: ignore
         if not directed:
             ki = sugSi.degree(vi, weight = w)
         else:
             ki = sugSi.out_degree(vi, weight = w)
         return ki
 
-    def degMeanByCommunity(self, si, w):
+    def degMeanByCommunity(self, si, w, directed):
         sum = 0
         for vi in si:
-            edgeWith = self.edgeWithinComm(vi, si, w)
+            edgeWith = self.edgeWithinComm(vi, si, w, directed)
             sum += edgeWith
         return sum/len(si)
 
-    def standDesvCommunity(self, si, w):
-        dMeanCi = self.degMeanByCommunity(si, w)
+    def standDesvCommunity(self, si, w, directed):
+        dMeanCi = self.degMeanByCommunity(si, w, directed)
         sum = 0 
         for vi in si:
-            ki = self.edgeWithinComm(vi, si, w)
+            ki = self.edgeWithinComm(vi, si, w, directed)
             sum += math.pow((ki - dMeanCi), 2)
         desv = math.sqrt(sum/len(si))
         return desv
@@ -793,6 +795,15 @@ class Matrix:
                 print('finish Weight: ', weg_j)
             print('finish Algorithm: ', alg_i)
 
+    def edgeMetricsExport(self, pathFile):
+        with open(pathFile, 'w') as f:
+            for u,v in self.G.edges:
+                f.write(u + ', ' + v + ', ' + str(self.G.edges[u,v]['weight']) + ', ' + str(self.G.edges[u,v]['edge_betweenes']))
+                f.write('\n')
+                
+        
+
+        
     def update_graph_with_within_measure(self, communities ,algorithms = ['louvain', 'greedy', 'lpa', 'infomap']):
 
         for algorithm in algorithms:
@@ -830,7 +841,6 @@ class Matrix:
                         else:
                             self.G.nodes[k]['data'][(algorithm, str(i), str(community_number))][name] = v[i]
             
-   
 
     # End Horacio's Region
 
@@ -957,8 +967,8 @@ class Matrix:
 
         for node in self.G.nodes():
 
-            data  = {'id': node,  'degree': self.G.degree(node), 'in_degree': self.G.in_degree(node), 'out_degree': self.G.out_degree(node), 
-                            'weight': self.G.degree(node, weight='weight'), 'in_weight': self.G.in_degree(node, weight='weight'), 'out_weight': self.G.out_degree(node, weight='weight'), 
+            data  = {'id': node,  'degree': self.G.degree(node), 'in_degree': self.G.in_degree(node), 'out_degree': self.G.out_degree(node),  # type: ignore
+                            'weight': self.G.degree(node, weight='weight'), 'in_weight': self.G.in_degree(node, weight='weight'), 'out_weight': self.G.out_degree(node, weight='weight'),  # type: ignore
                             'eigenvector_centrality': self.G.nodes[node]['eigenvector_centrality'], 'eigenvector_centrality_weighted': self.G.nodes[node]['eigenvector_centrality_weighted'],
                             'pagerank': self.G.nodes[node]['pagerank'], 'degree_centrality': self.G.nodes[node]['degree_centrality'], 'core_number': self.G.nodes[node]['core_number'],
                             'closeness_centrality': self.G.nodes[node]['closeness_centrality'], 'clustering_coefficient': self.G.nodes[node]['clustering_coefficient'], 
@@ -974,7 +984,7 @@ class Matrix:
 
             
 
-            df.loc[len(df)] = data
+            df.loc[len(df)] = data # type: ignore
 
         df.to_csv(path, index=False)
 
@@ -1134,21 +1144,22 @@ if __name__ == '__main__':
 
     #data = pd.read_csv('output/edgesMeasure.csv', header=0)
 
-    
+   
     # Plot a histogram of the data in a three ranges
     #plt.hist(data['degree'], bins=3, range=(0, 4039)) 
-    plt.hist(data['degree'], bins=20)
-    plt.show()
+    # plt.hist(data['degree'], bins=20)
+    # plt.show()
     
-    plt.boxplot(data['degree'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
-    plt.show()
+    # plt.boxplot(data['degree'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
+    # plt.show()
 
     # Plot a Q-Q plot to check if the data is normally distributed
-    stats.probplot(data['degree'], dist="norm", plot=plt, )
-    plt.show() 
+    # stats.probplot(data['degree'], dist="norm", plot=plt, )
+    # plt.show() 
     
-
+    
     print(datetime.datetime.now())
+    
     
     
 
