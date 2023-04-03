@@ -396,11 +396,11 @@ class Matrix:
 
         if algorithm == 'louvain':
             
-            paths = os.listdir('./dataset/outputs/' + algorithm + '/')
+            paths = os.listdir('./output/' + algorithm + '/')
         
             communities = []
             for path in paths:
-                with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
+                with open('./output/' + algorithm + '/' + path, 'rb') as f:
                     community = pickle.load(f)
                     sorted_community = sorted(community, key = lambda x: len(x), reverse = True)
                     communities.append(sorted_community)
@@ -408,24 +408,24 @@ class Matrix:
             return communities
         if algorithm == 'lpa':
 
-            paths = os.listdir('./dataset/outputs/' + algorithm + '/')
+            paths = os.listdir('./output/' + algorithm + '/')
         
             communities = []
             
             for path in paths:
-                with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
+                with open('./output/' + algorithm + '/' + path, 'rb') as f:
                     communities.append(pickle.load(f))
             
             return communities
         
         if algorithm == 'greedy':
 
-            paths = os.listdir('./dataset/outputs/' + algorithm + '/')
+            paths = os.listdir('./output/' + algorithm + '/')
 
             communities = []
 
             for path in paths:
-                with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
+                with open('./output/' + algorithm + '/' + path, 'rb') as f:
                     communities.append(pickle.load(f))
         
             
@@ -433,12 +433,12 @@ class Matrix:
 
         if algorithm == 'infomap':
 
-            paths = os.listdir('./dataset/outputs/' + algorithm + '/')
+            paths = os.listdir('./output/' + algorithm + '/')
 
             communities = []
 
             for path in paths:
-                with open('./dataset/outputs/' + algorithm + '/' + path, 'rb') as f:
+                with open('./output/' + algorithm + '/' + path, 'rb') as f:
                     communities.append(pickle.load(f))
         
             
@@ -1137,15 +1137,15 @@ if __name__ == '__main__':
     
     # Plot a histogram of the data in a three ranges
     #plt.hist(data['degree'], bins=3, range=(0, 4039)) 
-    # plt.hist(data['core_number'], bins=20)
-    # plt.show()
+    plt.hist(data['degree'], bins=20)
+    plt.show()
     
-    # plt.boxplot(data['core_number'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
-    # plt.show()
+    plt.boxplot(data['degree'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
+    plt.show()
 
     # Plot a Q-Q plot to check if the data is normally distributed
-    # stats.probplot(data['degree'], dist="norm", plot=plt, )
-    # plt.show()
+    stats.probplot(data['degree'], dist="norm", plot=plt, )
+    plt.show() 
     
 
     print(datetime.datetime.now())
