@@ -302,7 +302,7 @@ class Matrix:
             method_parameters: Configuration for the community discovery algorithm used
             overlap: Boolean, whether the partition is overlapping or not
         '''
-        from cdlib import algorithms
+        from cdlib import algorithms # type: ignore Only necesary with cdlib environment #TODO
 
         if seed:
             with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
@@ -669,6 +669,109 @@ class Matrix:
 
         for node in self.G.nodes():
             self.G.nodes[node][measure] = dict[node]
+    
+
+    def RoughClustering(self, communities: list):
+
+        '''
+        This function is for calculate the rough clustering of a community list.
+
+        Parameters
+        ----------        
+        communities : list
+            A list of comunities.
+        
+        Returns
+        -------
+        result : dict
+            The rough clustering of every node.
+        '''
+
+        data_nodes = {}        
+        
+        count = 0
+
+        match_dict = {}
+        
+        for node in self.G.nodes():
+
+            for community in communities:
+
+                if node in community:
+                    match_dict[node] = community
+                    break 
+    
+    def update_dict_count(self, community: list):
+
+
+        '''
+        This function is for update the dict of the count of the communities.
+
+        Parameters
+        ----------
+        community : list
+            A list of nodes of a community.
+        '''
+        # Initialize a dict to store the nodes in the community
+        dict_nodes = {}
+
+        # For each community
+        for com in community:
+            # For each node in the community
+            for i in range(len(com)):
+                nodei = com[i]
+                # For each node in the community except the current node
+                for j in range(i+1, len(com)):
+                    nodej = com[j]
+                    # If the current combination of nodes is not in the dict
+                    if (nodei, nodej) not in dict_nodes:
+                        # Add it with a count of 1
+                        dict_nodes[(nodei,nodej)] = 1
+                    else:
+                        # If it is in the dict, add 1 to the count
+                        dict_nodes[(nodei,nodej)] = dict_nodes[(nodei,nodej)] + 1
+
+        return dict_nodes             
+                        
+    def important_nodes(self):
+
+        '''
+        This function is for calculate the important nodes of the graph.
+
+        Returns
+        -------
+        result : dict
+            A dict with the important nodes.
+        '''
+
+       
+
+        dict_degree = dict(self.G.degree()) # type: ignore
+
+        dict_weighted = dict(self.G.degree(weight='weight')) # type: ignore
+
+        list_degree = list(dict_degree.items())
+
+        list_weighted = list(dict_weighted.items())
+
+        list_degree.sort(key=lambda x: x[1], reverse=True)
+
+        list_weighted.sort(key=lambda x: x[1], reverse=True)
+
+
+        list_degree = list_degree[:7200]
+
+        list_weighted = list_weighted[:7200]
+
+        list_degree = [x[0] for x in list_degree]
+
+        list_weighted = [x[0] for x in list_weighted]
+
+        intersection = set(list_degree).intersection(set(list_weighted))
+
+        return intersection
+
+        
     
     # Begining of Horacio's Region
 
@@ -1140,7 +1243,71 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
+    edges = [(1,2), (2,3), (2,4), (4,5), (4,6)]
+
+    G = nx.Graph()
+    
+    #data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
+
+    influen = m.important_nodes()
+
+    #G = m.G.subgraph(inter)
+
+    #kvalue = nx.algorithms.core.core_number(G)
+    
+    influen = set(influen)
+
+    #kvalue = pickle.load(open('output/kvalue.pkl', 'rb'))
+
+    kvalue = nx.algorithms.core.core_number(m.G)
+
+    data_dict = {}
+    data_node = {}
+
+    for key, value in kvalue.items():
+        if value not in data_dict:
+            data_dict[value] = 1
+            keys = set()
+            keys.add(key)
+            data_node[value] = keys
+        else:
+            data_dict[value] += 1
+            data_node[value].add(key)
+
+    data  =  list(data_dict.items())
+    data.sort(key=lambda x: x[1], reverse=True)
+    
+    k = 1
+    N = len(influen)
+    for key, value in data:
+        influen = influen.difference(data_node[key])        
+        if len(influen) < (N * 0.2):
+            break
+        k += 1
+
+    print(k)
+    # list_kvalue = list(kvalue.items())
+
+    # list_kvalue.sort(key=lambda x: x[1], reverse=True)
+
+    
+
+    # set_inter = set(inter)
+    
+
+    # print(len(set(list_kvalue)))
+    
+
+   
+            
+
+        
+   
+
+
+
+
+   
 
     #data = pd.read_csv('output/edgesMeasure.csv', header=0)
 
