@@ -679,30 +679,67 @@ class Matrix:
         Parameters
         ----------        
         communities : list
-            A list of comunities.
+            A list of list of comunities.
         
         Returns
         -------
         result : dict
             The rough clustering of every node.
         '''
-
-        data_nodes = {}        
         
-        count = 0
+
+         # Create a list of nodes from the graph
+        nodes = list(self.G.nodes())
+        
+        # Initialize a dict to store the nodes in the community
+        dict_nodes = {}
+        for i in range(len(nodes)):
+            for j in range(i+1, len(nodes)):
+                keyi = (nodes[i],nodes[j])           
+                dict_nodes[keyi] = 0
+        
+                
+        Gb0 = nx.Graph()
+
+        Gb0.add_nodes_from(nodes)
+              
 
         match_dict = {}
         
-        for node in self.G.nodes():
+        for community in communities:
+            temp_match = self.update_dict_count(dict_node=dict_nodes, community=community)
+            self.merge_communities_dict(match_dict, temp_match)
 
-            for community in communities:
+        b0 = len(communities)/2 - 1
 
-                if node in community:
-                    match_dict[node] = community
-                    break 
+        edges_list = []
+
+        for i in range(len(nodes)):
+            for j in range(i+1, len(nodes)):
+                keyi = (nodes[i],nodes[j])           
+                if match_dict[keyi] >= b0:
+                    edges_list.append(keyi)
+        
+        
+        
+        Gb0.add_edges_from(edges_list)
+
+        strongcomponents = nx.connected_components(Gb0)
+
+        seeds = []
+
+        for component in strongcomponents:
+            seeds.append(nx.subgraph(self.G, component))
+            print(component)
+
+        seeds.sort(key=len, reverse=True)
+
+
+        return seeds
+
     
-    def update_dict_count(self, community: list):
-
+    def update_dict_count(self, dict_node: dict ,community: list):
+        
 
         '''
         This function is for update the dict of the count of the communities.
@@ -712,12 +749,13 @@ class Matrix:
         community : list
             A list of nodes of a community.
         '''
-        # Initialize a dict to store the nodes in the community
-        dict_nodes = {}
+        
+        dict_nodes = dict_node.copy()
 
         # For each community
         for com in community:
             # For each node in the community
+            com.sort()
             for i in range(len(com)):
                 nodei = com[i]
                 # For each node in the community except the current node
@@ -733,6 +771,29 @@ class Matrix:
 
         return dict_nodes             
                         
+    
+    def merge_communities_dict(self, general_dict: dict, dict_new: dict):
+    
+        '''
+        Merges two dictionaries into a single dictionary.
+
+        Args:
+        -----
+            general_dict (dict): General dictionary where the values of the new dictionary will be added.
+            dict_new (dict): New dictionary with values that will be added to the general dictionary.
+        '''
+
+        # For each key in the new dictionary:
+        for key in dict_new:
+            # If the key is not in the general dictionary
+            if key not in general_dict:
+                # Add it to the general dictionary
+                general_dict[key] = dict_new[key]
+            # If the key is in the general dictionary
+            else:
+                # Add the value from the new dictionary to the value in the general dictionary
+                general_dict[key] = general_dict[key] + dict_new[key]
+
     def important_nodes(self):
 
         '''
@@ -1243,49 +1304,63 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    edges = [(1,2), (2,3), (2,4), (4,5), (4,6)]
+    m.G = nx.generators.karate_club_graph()
 
-    G = nx.Graph()
-    
+    list_of_communities = []
+
+    for i in range(3):
+        result = nx.algorithms.community.label_propagation_communities(m.G)
+        list_of_communities.append([list(x) for x in result])
+  
+    for x in list_of_communities:
+        print(x)
+
+    print('\n')
+
+    value = m.RoughClustering(communities=list_of_communities)
+
+    for g in value:
+        print(g.nodes)
+
     #data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
 
-    influen = m.important_nodes()
+    #influen = m.important_nodes()
 
     #G = m.G.subgraph(inter)
 
     #kvalue = nx.algorithms.core.core_number(G)
     
-    influen = set(influen)
+    #influen = set(influen)
 
     #kvalue = pickle.load(open('output/kvalue.pkl', 'rb'))
 
-    kvalue = nx.algorithms.core.core_number(m.G)
+    # kvalue = nx.algorithms.core.core_number(m.G)
 
-    data_dict = {}
-    data_node = {}
+    # data_dict = {}
+    # data_node = {}
 
-    for key, value in kvalue.items():
-        if value not in data_dict:
-            data_dict[value] = 1
-            keys = set()
-            keys.add(key)
-            data_node[value] = keys
-        else:
-            data_dict[value] += 1
-            data_node[value].add(key)
+    # for key, value in kvalue.items():
+    #     if value not in data_dict:
+    #         data_dict[value] = 1
+    #         keys = set()
+    #         keys.add(key)
+    #         data_node[value] = keys
+    #     else:
+    #         data_dict[value] += 1
+    #         data_node[value].add(key)
 
-    data  =  list(data_dict.items())
-    data.sort(key=lambda x: x[1], reverse=True)
+    # data  =  list(data_dict.items())
+    # data.sort(key=lambda x: x[1], reverse=True)
     
-    k = 1
-    N = len(influen)
-    for key, value in data:
-        influen = influen.difference(data_node[key])        
-        if len(influen) < (N * 0.2):
-            break
-        k += 1
+    # k = 1
+    # N = len(influen)
+    # for key, value in data:
+    #     influen = influen.difference(data_node[key])        
+    #     if len(influen) < (N * 0.2):
+    #         break
+    #     k += 1
 
-    print(k)
+    # print(k)
     # list_kvalue = list(kvalue.items())
 
     # list_kvalue.sort(key=lambda x: x[1], reverse=True)
