@@ -11,6 +11,7 @@ import datetime
 import math
 import numpy as np
 import scipy.stats as stats
+import statistics
 
 
 
@@ -729,11 +730,14 @@ class Matrix:
         seeds = []
 
         for component in strongcomponents:
-            seeds.append(nx.subgraph(self.G, component))
-            print(component)
+            seeds.append(nx.function.subgraph(self.G, component))
+            
 
         seeds.sort(key=len, reverse=True)
 
+        k = self.calculate_k(communities)
+
+        print
 
         return seeds
 
@@ -770,7 +774,46 @@ class Matrix:
                         dict_nodes[(nodei,nodej)] = dict_nodes[(nodei,nodej)] + 1
 
         return dict_nodes             
-                        
+
+    def calculate_k(self, communities: list, statistic = True):
+
+        '''
+        This function is for calculate the k of a community.
+
+        Parameters
+        ----------        
+        communities : list
+            A list of comunities.
+        statistic : bool
+            If True, the function will calculate the k of all communities with the statistic method.
+        
+        Returns
+        -------
+        result : int
+            The k of the community.
+        '''
+
+        k = 0
+        data = []
+        if statistic:
+            for community in communities:
+                for partition in community:
+                    data.append(len(partition))
+
+            mean = statistics.mean(data)
+            stddev = statistics.stdev(data)    
+
+            
+
+            count = 0
+            for x in data:
+                if x in range(mean - (-2 * stddev) , mean + (2 * stddev)):
+                    count += 1
+
+            
+            k = count/len(communities)
+            return k
+
     
     def merge_communities_dict(self, general_dict: dict, dict_new: dict):
     
@@ -1304,17 +1347,17 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    m.G = nx.generators.karate_club_graph()
-
+    m.G = nx.generators.social.karate_club_graph()
+    
     list_of_communities = []
 
     for i in range(3):
-        result = nx.algorithms.community.label_propagation_communities(m.G)
+        result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
         list_of_communities.append([list(x) for x in result])
   
     for x in list_of_communities:
         print(x)
-
+    
     print('\n')
 
     value = m.RoughClustering(communities=list_of_communities)
