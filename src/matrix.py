@@ -692,13 +692,15 @@ class Matrix:
          # Create a list of nodes from the graph
         nodes = list(self.G.nodes())
         
+
+        print('Initializing dict')
         # Initialize a dict to store the nodes in the community
         dict_nodes = {}
         for i in range(len(nodes)):
             for j in range(i+1, len(nodes)):
                 keyi = (nodes[i],nodes[j])           
                 dict_nodes[keyi] = 0
-        
+        print('Dict initialized')
                 
         Gb0 = nx.Graph()
 
@@ -707,24 +709,28 @@ class Matrix:
 
         match_dict = {}
         
+        print('Initializing dict')
         for community in communities:
             temp_match = self.update_dict_count(dict_node=dict_nodes, community=community)
             self.merge_communities_dict(match_dict, temp_match)
+        print('Dict initialized')
 
         b0 = len(communities)/2 - 1
 
         edges_list = []
 
+        print('Calculating edges')
         for i in range(len(nodes)):
             for j in range(i+1, len(nodes)):
                 keyi = (nodes[i],nodes[j])           
                 if match_dict[keyi] >= b0:
                     edges_list.append(keyi)
-        
+        print('Edges calculated')
         
         
         Gb0.add_edges_from(edges_list)
 
+        print('Calculating strong components')
         strongcomponents = nx.connected_components(Gb0)
 
         seeds = []
@@ -732,12 +738,14 @@ class Matrix:
         for component in strongcomponents:
             seeds.append(nx.function.subgraph(self.G, component))
             
+        print('Strong components calculated')
 
         seeds.sort(key=len, reverse=True)
 
+        print('Calculating k')
         k = self.calculate_k(communities)
 
-        print
+        print('k: ' + str(k))
 
         return seeds
 
@@ -759,6 +767,7 @@ class Matrix:
         # For each community
         for com in community:
             # For each node in the community
+            com = list(com)
             com.sort()
             for i in range(len(com)):
                 nodei = com[i]
@@ -803,11 +812,12 @@ class Matrix:
             mean = statistics.mean(data)
             stddev = statistics.stdev(data)    
 
-            
+            print('mean: ' + str(mean))
+            print('stddev: ' + str(stddev))
 
             count = 0
             for x in data:
-                if x in range(mean - (-2 * stddev) , mean + (2 * stddev)):
+                if x in range(int(mean + (-2 * stddev)) , int(mean + (2 * stddev))):
                     count += 1
 
             
@@ -1347,23 +1357,23 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    m.G = nx.generators.social.karate_club_graph()
+    #m.G = nx.generators.social.karate_club_graph()
     
     list_of_communities = []
-
-    for i in range(3):
-        result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
-        list_of_communities.append([list(x) for x in result])
+    list_of_communities = m.load_all_communities('louvain')
+    # for i in range(3):
+    #     result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
+    #     list_of_communities.append([list(x) for x in result])
   
-    for x in list_of_communities:
-        print(x)
+    # for x in list_of_communities:
+    #     print(x)
     
     print('\n')
 
     value = m.RoughClustering(communities=list_of_communities)
 
-    for g in value:
-        print(g.nodes)
+    # for g in value:
+    #     print(g.nodes)
 
     #data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
 
