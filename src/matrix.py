@@ -692,15 +692,21 @@ class Matrix:
          # Create a list of nodes from the graph
         nodes = list(self.G.nodes())
         
+        match_array = np.zeros((len(nodes), len(nodes)), dtype=int)
 
-        print('Initializing dict')
-        # Initialize a dict to store the nodes in the community
-        dict_nodes = {}
+        node_hash = {}
+
         for i in range(len(nodes)):
-            for j in range(i+1, len(nodes)):
-                keyi = (nodes[i],nodes[j])           
-                dict_nodes[keyi] = 0
-        print('Dict initialized')
+            node_hash[nodes[i]] = i
+
+        # print('Initializing dict')
+        # # Initialize a dict to store the nodes in the community
+        # dict_nodes = {}
+        # for i in range(len(nodes)):
+        #     for j in range(i+1, len(nodes)):
+        #         keyi = (nodes[i],nodes[j])           
+        #         dict_nodes[keyi] = 0
+        # print('Dict initialized')
                 
         Gb0 = nx.Graph()
 
@@ -709,11 +715,11 @@ class Matrix:
 
         match_dict = {}
         
-        print('Initializing dict')
+        print('Updating ocurances in match array')
         for community in communities:
-            temp_match = self.update_dict_count(dict_node=dict_nodes, community=community)
-            self.merge_communities_dict(match_dict, temp_match)
-        print('Dict initialized')
+            self.update_match_array(community=community, match_array=match_array, hash=node_hash)
+                        
+        print('Ocurances updated in match array')
 
         b0 = len(communities)/2 - 1
 
@@ -721,10 +727,9 @@ class Matrix:
 
         print('Calculating edges')
         for i in range(len(nodes)):
-            for j in range(i+1, len(nodes)):
-                keyi = (nodes[i],nodes[j])           
-                if match_dict[keyi] >= b0:
-                    edges_list.append(keyi)
+            for j in range(i+1, len(nodes)):                          
+                if match_array[i][j] >= b0:
+                    edges_list.append((nodes[i], nodes[j]))
         print('Edges calculated')
         
         
@@ -784,6 +789,37 @@ class Matrix:
 
         return dict_nodes             
 
+    def update_match_array(self, match_array: np.ndarray, community: list, hash: dict):
+        
+
+        '''
+        This function is for update the match array of the count of the communities.
+
+        Parameters
+        ----------
+        match_array : np.ndarray
+            A numpy array with the count of the ocurrances of the nodes in the communities.
+        community : list
+            A list of nodes of a community.
+        '''
+        
+        # For each community
+        for com in community:
+            # For each node in the community
+            com = list(com)
+            com.sort()
+            for i in range(len(com)):
+                nodei = com[i]
+                # For each node in the community except the current node
+                for j in range(i+1, len(com)):
+                    nodej = com[j]
+                    # Increment the count of the current combination of nodes
+                    nodei_hash = hash[nodei]
+                    nodej_hash = hash[nodej]
+                    match_array[nodei_hash, nodej_hash] += 1
+
+        
+
     def calculate_k(self, communities: list, statistic = True):
 
         '''
@@ -804,24 +840,29 @@ class Matrix:
 
         k = 0
         data = []
+        data_array = np.array([])
+
         if statistic:
             for community in communities:
-                for partition in community:
-                    data.append(len(partition))
+                for i in range(len(community)):
+                    partition = community[i]
+                    vale = np.full(len(partition), i)
+                    data_array = np.concatenate((data_array, vale), axis=None)
+                    #data.append(len(partition))
 
-            mean = statistics.mean(data)
-            stddev = statistics.stdev(data)    
+            mean = statistics.mean(data_array)
+            stddev = statistics.stdev(data_array)    
 
             print('mean: ' + str(mean))
             print('stddev: ' + str(stddev))
 
-            count = 0
-            for x in data:
-                if x in range(int(mean + (-2 * stddev)) , int(mean + (2 * stddev))):
-                    count += 1
+            # count = 0
+            # for x in data_array:
+            #     if x in range(int(mean + (-2 * stddev)) , int(mean + (2 * stddev))):
+            #         count += 1
 
             
-            k = count/len(communities)
+            k = int(mean + (2 * stddev))
             return k
 
     
@@ -1368,7 +1409,7 @@ if __name__ == '__main__':
     # for x in list_of_communities:
     #     print(x)
     
-    print('\n')
+    #print('\n')
 
     value = m.RoughClustering(communities=list_of_communities)
 
