@@ -449,6 +449,12 @@ class Matrix:
             if infomap_flags:
                 communities = [community['communities'] for community in communities]
 
+                iteration = []
+                for community in communities:
+                    iteration.append([set(com) for com in community])
+
+                return iteration
+            
             return communities
         
         return []    
@@ -702,15 +708,6 @@ class Matrix:
 
         for i in range(len(nodes)):
             node_hash[nodes[i]] = i
-
-        # print('Initializing dict')
-        # # Initialize a dict to store the nodes in the community
-        # dict_nodes = {}
-        # for i in range(len(nodes)):
-        #     for j in range(i+1, len(nodes)):
-        #         keyi = (nodes[i],nodes[j])           
-        #         dict_nodes[keyi] = 0
-        # print('Dict initialized')
                 
         Gb0 = nx.Graph()
 
@@ -1425,9 +1422,7 @@ if __name__ == '__main__':
         list_of_communities = m.load_all_communities(algorithm=algorithm, infomap_flags=True)
         all_iterations.extend(list_of_communities)
    
-
-    
-
+            
     
     # for i in range(3):
     #     result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
@@ -1438,7 +1433,7 @@ if __name__ == '__main__':
     
     #print('\n')
 
-    value = m.RoughClustering(communities=all_iterations)
+    #value = m.RoughClustering(communities=all_iterations)
 
     # for g in value:
     #     print(g.nodes)
