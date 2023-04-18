@@ -3,7 +3,9 @@ import pickle
 import multiprocessing
 import time
 from multiprocessing import Array
-
+import sys
+import concurrent.futures
+from timeit import default_timer as timer
 
 def temp():
     df = pd.read_csv('./data/matrix/0 file.csv')
@@ -160,10 +162,56 @@ def infomap_concurrent(G, n = 10):
         communities = pool.map(algorithms.infomap, [G for _ in range(n)])
     return communities
 
+data_a = Array('i', 198034851, lock=False)
+
+def match_count_parallel(tuple):
+    pos = (19902 * tuple[0]) - sum([i for i in range(tuple[0])])
+    pos = pos + tuple[1] - tuple[0] 
+    data_a[pos] = data_a[pos] + 1
+
+def match_count_parallel_return(tuple):
+    pos = (19902 * tuple[0]) - sum([i for i in range(tuple[0])])
+    pos = pos + tuple[1] - tuple[0] 
+    return pos
+
 if __name__ == '__main__':
     
+    n = 11000
+    params = [(i,j) for i in range(n) for j in range( i + 1, n)]
 
+    print('Params ready')
     
+    # concurrent
+    # comment out to only run sequential
+    start = timer()
+    result = []
+
+    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+        result = pool.map(match_count_parallel, params)
+    
+    # for i in params:
+    #     match_count_parallel(i)
+    
+    # with concurrent.futures.ProcessPoolExecutor(max_workers= 20) as executor:
+    #     futures = [executor.submit(match_count_parallel_return, i) for i in params]
+
+    #     for i, future in enumerate(concurrent.futures.as_completed(futures)):
+    #         if future.result():
+    #             result.append(future.result())
+    
+    
+
+
+    #print('Result 2:', result)
+    print('Took: %.2f seconds.' % (timer() - start))
+
+    print(len(result))
+   
+
+    print('Done')
+
+    print(data_a)
+
     '''Region Concurrent Communities Algorithms'''
     
     #communities = lovain_concurrent(G)
