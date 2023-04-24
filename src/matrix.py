@@ -715,8 +715,11 @@ class Matrix:
               
         print('Updating ocurances in match array')
         for community in communities:
-            self.update_match_array(community=community, match_array=match_array, hash=node_hash)
-                        
+            self.update_match_array(community=community, match_array=match_array, hash=node_hash)        
+        
+
+        
+
         print('Ocurances updated in match array')
 
         b0 = len(communities)/2 - 1
@@ -750,7 +753,58 @@ class Matrix:
 
         print('k: ' + str(k))
 
-        return seeds
+
+        # list of set of nodes that represents the  coverage of the graph . The first set is the inferior coverage and the second set is the superior coverage.
+        coverage_inferior = [set() for _ in range(k + 1)]
+        coverage_superior = [set() for _ in range(k + 1)]
+
+
+        for i in range(k + 1):
+            coverage_inferior[i] = coverage_inferior[i].union(set(seeds[i].nodes())) # type: ignore
+            coverage_superior[i] = coverage_superior[i].union(set(seeds[i].nodes())) # type: ignore
+
+        similarity_values = []
+
+        print('Calculating similarity')
+
+        for j in range( k + 1, len(seeds)):
+
+
+            grj1 = seeds[j] # Subgraph of the seed that will be calculated its similarity with all k seeds
+
+            similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
+            
+            
+            
+            max_similarity ,max_similarity_index = 0, 0
+
+            for i in range(len(similarity_values)):
+                if similarity_values[i] > max_similarity:
+                    max_similarity = similarity_values[i]
+                    max_similarity_index = i
+                    
+            if max_similarity == 0:
+                similarity_values_normalized = [0 for _ in range(k + 1)]
+            else:
+                similarity_values_normalized = [svalues / max_similarity for svalues in similarity_values]
+
+            T = []
+
+            gamma = 0.3
+
+
+            for i in range(len(similarity_values_normalized)):
+                if similarity_values_normalized[i] >= gamma:
+                    T.append(i)
+            
+            if len(T) > 1:
+                for element in T:
+                    coverage_superior[element] = coverage_superior[element].union(set(grj1.nodes()))
+            else:
+                coverage_superior[max_similarity_index] = coverage_superior[max_similarity_index].union(set(grj1.nodes()))
+                coverage_inferior[max_similarity_index] = coverage_inferior[max_similarity_index].union(set(grj1.nodes()))
+                
+        return coverage_inferior
 
     
     def update_dict_count(self, dict_node: dict ,community: list):
@@ -815,10 +869,8 @@ class Matrix:
                     nodei_hash = hash[nodei]
                     nodej_hash = hash[nodej]
                     match_array[nodei_hash, nodej_hash] += 1
-
-        
-
-    def calculate_k(self, communities: list, statistic = True, ):
+ 
+    def calculate_k(self, communities: list, statistic = True, ) -> int:
 
         '''
         This function is for calculate the k of a community.
@@ -879,7 +931,7 @@ class Matrix:
                 if x in range(int(mean + (-2 * stddev)) , int(mean + (2 * stddev))):
                     count += 1
             
-            return count / len(communities)
+            return int(count / len(communities))
     
     def merge_communities_dict(self, general_dict: dict, dict_new: dict):
     
@@ -941,7 +993,42 @@ class Matrix:
 
         return intersection
 
+    def similarity_between_subgraphs(self, subgraph1: nx.Graph, subgraph2: set, match_array: np.ndarray, hash: dict) -> float:
+
+        '''
+        This function is for calculate the similarity between two subgraphs.
         
+        Parameters
+        ----------
+        subgraph1 : nx.Graph
+            A subgraph.
+        subgraph2 : set
+            A set of nodes with represent an inferior coverage.
+        match_array : np.ndarray
+            A numpy array with the count of the ocurrances of the nodes in the communities.
+        hash : dict
+            A dict with the hash of the nodes correspondaing to the index of the match array.
+        
+        Returns
+        -------
+
+        result : float
+            The similarity between the two subgraphs between 0 and 1.
+        '''
+        result = 0
+
+        print(match_array)
+        
+        for node1 in subgraph1.nodes():
+            node_hash1 = hash[node1]
+            for node2 in subgraph2:
+                node_hash2 = hash[node2]
+                result += match_array[node_hash1, node_hash2]
+                result += match_array[node_hash2, node_hash1]
+                print(node_hash2, node_hash1)
+
+        
+        return result / (len(subgraph1.nodes()) * len(subgraph2))
     
     # Begining of Horacio's Region
 
@@ -1413,27 +1500,28 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    #m.G = nx.generators.social.karate_club_graph()
+    m.G = nx.generators.social.karate_club_graph()    
     
     algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
 
     all_iterations = []
-    for algorithm in algorithms:    
-        list_of_communities = m.load_all_communities(algorithm=algorithm, infomap_flags=True)
-        all_iterations.extend(list_of_communities)
+    # for algorithm in algorithms:    
+    #     list_of_communities = m.load_all_communities(algorithm=algorithm, infomap_flags=True)
+    #     all_iterations.extend(list_of_communities)
    
             
     
-    # for i in range(3):
-    #     result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
-    #     list_of_communities.append([list(x) for x in result])
+    for i in range(3):
+        result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
+        all_iterations.append([list(x) for x in result])
   
-    # for x in list_of_communities:
-    #     print(x)
+    print(all_iterations)
     
     #print('\n')
 
-    #value = m.RoughClustering(communities=all_iterations)
+    value = m.RoughClustering(communities=all_iterations)
+
+    print(value)
 
     # for g in value:
     #     print(g.nodes)
