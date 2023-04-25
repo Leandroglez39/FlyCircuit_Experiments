@@ -1545,10 +1545,6 @@ if __name__ == '__main__':
         all_iterations.append([list(x) for x in result]) # type: ignore
 
    
-
-
-    
-    
     #print('\n')
 
     value = m.RoughClustering(communities=all_iterations)
