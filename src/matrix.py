@@ -722,7 +722,7 @@ class Matrix:
 
         print('Ocurances updated in match array')
 
-        b0 = len(communities)/2 - 1
+        b0 = len(communities) * 0.75
 
         edges_list = []
 
@@ -735,6 +735,10 @@ class Matrix:
         
         
         Gb0.add_edges_from(edges_list)
+
+
+        #nx.draw(Gb0, with_labels=True, font_weight='bold')
+        #plt.show()
 
         print('Calculating strong components')
         strongcomponents = nx.connected_components(Gb0)
@@ -751,7 +755,7 @@ class Matrix:
         print('Calculating k')
         k = self.calculate_k(communities)
 
-        print('k: ' + str(k))
+        print('Real k: ' + str(k + 1))
 
 
         # list of set of nodes that represents the  coverage of the graph . The first set is the inferior coverage and the second set is the superior coverage.
@@ -782,29 +786,35 @@ class Matrix:
                 if similarity_values[i] > max_similarity:
                     max_similarity = similarity_values[i]
                     max_similarity_index = i
-                    
+            
+            
+
             if max_similarity == 0:
                 similarity_values_normalized = [0 for _ in range(k + 1)]
             else:
                 similarity_values_normalized = [svalues / max_similarity for svalues in similarity_values]
-
+            
+            print('Max similarity: ' + str(max_similarity))
+            print(similarity_values_normalized)
+            print(grj1.nodes())
             T = []
 
-            gamma = 0.3
+            gamma = 0.8
 
 
             for i in range(len(similarity_values_normalized)):
-                if similarity_values_normalized[i] >= gamma:
+                if  max_similarity_index != i and similarity_values_normalized[i] >= gamma:
                     T.append(i)
             
-            if len(T) > 1:
+            if len(T) > 0:
                 for element in T:
                     coverage_superior[element] = coverage_superior[element].union(set(grj1.nodes()))
+                    coverage_superior[max_similarity_index] = coverage_superior[max_similarity_index].union(set(grj1.nodes()))
             else:
                 coverage_superior[max_similarity_index] = coverage_superior[max_similarity_index].union(set(grj1.nodes()))
                 coverage_inferior[max_similarity_index] = coverage_inferior[max_similarity_index].union(set(grj1.nodes()))
                 
-        return coverage_inferior
+        return (coverage_inferior, coverage_superior)
 
     
     def update_dict_count(self, dict_node: dict ,community: list):
@@ -1017,7 +1027,7 @@ class Matrix:
         '''
         result = 0
 
-        print(match_array)
+        
         
         for node1 in subgraph1.nodes():
             node_hash1 = hash[node1]
@@ -1025,7 +1035,7 @@ class Matrix:
                 node_hash2 = hash[node2]
                 result += match_array[node_hash1, node_hash2]
                 result += match_array[node_hash2, node_hash1]
-                print(node_hash2, node_hash1)
+                
 
         
         return result / (len(subgraph1.nodes()) * len(subgraph2))
@@ -1509,19 +1519,31 @@ if __name__ == '__main__':
     #     list_of_communities = m.load_all_communities(algorithm=algorithm, infomap_flags=True)
     #     all_iterations.extend(list_of_communities)
    
-            
+    # all_iterations = [[[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [8, 30, 0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 2, 13], [0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
+    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 8, 2], [30, 0, 1, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
+    #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 8, 2], [30, 0, 1, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
+    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
+    #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
+    
+   
     
     for i in range(3):
         result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
         all_iterations.append([list(x) for x in result])
   
-    print(all_iterations)
+    
     
     #print('\n')
 
     value = m.RoughClustering(communities=all_iterations)
 
-    print(value)
+    print(value[0])
+    print(value[1])
 
     # for g in value:
     #     print(g.nodes)
