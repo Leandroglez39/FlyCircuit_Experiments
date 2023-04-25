@@ -1532,16 +1532,16 @@ if __name__ == '__main__':
     
    
     
-    for i in range(3):
+    for i in range(100):
         result = nx.algorithms.community.label_propagation.label_propagation_communities(m.G)
         all_iterations.append([list(x) for x in result])
     
-    for i in range(3):
+    for i in range(100):
         result = nx.algorithms.community.greedy_modularity_communities(m.G)
         all_iterations.append([list(x) for x in result]) # type: ignore
     
-    for i in range(3):
-        result = nx.algorithms.community.louvain.louvain_communities(m.G)
+    for i in range(100):
+        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=i)
         all_iterations.append([list(x) for x in result]) # type: ignore
 
    
