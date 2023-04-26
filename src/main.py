@@ -7,6 +7,7 @@ import sys
 import concurrent.futures
 from timeit import default_timer as timer
 
+
 def temp():
     df = pd.read_csv('./data/matrix/0 file.csv')
 
@@ -177,17 +178,38 @@ def match_count_parallel_return(tuple):
 if __name__ == '__main__':
     
     n = 11000
-    params = [(i,j) for i in range(n) for j in range( i + 1, n)]
+    #params = [(i,j) for i in range(n) for j in range( i + 1, n)]
 
     print('Params ready')
     
+
+    import networkx as nx
+
+    # Create a graph
+    G = nx.Graph()
+    G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 4)])
+
+    # Create two subgraphs
+    subgraph1 = G.subgraph([1, 2, 3])
+    subgraph2 = G.subgraph([2, 3, 4])
+
+    print(subgraph1.edges)
+    print(subgraph2.edges)
+
+    # Calculate the number of edges between the subgraphs
+    
+    a = nx.algorithms.community.quality.inter_community_edges(G, subgraph2.nodes)
+    # Print the result
+    print("Number of edges between subgraphs:", a)
+
+
     # concurrent
     # comment out to only run sequential
     start = timer()
     result = []
 
-    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-        result = pool.map(match_count_parallel, params)
+    # with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+    #     result = pool.map(match_count_parallel, params)
     
     # for i in params:
     #     match_count_parallel(i)

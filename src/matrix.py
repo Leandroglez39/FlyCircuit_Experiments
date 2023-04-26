@@ -12,7 +12,7 @@ import math
 import numpy as np
 import scipy.stats as stats
 import statistics
-
+import random
 
 
 
@@ -778,10 +778,16 @@ class Matrix:
 
             similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
             
+            edges_values = [self.edges_between_subgraphs(grj1, seeds[i]) for i in range(k + 1)]
             
-            
-            max_similarity ,max_similarity_index = 0, 0
+            total_nodes = sum([len(seed.nodes()) for seed in seeds]) + len(grj1.nodes())
+            total_edges = (total_nodes * (total_nodes-1)) / 2
 
+            edges_values_normalized = [x / total_edges for x in edges_values]
+
+            max_similarity ,max_similarity_index = 0, 0
+            
+            
             for i in range(len(similarity_values)):
                 if similarity_values[i] > max_similarity:
                     max_similarity = similarity_values[i]
@@ -793,6 +799,8 @@ class Matrix:
                 similarity_values_normalized = [0 for _ in range(k + 1)]
             else:
                 similarity_values_normalized = [svalues / max_similarity for svalues in similarity_values]
+
+            similarity_values_normalized = [(similarity_values_normalized[i] + edges_values_normalized[i])/2 for i in range(len(similarity_values_normalized))]
             
             print('Max similarity: ' + str(max_similarity))
             print(similarity_values_normalized)
@@ -1039,6 +1047,34 @@ class Matrix:
 
         
         return result / (len(subgraph1.nodes()) * len(subgraph2))
+    
+    def edges_between_subgraphs(self, subgraph1: nx.Graph, subgraph2: nx.Graph) -> int:
+            
+            '''
+            This function is for calculate the number of edges between two subgraphs.
+            
+            Parameters
+            ----------
+            subgraph1 : nx.Graph
+                A subgraph.
+            subgraph2 : nx.Graph
+                A subgraph.
+            
+            Returns
+            -------
+    
+            result : int
+                The number of edges between the two subgraphs.
+            '''
+            
+    
+            total = len(subgraph1.edges()) + len(subgraph2.edges())
+
+
+            subgraph3 = self.G.subgraph(list(subgraph1.nodes()) + list(subgraph2.nodes())) # type: ignore
+
+
+            return len(subgraph3.edges()) - total
     
     # Begining of Horacio's Region
 
@@ -1530,22 +1566,24 @@ if __name__ == '__main__':
     #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
-   
-    
-    for i in range(180):
-        result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=i)
+    n = 0
+    max = 150
+
+    for i in range(n, max):
+        result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 1000))
         all_iterations.append([list(x) for x in result])
+        #print(all_iterations[-1])
     
-    for i in range(180):
-        result = nx.algorithms.community.greedy_modularity_communities(m.G)
+    for i in range(n, int(max/2)):
+        result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1.5)        
         all_iterations.append([list(x) for x in result]) # type: ignore
+        print(all_iterations[-1])
     
-    for i in range(180):
-        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=i)
+    for i in range(n, max):
+        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 1000))
+        #print(result)
         all_iterations.append([list(x) for x in result]) # type: ignore
 
-   
-    #print('\n')
 
     value = m.RoughClustering(communities=all_iterations)
 
