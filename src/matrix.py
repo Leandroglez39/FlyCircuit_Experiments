@@ -785,16 +785,11 @@ class Matrix:
 
             edges_values_normalized = [x / total_edges for x in edges_values]
 
-            max_similarity ,max_similarity_index = 0, 0
+            max_similarity =  max(similarity_values) 
+            
+            max_similarity_index = similarity_values.index(max(similarity_values)) 
             
             
-            for i in range(len(similarity_values)):
-                if similarity_values[i] > max_similarity:
-                    max_similarity = similarity_values[i]
-                    max_similarity_index = i
-            
-            
-
             if max_similarity == 0:
                 similarity_values_normalized = [0 for _ in range(k + 1)]
             else:
@@ -1567,19 +1562,19 @@ if __name__ == '__main__':
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
     n = 0
-    max = 150
+    top = 10
 
-    for i in range(n, max):
+    for i in range(n, top):
         result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 1000))
         all_iterations.append([list(x) for x in result])
         #print(all_iterations[-1])
     
-    for i in range(n, int(max/2)):
-        result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1.5)        
+    for i in range(n, int(top/2)):
+        result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
         all_iterations.append([list(x) for x in result]) # type: ignore
         print(all_iterations[-1])
     
-    for i in range(n, max):
+    for i in range(n, top):
         result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 1000))
         #print(result)
         all_iterations.append([list(x) for x in result]) # type: ignore
