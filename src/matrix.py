@@ -780,8 +780,10 @@ class Matrix:
             
             edges_values = [self.edges_between_subgraphs(grj1, seeds[i]) for i in range(k + 1)]
             
-            total_nodes = sum([len(seed.nodes()) for seed in seeds]) + len(grj1.nodes())
-            total_edges = (total_nodes * (total_nodes-1)) / 2
+            #total_nodes = sum([len(seed.nodes()) for seed in seeds]) + len(grj1.nodes())
+            #total_edges = (total_nodes * (total_nodes-1)) / 2
+            total_edges = max(edges_values)
+
 
             edges_values_normalized = [x / total_edges for x in edges_values]
 
@@ -795,6 +797,8 @@ class Matrix:
             else:
                 similarity_values_normalized = [svalues / max_similarity for svalues in similarity_values]
 
+            
+
             similarity_values_normalized = [(similarity_values_normalized[i] + edges_values_normalized[i])/2 for i in range(len(similarity_values_normalized))]
             
             print('Max similarity: ' + str(max_similarity))
@@ -803,7 +807,6 @@ class Matrix:
             T = []
 
             gamma = 0.8
-
 
             for i in range(len(similarity_values_normalized)):
                 if  max_similarity_index != i and similarity_values_normalized[i] >= gamma:
@@ -1562,20 +1565,20 @@ if __name__ == '__main__':
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
     n = 0
-    top = 10
+    top = 150
 
     for i in range(n, top):
-        result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 1000))
+        result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
         all_iterations.append([list(x) for x in result])
         #print(all_iterations[-1])
     
-    for i in range(n, int(top/2)):
+    for i in range(n, int(top/1.5)):
         result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
         all_iterations.append([list(x) for x in result]) # type: ignore
-        print(all_iterations[-1])
+        #print(all_iterations[-1])
     
     for i in range(n, top):
-        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 1000))
+        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
         #print(result)
         all_iterations.append([list(x) for x in result]) # type: ignore
 
