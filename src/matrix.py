@@ -1572,7 +1572,7 @@ if __name__ == '__main__':
     
     #m.G = nx.generators.social.karate_club_graph()    
     
-    m.G = pickle.load(open('dataset/dolphins.pkl', 'rb'))
+    
 
     algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
 
@@ -1592,32 +1592,37 @@ if __name__ == '__main__':
     #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
-    n = 0
-    top = 50
-    
-    for i in range(n, top):
-        result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-        all_iterations.append([list(x) for x in result])
-        #print(all_iterations[-1])
-    
-    for i in range(n, int(top/1.5)):
-        result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
-        all_iterations.append([list(x) for x in result]) # type: ignore
-        #print(all_iterations[-1])
-    
-    for i in range(n, top):
-        result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
-        #print(result)
-        all_iterations.append([list(x) for x in result]) # type: ignore
+
+    for j in range(1,12):
+
+        m.G = pickle.load(open('dataset/network'+ str(j) + '.pkl', 'rb'))
+
+        n = 0
+        top = 100
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+            all_iterations.append([list(x) for x in result])
+            #print(all_iterations[-1])
+        
+        for i in range(n, int(top/1.5)):
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+            all_iterations.append([list(x) for x in result]) # type: ignore
+            #print(all_iterations[-1])
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+            #print(result)
+            all_iterations.append([list(x) for x in result]) # type: ignore
 
 
-    value = m.RoughClustering(communities=all_iterations)
+        value = m.RoughClustering(communities=all_iterations)
 
-    print(value[0])
-    print(value[1])
+        print(value[0])
+        print(value[1])
 
 
-    m.export_RC('dolphins.txt', value)
+        m.export_RC('network'+ str(j) + '.txt', value)
 
     # for g in value:
     #     print(g.nodes)
