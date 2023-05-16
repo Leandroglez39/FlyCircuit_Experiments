@@ -2,6 +2,11 @@ import pandas as pd
 import pickle
 import multiprocessing
 import time
+from multiprocessing import Array
+import sys
+import concurrent.futures
+from timeit import default_timer as timer
+
 
 def temp():
     df = pd.read_csv('./data/matrix/0 file.csv')
@@ -158,23 +163,76 @@ def infomap_concurrent(G, n = 10):
         communities = pool.map(algorithms.infomap, [G for _ in range(n)])
     return communities
 
+data_a = Array('i', 198034851, lock=False)
+
+def match_count_parallel(tuple):
+    pos = (19902 * tuple[0]) - sum([i for i in range(tuple[0])])
+    pos = pos + tuple[1] - tuple[0] 
+    data_a[pos] = data_a[pos] + 1
+
+def match_count_parallel_return(tuple):
+    pos = (19902 * tuple[0]) - sum([i for i in range(tuple[0])])
+    pos = pos + tuple[1] - tuple[0] 
+    return pos
+
 if __name__ == '__main__':
     
+    n = 11000
+    #params = [(i,j) for i in range(n) for j in range( i + 1, n)]
 
-    import networkx.algorithms.community as nx_comm
+    print('Params ready')
+    
+
     import networkx as nx
-    
-    #G = nx.karate_club_graph()
-    df = pd.DataFrame(columns=['source', 'target', 'weight'])
-    
-    df = df.append({'source': 1, 'target': 2, 'weight': 1}, ignore_index=True)
-    df = df.append({'source': 2, 'target': 3, 'weight': 1}, ignore_index=True)
-    dff = df.set_index('source')
 
-    dff.loc[1, 'val'] = "some value"
-    dff.loc[2, 'val'] = "perra"
+    # Create a graph
+    G = nx.Graph()
+    G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4), (3, 4)])
 
-    print(dff)   
+    # Create two subgraphs
+    subgraph1 = G.subgraph([1, 2, 3])
+    subgraph2 = G.subgraph([2, 3, 4])
+
+    print(subgraph1.edges)
+    print(subgraph2.edges)
+
+    # Calculate the number of edges between the subgraphs
+    
+    a = nx.algorithms.community.quality.inter_community_edges(G, subgraph2.nodes)
+    # Print the result
+    print("Number of edges between subgraphs:", a)
+
+
+    # concurrent
+    # comment out to only run sequential
+    start = timer()
+    result = []
+
+    # with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+    #     result = pool.map(match_count_parallel, params)
+    
+    # for i in params:
+    #     match_count_parallel(i)
+    
+    # with concurrent.futures.ProcessPoolExecutor(max_workers= 20) as executor:
+    #     futures = [executor.submit(match_count_parallel_return, i) for i in params]
+
+    #     for i, future in enumerate(concurrent.futures.as_completed(futures)):
+    #         if future.result():
+    #             result.append(future.result())
+    
+    
+
+
+    #print('Result 2:', result)
+    print('Took: %.2f seconds.' % (timer() - start))
+
+    print(len(result))
+   
+
+    print('Done')
+
+    print(data_a)
 
     '''Region Concurrent Communities Algorithms'''
     
