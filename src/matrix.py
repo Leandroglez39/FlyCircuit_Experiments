@@ -1074,6 +1074,32 @@ class Matrix:
 
             return len(subgraph3.edges()) - total
     
+    def export_RC(self, path, rc):
+
+        '''
+        This function is for export the RC file.
+
+        Parameters
+        ----------
+        path : str
+            The path where the file will be saved.
+        rc : list(set)
+            A list of sets with the communities. Include solapated nodes.
+        '''
+        var = 0
+        with open(path, 'w') as file:
+            for i in range(len(rc[0])):
+                temp = set()
+                temp = temp.union(rc[0][i])
+                temp = temp.union(rc[1][i])
+                line = ''
+                var += len(temp)
+                for node in temp:
+                    line += str(node) + ' '                   
+                file.write(line + '\n')
+
+        
+        
     # Begining of Horacio's Region
 
     def edgeWithinComm(self, vi, si, w, directed):
@@ -1544,8 +1570,10 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    m.G = nx.generators.social.karate_club_graph()    
+    #m.G = nx.generators.social.karate_club_graph()    
     
+    m.G = pickle.load(open('dataset/dolphins.pkl', 'rb'))
+
     algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
 
     all_iterations = []
@@ -1565,8 +1593,8 @@ if __name__ == '__main__':
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
     n = 0
-    top = 150
-
+    top = 50
+    
     for i in range(n, top):
         result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
         all_iterations.append([list(x) for x in result])
@@ -1587,6 +1615,9 @@ if __name__ == '__main__':
 
     print(value[0])
     print(value[1])
+
+
+    m.export_RC('dolphins.txt', value)
 
     # for g in value:
     #     print(g.nodes)
