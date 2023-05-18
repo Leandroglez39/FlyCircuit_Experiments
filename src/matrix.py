@@ -1664,7 +1664,6 @@ if __name__ == '__main__':
     
     #m.G = nx.generators.social.karate_club_graph()    
     
-    
     nmi_overlapping_evaluate('NetsType_1.1')
      
 
