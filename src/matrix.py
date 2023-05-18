@@ -784,12 +784,14 @@ class Matrix:
             #total_edges = (total_nodes * (total_nodes-1)) / 2
             total_edges = max(edges_values)
 
-
-            edges_values_normalized = [x / total_edges for x in edges_values]
+            if total_edges == 0:
+                edges_values_normalized = [0 for _ in range(k + 1)]
+            else:
+                edges_values_normalized = [x / total_edges for x in edges_values]
 
             max_similarity =  max(similarity_values) 
             
-            max_similarity_index = similarity_values.index(max(similarity_values)) 
+            
             
             
             if max_similarity == 0:
@@ -801,9 +803,11 @@ class Matrix:
 
             similarity_values_normalized = [(similarity_values_normalized[i] + edges_values_normalized[i])/2 for i in range(len(similarity_values_normalized))]
             
-            print('Max similarity: ' + str(max_similarity))
-            print(similarity_values_normalized)
-            print(grj1.nodes())
+            max_similarity_index = similarity_values_normalized.index(max(similarity_values_normalized)) 
+
+            #print('Max similarity: ' + str(max_similarity))
+            #print(similarity_values_normalized)
+            #print(grj1.nodes())
             T = []
 
             gamma = 0.8
@@ -1593,16 +1597,19 @@ if __name__ == '__main__':
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
 
-    for j in range(1,12):
+    response = []
+    for j in range(1, 10):
 
         m.G = pickle.load(open('dataset/network'+ str(j) + '.pkl', 'rb'))
 
         n = 0
-        top = 100
+        top = 5
         
         for i in range(n, top):
             result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-            all_iterations.append([list(x) for x in result])
+            communities = [list(x) for x in result]
+            if len(communities) > 1:
+                all_iterations.append(communities) # type: ignore
             #print(all_iterations[-1])
         
         for i in range(n, int(top/1.5)):
@@ -1618,11 +1625,32 @@ if __name__ == '__main__':
 
         value = m.RoughClustering(communities=all_iterations)
 
-        print(value[0])
-        print(value[1])
+        all_iterations = []
 
+        #print(value[0])
+        #print(value[1])
 
-        m.export_RC('network'+ str(j) + '.txt', value)
+        m.export_RC('network_noG'+ str(j) + '.txt', value)
+
+        total_matches = 0
+        with open('LFRBenchamark/community'+ str(j) + '_GT.dat', 'r') as f:
+            lines = f.readlines()
+            for comm in value[0]:
+                maximum = 0
+                for line in lines:
+                    gt_comm = line.split(' ')
+                    int_gt_comm = [int(x) for x in gt_comm]
+                    if len(set(comm).intersection(set(int_gt_comm))) > maximum:
+                        maximum = len(set(comm).intersection(set(int_gt_comm)))
+                total_matches += maximum
+        
+        response.append(total_matches/1100)
+        total_matches = 0
+    with open('match.txt', 'w') as f:
+        f.write(str(response))
+
+        
+    
 
     # for g in value:
     #     print(g.nodes)

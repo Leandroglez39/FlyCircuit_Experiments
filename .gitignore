@@ -8,3 +8,4 @@ envNX
 *.fly
 output/edgesMeasure.csv
 testing.py
+src/__pycache__/
