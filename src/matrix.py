@@ -13,6 +13,7 @@ import numpy as np
 import scipy.stats as stats
 import statistics
 import random
+import re
 
 
 
@@ -1583,6 +1584,71 @@ def apply_central_dispersion_measures(path: str):
     # Export summary statistics to a CSV file
     summary.to_csv(path)
 
+def nmi_overlapping_evaluate(foldername: str) -> None:
+
+    '''
+    Evaluate the overlapping detection methods using NMI
+
+    Parameters
+    ----------
+    foldername: str
+        Path to folder containing  GT communities and detected communities
+
+    Returns
+    -------
+    None
+    '''
+
+    from cdlib import evaluation, NodeClustering
+
+    files = os.listdir('dataset/' + foldername)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    for file in files:
+        nodes = []
+        match = re.search(r'(network)(\d+)', file)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open('dataset/' + foldername + '/GT/community' + number + '_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+        
+        G = pickle.load(open('dataset/' + foldername + '/' + file + '/' + file + '.pkl', 'rb')) 
+    
+
+        nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    
+        nodes = []
+        outputs = ['', '_Lpa', '_Louvain', '_Greedy']
+
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+            f.write('network' + number + '\n')
+
+        for output in outputs:
+            with open('output/' + foldername + '/network' + number + output + '.txt', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    line = line.strip('\n').rstrip()
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+
+            nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=output, method_parameters={}, overlap=True)
+            
+            match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+
+            with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+                f.write(output + ': ' + str(match_resoult.score) + '\n')
+
+            nodes = []
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+            f.write('------------------------\n')
+
 
 
 if __name__ == '__main__':
@@ -1599,6 +1665,8 @@ if __name__ == '__main__':
     #m.G = nx.generators.social.karate_club_graph()    
     
     
+    nmi_overlapping_evaluate('NetsType_1.1')
+     
 
     algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
 
@@ -1621,43 +1689,43 @@ if __name__ == '__main__':
 
     
 
-    folder_version = 'NetsType_1.1'
+    # folder_version = 'NetsType_1.1'
 
-    for j in range(1, 12):
+    # for j in range(1, 12):
 
-        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+    #     m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
 
-        n = 0
-        top = 5
+    #     n = 0
+    #     top = 5
         
-        for i in range(n, top):
-            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-            communities = [list(x) for x in result]
-            if len(communities) > 1:
-                all_iterations.append(communities) # type: ignore
-            #print(all_iterations[-1])
+    #     for i in range(n, top):
+    #         result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+    #         communities = [list(x) for x in result]
+    #         if len(communities) > 1:
+    #             all_iterations.append(communities) # type: ignore
+    #         #print(all_iterations[-1])
         
-        for i in range(n, int(top/1.5)):
-            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
-            all_iterations.append([list(x) for x in result]) # type: ignore
-            #print(all_iterations[-1])
+    #     for i in range(n, int(top/1.5)):
+    #         result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+    #         all_iterations.append([list(x) for x in result]) # type: ignore
+    #         #print(all_iterations[-1])
         
-        for i in range(n, top):
-            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
-            #print(result)
-            all_iterations.append([list(x) for x in result]) # type: ignore
+    #     for i in range(n, top):
+    #         result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+    #         #print(result)
+    #         all_iterations.append([list(x) for x in result]) # type: ignore
 
 
-        value = m.RoughClustering(communities=all_iterations)
+    #     value = m.RoughClustering(communities=all_iterations)
 
-        all_iterations = []
+    #     all_iterations = []
 
-        #print(value[0])
-        #print(value[1])
+    #     #print(value[0])
+    #     #print(value[1])
 
-        exportpath_RC = '/network'+ str(j) + '.txt'
+    #     exportpath_RC = '/network'+ str(j) + '.txt'
 
-        m.export_RC(folder_version, exportpath_RC, value)
+    #     m.export_RC(folder_version, exportpath_RC, value)
 
         
     
