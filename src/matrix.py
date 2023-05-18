@@ -1090,9 +1090,10 @@ class Matrix:
         rc : list(set)
             A list of sets with the communities. Include solapated nodes.
         '''
-        os.mkdir(folderpath)
+        if not os.path.exists('output/' + folderpath):
+            os.mkdir('output/' + folderpath)
         
-        with open(folderpath + '/' + filepath, 'w') as file:
+        with open('output/' + folderpath + filepath, 'w') as file:
             for i in range(len(rc[0])):
                 temp = set()
                 temp = temp.union(rc[0][i])
