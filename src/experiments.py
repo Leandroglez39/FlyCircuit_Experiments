@@ -147,22 +147,22 @@ def runAlgorithmSimple(m):
         n = 0
         top = 1
 
-        exportpath_Simple = 'output' + folder_version + '/network'+ str(j)
+        exportpath_Simple = folder_version
 
         for i in range(n, top):
             result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-            communities = [list.sort(list(x)) for x in result]
-            m.export_Simple(exportpath_Simple + '_Lpa.txt', communities)
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
         
         for i in range(n, int(top/1.5)):
             result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
-            communities = [list.sort(list(x)) for x in result]
-            m.export_Simple(exportpath_Simple + '_Greedy.txt', communities)
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
         
         for i in range(n, top):
             result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
-            communities = [list.sort(list(x)) for x in result]
-            m.export_Simple(exportpath_Simple + '_Louvain.txt', communities)
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
 
     print('done')
    
@@ -175,11 +175,11 @@ if __name__ == "__main__":
 
     
 
-    G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
+    # G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
 
-    result = nx.algorithms.community.label_propagation.asyn_lpa_communities(G, seed=random.randint(0, 10000))
-    communities = [list(x) for x in result]
-    print(len(communities))
+    # result = nx.algorithms.community.label_propagation.asyn_lpa_communities(G, seed=random.randint(0, 10000))
+    # communities = [list(x) for x in result]
+    # print(len(communities))
 
 
     

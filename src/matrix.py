@@ -1105,7 +1105,7 @@ class Matrix:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
 
-    def export_Simple(self, path, result):
+    def export_Simple(self, folderpath, filepath, result):
 
         '''
         This function is for export the RC file.
@@ -1117,10 +1117,11 @@ class Matrix:
         rc : list(set)
             A list of sets with the communities. Include solapated nodes.
         '''
-        os.mkdir(path)
-        var = 0
-        with open(path, 'w') as file:
+        if not os.path.exists('output/' + folderpath):
+            os.mkdir('output/' + folderpath)
+        with open('output/' + folderpath + filepath, 'w') as file:
             for ci in result:
+                ci.sort()
                 line = ''
                 for node in ci:
                     line += str(node) + ' '                   
