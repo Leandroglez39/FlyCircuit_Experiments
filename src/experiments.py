@@ -137,20 +137,53 @@ def generate_pkl(path: str) -> None:
         pickle.dump(G, open('dataset/' + path + '/' + file + '/' + file + '.pkl', 'wb'))
         G.clear()
 
+def runAlgorithmSimple(m, folder_version = 'NetsType_1.1'):
 
+    for j in range(1, 12):
+
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+
+        n = 0
+        top = 1
+
+        exportpath_Simple = folder_version
+
+        for i in range(n, top):
+            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
+        
+        for i in range(n, int(top)):
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
+
+    print('done')
    
 if __name__ == "__main__":
 
-    G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
+    # create Data Structure
+    m = Matrix([], {},[])
+    # run algorithm
+    runAlgorithmSimple(m, 'NetsType_1.2')
 
-    result = nx.algorithms.community.label_propagation.asyn_lpa_communities(G, seed=random.randint(0, 10000))
-    communities = [list(x) for x in result]
-    print(len(communities))
+    #generate_pkl('NetsType_1.2')
+
+    # G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
+
+    # result = nx.algorithms.community.label_propagation.asyn_lpa_communities(G, seed=random.randint(0, 10000))
+    # communities = [list(x) for x in result]
+    # print(len(communities))
 
 
     
 
-    #generate_pkl('NetsType_1.1')
+    
 
     # gt = read_GT('LFRBenchamark')
     # rc = read_rc_output('output/rc')
