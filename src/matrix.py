@@ -1099,7 +1099,8 @@ class Matrix:
                 temp = temp.union(rc[0][i])
                 temp = temp.union(rc[1][i])
                 line = ''
-                
+                temp = list(temp)
+                temp.sort()
                 for node in temp:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
