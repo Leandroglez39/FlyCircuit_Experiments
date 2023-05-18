@@ -1092,7 +1092,7 @@ class Matrix:
         '''
         os.mkdir(folderpath)
         
-        with open(folderpath + filepath, 'w') as file:
+        with open(folderpath + '/' + filepath, 'w') as file:
             for i in range(len(rc[0])):
                 temp = set()
                 temp = temp.union(rc[0][i])
@@ -1588,9 +1588,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    print(m.G.number_of_edges())
+    #print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
     
