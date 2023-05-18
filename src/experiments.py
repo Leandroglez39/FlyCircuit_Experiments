@@ -154,7 +154,7 @@ def runAlgorithmSimple(m):
             communities = [list(x) for x in result]
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
         
-        for i in range(n, int(top/1.5)):
+        for i in range(n, int(top)):
             result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
             communities = [list(x) for x in result]
             m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
