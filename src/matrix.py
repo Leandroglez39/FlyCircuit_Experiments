@@ -1078,7 +1078,7 @@ class Matrix:
 
             return len(subgraph3.edges()) - total
     
-    def export_RC(self, path, rc):
+    def export_RC(self, folderpath, filepath, rc):
 
         '''
         This function is for export the RC file.
@@ -1090,15 +1090,17 @@ class Matrix:
         rc : list(set)
             A list of sets with the communities. Include solapated nodes.
         '''
-        os.mkdir(path)
-        var = 0
-        with open(path, 'w') as file:
+        if not os.path.exists('output/' + folderpath):
+            os.mkdir('output/' + folderpath)
+        
+        with open('output/' + folderpath + filepath, 'w') as file:
             for i in range(len(rc[0])):
                 temp = set()
                 temp = temp.union(rc[0][i])
                 temp = temp.union(rc[1][i])
                 line = ''
-                var += len(temp)
+                temp = list(temp)
+                temp.sort()
                 for node in temp:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
@@ -1124,7 +1126,26 @@ class Matrix:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
 
+    def evaluate_nodesmatch_with_gt(self, nodesmatch: list, gt: list) -> list:
         
+        response = []
+        total_matches = 0
+        with open('LFRBenchamark/community'+ str(j) + '_GT.dat', 'r') as f:
+            lines = f.readlines()
+            for comm in value[0]:
+                maximum = 0
+                for line in lines:
+                    gt_comm = line.split(' ')
+                    int_gt_comm = [int(x) for x in gt_comm]
+                    if len(set(comm).intersection(set(int_gt_comm))) > maximum:
+                        maximum = len(set(comm).intersection(set(int_gt_comm)))
+                total_matches += maximum
+        
+        response.append(total_matches/1100)
+        total_matches = 0
+
+        return response
+
         
     # Begining of Horacio's Region
 
@@ -1590,9 +1611,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    print(m.G.number_of_edges())
+    #print(m.G.number_of_edges())
 
     print(datetime.datetime.now())
     
@@ -1619,7 +1640,7 @@ if __name__ == '__main__':
     #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
     
 
-    response = []
+    
 
     folder_version = 'NetsType_1.1'
 
@@ -1655,26 +1676,12 @@ if __name__ == '__main__':
         #print(value[0])
         #print(value[1])
 
-        exportpath_RC = folder_version + '/network'+ str(j) + '.txt'
+        exportpath_RC = '/network'+ str(j) + '.txt'
 
-        m.export_RC(exportpath_RC, value)
+        m.export_RC(folder_version, exportpath_RC, value)
 
-        total_matches = 0
-        with open('LFRBenchamark/community'+ str(j) + '_GT.dat', 'r') as f:
-            lines = f.readlines()
-            for comm in value[0]:
-                maximum = 0
-                for line in lines:
-                    gt_comm = line.split(' ')
-                    int_gt_comm = [int(x) for x in gt_comm]
-                    if len(set(comm).intersection(set(int_gt_comm))) > maximum:
-                        maximum = len(set(comm).intersection(set(int_gt_comm)))
-                total_matches += maximum
         
-        response.append(total_matches/1100)
-        total_matches = 0
-    with open('match.txt', 'w') as f:
-        f.write(str(response))
+    
 
         
     
