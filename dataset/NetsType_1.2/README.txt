@@ -1,0 +1,11 @@
+Network Type 2
+-N 1000
+-k 15
+-maxk 50
+-mu 0.1 con paso 0.05 => 11 networks
+-t1 2
+-t2 1
+-minc 20
+-maxc 50
+-on 300
+-om 4
