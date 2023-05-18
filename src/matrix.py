@@ -1620,7 +1620,6 @@ if __name__ == '__main__':
     
     #m.G = nx.generators.social.karate_club_graph()    
     
-    
 
     algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
 
