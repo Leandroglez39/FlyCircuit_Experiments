@@ -1604,7 +1604,7 @@ if __name__ == '__main__':
 
     for j in range(1, 12):
 
-        m.G = pickle.load(open('dataset/network'+ str(j) + '.pkl', 'rb'))
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
 
         n = 0
         top = 5
