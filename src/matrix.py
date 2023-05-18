@@ -1103,6 +1103,27 @@ class Matrix:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
 
+    def export_Simple(self, path, result):
+
+        '''
+        This function is for export the RC file.
+
+        Parameters
+        ----------
+        path : str
+            The path where the file will be saved.
+        rc : list(set)
+            A list of sets with the communities. Include solapated nodes.
+        '''
+        os.mkdir(path)
+        var = 0
+        with open(path, 'w') as file:
+            for ci in result:
+                line = ''
+                for node in ci:
+                    line += str(node) + ' '                   
+                file.write(line + '\n')
+
         
         
     # Begining of Horacio's Region
