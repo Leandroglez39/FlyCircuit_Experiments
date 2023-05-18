@@ -1106,6 +1106,28 @@ class Matrix:
                     line += str(node) + ' '                   
                 file.write(line + '\n')
 
+    def export_Simple(self, folderpath, filepath, result):
+
+        '''
+        This function is for export the RC file.
+
+        Parameters
+        ----------
+        path : str
+            The path where the file will be saved.
+        rc : list(set)
+            A list of sets with the communities. Include solapated nodes.
+        '''
+        if not os.path.exists('output/' + folderpath):
+            os.mkdir('output/' + folderpath)
+        with open('output/' + folderpath + filepath, 'w') as file:
+            for ci in result:
+                ci.sort()
+                line = ''
+                for node in ci:
+                    line += str(node) + ' '                   
+                file.write(line + '\n')
+
     def evaluate_nodesmatch_with_gt(self, nodesmatch: list, gt: list) -> list:
         
         response = []
@@ -1649,7 +1671,43 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
         with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('------------------------\n')
 
+def runRoughClustering(folder_version = 'NetsType_1.1'):
 
+    all_iterations = []
+
+    for j in range(1, 12):
+
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+
+        n = 0
+        top = 5
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+            communities = [list(x) for x in result]
+            if len(communities) > 1:
+                all_iterations.append(communities) # type: ignore
+            #print(all_iterations[-1])
+        
+        for i in range(n, int(top/1.5)):
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+            all_iterations.append([list(x) for x in result]) # type: ignore
+            #print(all_iterations[-1])
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+            #print(result)
+            all_iterations.append([list(x) for x in result]) # type: ignore
+
+
+        value = m.RoughClustering(communities=all_iterations)
+
+        all_iterations = []
+
+
+        exportpath_RC = '/network'+ str(j) + '.txt'
+
+        m.export_RC(folder_version, exportpath_RC, value)
 
 if __name__ == '__main__':
     
@@ -1658,161 +1716,11 @@ if __name__ == '__main__':
     
     #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    #print(m.G.number_of_edges())
-
     print(datetime.datetime.now())
     
-    #m.G = nx.generators.social.karate_club_graph()    
-    
-    nmi_overlapping_evaluate('NetsType_1.1')
-     
+    #runRoughClustering('NetsType_1.2')
+    nmi_overlapping_evaluate('NetsType_1.2')
 
-    algorithms = ['louvain', 'greedy', 'lpa', 'infomap']
-
-    all_iterations = []
-    # for algorithm in algorithms:    
-    #     list_of_communities = m.load_all_communities(algorithm=algorithm, infomap_flags=True)
-    #     all_iterations.extend(list_of_communities)
-   
-    # all_iterations = [[[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [8, 30, 0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 2, 13], [0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
-    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 8, 2], [30, 0, 1, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
-    #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14, 8, 2], [30, 0, 1, 3, 7, 13, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]], 
-    #                   [[8, 30, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [2, 13, 0, 1, 3, 7, 19, 12, 21, 11, 17], [4, 5, 6, 10, 16]], 
-    #                   [[8, 13, 9, 28, 31, 27, 33, 22, 24, 25, 32, 15, 18, 20, 23, 29, 26, 14], [0, 1, 2, 3, 7, 30, 19, 12, 21, 11, 17, 4, 5, 6, 10, 16]]]
-    
-
-    
-
-    # folder_version = 'NetsType_1.1'
-
-    # for j in range(1, 12):
-
-    #     m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
-
-    #     n = 0
-    #     top = 5
-        
-    #     for i in range(n, top):
-    #         result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-    #         communities = [list(x) for x in result]
-    #         if len(communities) > 1:
-    #             all_iterations.append(communities) # type: ignore
-    #         #print(all_iterations[-1])
-        
-    #     for i in range(n, int(top/1.5)):
-    #         result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
-    #         all_iterations.append([list(x) for x in result]) # type: ignore
-    #         #print(all_iterations[-1])
-        
-    #     for i in range(n, top):
-    #         result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
-    #         #print(result)
-    #         all_iterations.append([list(x) for x in result]) # type: ignore
-
-
-    #     value = m.RoughClustering(communities=all_iterations)
-
-    #     all_iterations = []
-
-    #     #print(value[0])
-    #     #print(value[1])
-
-    #     exportpath_RC = '/network'+ str(j) + '.txt'
-
-    #     m.export_RC(folder_version, exportpath_RC, value)
-
-        
-    
-
-        
-    
-
-    # for g in value:
-    #     print(g.nodes)
-
-    #data = pd.read_csv('output/attributed_graph-1.4.1.csv', header=0)
-
-    #influen = m.important_nodes()
-
-    #G = m.G.subgraph(inter)
-
-    #kvalue = nx.algorithms.core.core_number(G)
-    
-    #influen = set(influen)
-
-    #kvalue = pickle.load(open('output/kvalue.pkl', 'rb'))
-
-    # kvalue = nx.algorithms.core.core_number(m.G)
-
-    # data_dict = {}
-    # data_node = {}
-
-    # for key, value in kvalue.items():
-    #     if value not in data_dict:
-    #         data_dict[value] = 1
-    #         keys = set()
-    #         keys.add(key)
-    #         data_node[value] = keys
-    #     else:
-    #         data_dict[value] += 1
-    #         data_node[value].add(key)
-
-    # data  =  list(data_dict.items())
-    # data.sort(key=lambda x: x[1], reverse=True)
-    
-    # k = 1
-    # N = len(influen)
-    # for key, value in data:
-    #     influen = influen.difference(data_node[key])        
-    #     if len(influen) < (N * 0.2):
-    #         break
-    #     k += 1
-
-    # print(k)
-    # list_kvalue = list(kvalue.items())
-
-    # list_kvalue.sort(key=lambda x: x[1], reverse=True)
-
-    
-
-    # set_inter = set(inter)
-    
-
-    # print(len(set(list_kvalue)))
-    
-
-   
-            
-
-        
-   
-
-
-
-
-   
-
-    #data = pd.read_csv('output/edgesMeasure.csv', header=0)
-
-   
-    # Plot a histogram of the data in a three ranges
-    #plt.hist(data['degree'], bins=3, range=(0, 4039)) 
-    # plt.hist(data['degree'], bins=20)
-    # plt.show()
-    
-    # plt.boxplot(data['degree'], meanline=True, showmeans=True, medianprops=dict(color='yellow'))
-    # plt.show()
-
-    # Plot a Q-Q plot to check if the data is normally distributed
-    # stats.probplot(data['degree'], dist="norm", plot=plt, )
-    # plt.show() 
-    
-    
     print(datetime.datetime.now())
     
     
