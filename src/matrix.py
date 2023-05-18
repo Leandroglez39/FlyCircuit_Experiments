@@ -1090,6 +1090,7 @@ class Matrix:
         rc : list(set)
             A list of sets with the communities. Include solapated nodes.
         '''
+        os.mkdir(path)
         var = 0
         with open(path, 'w') as file:
             for i in range(len(rc[0])):
@@ -1598,7 +1599,10 @@ if __name__ == '__main__':
     
 
     response = []
-    for j in range(1, 10):
+
+    folder_version = 'NetsType_1.1'
+
+    for j in range(1, 12):
 
         m.G = pickle.load(open('dataset/network'+ str(j) + '.pkl', 'rb'))
 
@@ -1630,7 +1634,9 @@ if __name__ == '__main__':
         #print(value[0])
         #print(value[1])
 
-        m.export_RC('network_noG'+ str(j) + '.txt', value)
+        exportpath_RC = folder_version + '/network'+ str(j) + '.txt'
+
+        m.export_RC(exportpath_RC, value)
 
         total_matches = 0
         with open('LFRBenchamark/community'+ str(j) + '_GT.dat', 'r') as f:
