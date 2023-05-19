@@ -137,6 +137,48 @@ class Matrix:
                 f.write(str(self.G.nodes[node]['degree_centrality']) + ',')
                 f.write(str(self.G.nodes[node]['core_number']) + '\n')
 
+    def export_infomap_iterations(self, folder_version = 'NetsType_1.0', init = 0, end = 10):
+        '''
+        Export the infomap iterations to pickle file.
+
+        Parameters
+        ----------
+        path : str, optional (default='./dataset/outputs/infomap_iterations.pkl')
+            The path where the pickle file will be saved.
+        init : int, optional (default=0)
+            The initial iteration range.
+        end : int, optional (default=10)
+            The final iteration range.
+
+        '''
+
+        from cdlib import algorithms
+
+        all_iterations = []
+        count = 0
+        for j in range(1, 12):
+
+            self.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+            
+            for _ in range(init, end):
+                result = algorithms.infomap(self.G, flags='--seed ' + str(random.randint(0,1000)))
+                result = result.communities
+                communities = [list(x) for x in result]
+
+                if count == 0:
+                    self.export_Simple(folderpath = folder_version, filepath= '/network'+ str(j) + '_Infomap' + '.txt', result= communities)
+                    count += 1
+
+                if len(communities) > 1:
+                    all_iterations.append(communities)
+
+            count = 0
+
+            pickle.dump(all_iterations, open('output/' + folder_version + '/network'+ str(j) + '_Infomap' + '.pkl', 'wb'))
+
+           
+
+           
 
     # ALGORITMOS DE COMUNIDADES
 
@@ -1682,19 +1724,19 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
         n = 0
         top = 5
         
-        for i in range(n, top):
+        for _ in range(n, top):
             result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
             communities = [list(x) for x in result]
             if len(communities) > 1:
                 all_iterations.append(communities) # type: ignore
             #print(all_iterations[-1])
         
-        for i in range(n, int(top/1.5)):
+        for _ in range(n, int(top/1.5)):
             result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
             all_iterations.append([list(x) for x in result]) # type: ignore
             #print(all_iterations[-1])
         
-        for i in range(n, top):
+        for _ in range(n, top):
             result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
             #print(result)
             all_iterations.append([list(x) for x in result]) # type: ignore
@@ -1716,10 +1758,16 @@ if __name__ == '__main__':
     
     #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
+    
+
     print(datetime.datetime.now())
     
     #runRoughClustering('NetsType_1.2')
-    nmi_overlapping_evaluate('NetsType_1.2')
+    #nmi_overlapping_evaluate('NetsType_1.2')
+
+    m.export_infomap_iterations(folder_version='NetsType_1.1')
+
+    print(pickle.load(open('output/NetsType_1.1/network10_Infomap.pkl', 'rb')))
 
     print(datetime.datetime.now())
     
