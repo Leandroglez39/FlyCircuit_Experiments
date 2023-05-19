@@ -176,7 +176,7 @@ class Matrix:
 
             pickle.dump(all_iterations, open('output/' + folder_version + '/network'+ str(j) + '_Infomap' + '.pkl', 'wb'))
 
-           
+            all_iterations = []
 
            
 
@@ -1688,7 +1688,7 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
         nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
     
         nodes = []
-        outputs = ['', '_Lpa', '_Louvain', '_Greedy']
+        outputs = ['', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
 
         with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
@@ -1741,6 +1741,8 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
             #print(result)
             all_iterations.append([list(x) for x in result]) # type: ignore
 
+        infomap_results = pickle.load(open('output/' + folder_version + '/network'+ str(j) + '_Infomap.pkl', 'rb'))
+        all_iterations.extend(infomap_results) # type: ignore
 
         value = m.RoughClustering(communities=all_iterations)
 
@@ -1758,16 +1760,14 @@ if __name__ == '__main__':
     
     #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    
-
     print(datetime.datetime.now())
     
-    #runRoughClustering('NetsType_1.2')
-    #nmi_overlapping_evaluate('NetsType_1.2')
+    #runRoughClustering('NetsType_1.1')
+    nmi_overlapping_evaluate('NetsType_1.1')
 
-    m.export_infomap_iterations(folder_version='NetsType_1.1')
-
-    print(pickle.load(open('output/NetsType_1.1/network10_Infomap.pkl', 'rb')))
+   # m.export_infomap_iterations(folder_version='NetsType_1.1')
+    
+    #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
     print(datetime.datetime.now())
     
