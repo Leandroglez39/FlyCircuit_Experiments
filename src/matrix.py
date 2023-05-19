@@ -1763,9 +1763,9 @@ if __name__ == '__main__':
     print(datetime.datetime.now())
     
     #runRoughClustering('NetsType_1.1')
-    nmi_overlapping_evaluate('NetsType_1.1')
+    #nmi_overlapping_evaluate('NetsType_1.1')
 
-   # m.export_infomap_iterations(folder_version='NetsType_1.1')
+    m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
