@@ -800,11 +800,14 @@ class Matrix:
 
         edges_list = []
 
-        print('Calculating edges')
-        for i in range(len(nodes)):
-            for j in range(i+1, len(nodes)):                          
-                if match_array[i][j] >= b0:
-                    edges_list.append((nodes[i], nodes[j]))
+        print('Calculating edges')        
+
+        # Find the indices where match_array is greater than or equal to b0
+        i, j = np.where(match_array >= b0)
+
+        # Use those indices to create the edges_list
+        edges_list = [(nodes[i[k]], nodes[j[k]]) for k in range(len(i))]
+
         print('Edges calculated')
         
         
@@ -1827,11 +1830,14 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    print(datetime.datetime.now())
-    
-    result = m.load_all_algorithm_communities(algorithms=['lpa', 'louvain', 'greedy', 'infomap'])    
+    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
+
+    start_time = datetime.datetime.now()
+    print(start_time)
+         
+    runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
     #runRoughClustering('NetsType_1.3')
     #nmi_overlapping_evaluate('NetsType_1.1')
@@ -1840,7 +1846,10 @@ if __name__ == '__main__':
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
-    print(datetime.datetime.now())
+    end_time = datetime.datetime.now()
+    real_time = end_time - start_time
+    print(end_time)
+    print(f'Elapsed time: {real_time}')
     
     
     
