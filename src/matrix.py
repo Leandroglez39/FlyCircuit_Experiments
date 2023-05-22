@@ -1722,27 +1722,36 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
         m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
 
         n = 0
-        top = 5
+        top = 10
         
+        print('async_lpa Algorithm running ' + str(top) + ' times in network' + str(j))
         for _ in range(n, top):
             result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
             communities = [list(x) for x in result]
             if len(communities) > 1:
                 all_iterations.append(communities) # type: ignore
             #print(all_iterations[-1])
+        print('async_lpa Algorithm finished')
         
-        for _ in range(n, int(top/1.5)):
-            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
-            all_iterations.append([list(x) for x in result]) # type: ignore
+        print('Greedy Algorithm running ' + str(1) + ' times in network' + str(j))
+        for _ in range(0, 1):
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)
+            for _ in range(0, int(top/1.5)):        
+                all_iterations.append([list(x) for x in result]) # type: ignore
             #print(all_iterations[-1])
-        
+        print('Greedy Algorithm finished')
+
+        print('Louvain Algorithm running ' + str(top) + ' times in network' + str(j))
         for _ in range(n, top):
             result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
             #print(result)
             all_iterations.append([list(x) for x in result]) # type: ignore
+        print('Louvain Algorithm finished')
 
+        print('Infomap Algorithm loading ' + str(top) + ' times in network' + str(j))
         infomap_results = pickle.load(open('output/' + folder_version + '/network'+ str(j) + '_Infomap.pkl', 'rb'))
         all_iterations.extend(infomap_results) # type: ignore
+        print('Infomap Algorithm finished')
 
         value = m.RoughClustering(communities=all_iterations)
 
@@ -1762,8 +1771,8 @@ if __name__ == '__main__':
 
     print(datetime.datetime.now())
     
-    #runRoughClustering('NetsType_1.1')
-    nmi_overlapping_evaluate('NetsType_1.3')
+    runRoughClustering('NetsType_1.3')
+    #nmi_overlapping_evaluate('NetsType_1.1')
 
     #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
