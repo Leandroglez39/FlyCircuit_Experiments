@@ -7,6 +7,7 @@ contourpy==1.0.7
 cycler==0.11.0
 Cython==0.29.33
 datashape==0.5.2
+et-xmlfile==1.1.0
 exceptiongroup==1.1.1
 ffmpeg-python==0.2.0
 fonttools==4.39.2
@@ -26,6 +27,7 @@ multipledispatch==0.6.0
 networkx==3.0
 numba==0.56.4
 numpy==1.23.5
+openpyxl==3.1.2
 packaging==23.0
 pandas==1.5.3
 param==1.13.0
