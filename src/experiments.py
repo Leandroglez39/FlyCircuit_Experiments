@@ -168,14 +168,60 @@ def runAlgorithmSimple(m, folder_version = 'NetsType_1.3'):
 
     print('done')
 
+
+def runAlgorithmSimpleTunning(m, folder_version = 'NetsType_1.1_Tunning'):
+
+    exportpath_Simple = folder_version
+    folder_version = folder_version.split('_Tunning')[0]
+
+    for j in range(1, 12):
+
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+
+        n = 1
+        top = 5
+        
+        louvainParameters = []
+        greedyParameters = []
+
+        
+
+        init = 0
+        end = 250
+        lpaParameters = []
+
+        # for i in range(n, top):
+        #     seed_i = random.randint(init, end)
+        #     result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=seed_i)
+        #     communities = [list(x) for x in result]
+        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa_' + str(i)  + '.txt', communities)
+        #     init = end
+        #     end = end + 250
+        
+        resolution = [3.5, 4.0, 4.5, 5.0]
+        for i in range(n, int(top)):
+            rs = resolution[i-1]
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= rs)        
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Greedy_' + str(i)  + '.txt', communities)
+        
+        # resolution = [3.5, 4.0, 4.5, 5.0]
+        # for i in range(n, top):
+        #     rs = resolution[i-1]
+        #     result = nx.algorithms.community.louvain.louvain_communities(m.G, resolution = rs, seed=random.randint(0, 10000))
+        #     communities = [list(x) for x in result]
+        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain_' + str(i)  + '.txt', communities)
+
+    print('done')
+
 def drawResultAlgorithm(folderpath, nameFile):
 
     print('Begin!!!!!!!!!!!')
 
     columnsName = ['Algorithms', 'network1', 'network2', 'network3', 'network4', 'network5',
                'network6', 'network7', 'network8', 'network9', 'network10', 'network11']
-    algName = ['RC', 'Lpa', 'Louvain', 'Greedy']
-
+    # algName = ['RC', 'Lpa', 'Louvain', 'Greedy', '_Infomap']
+    algName = ['Greedy_1', 'Greedy_2', 'Greedy_3', 'Greedy_4']
     df = pd.DataFrame(columns= columnsName)
     df['Algorithms'] = algName
 
@@ -189,12 +235,8 @@ def drawResultAlgorithm(folderpath, nameFile):
                 scoresList = []
                 while '---------' not in currentLine:
                     score_i = currentLine.split(': ')
-                    if 'Lpa' in score_i[0] or 'Louvain' in score_i[0] or 'Greedy' in score_i[0]:
-                        sc = round(float(score_i[1]), 2)
-                        scoresList.append(sc)
-                    else:
-                        sc = round(float(score_i[1]), 2)
-                        scoresList.append(sc)
+                    sc = round(float(score_i[1]), 2)
+                    scoresList.append(sc)
                     currentLine = file.readline().replace('\n', '')
                 df[net] = scoresList
             currentLine = file.readline().replace('\n', '')
@@ -202,12 +244,12 @@ def drawResultAlgorithm(folderpath, nameFile):
     print('created df done')
     print(df)
 
-    algList = []
     allScores = []
     scRC = []
     scLpa = []
     scLouvain = []
     scGreedy = []
+    # scInfomap = []
     for i in range(len(df)):
         row_iValues = [df.iloc[i,j] for j in range(1,12)]
         allScores.append(row_iValues)
@@ -218,14 +260,20 @@ def drawResultAlgorithm(folderpath, nameFile):
     scLpa = allScores[1]
     scLouvain = allScores[2]
     scGreedy = allScores[3]
+    # scInfomap = allScores[4]
 
 
 
     nets = range(1,12)
-    plt.plot(nets, scRC, 'g', label='RC accuracy')
-    plt.plot(nets, scLpa, 'b', label='Lpa accuracy')
-    plt.plot(nets, scLouvain, 'r', label='Louvain accuracy')
-    plt.plot(nets, scGreedy, 'm', label='Greedy accuracy')
+    plt.plot(nets, scRC, 'r', label= str(algName[0]) + ' resolution: 3.5 ' + ' accuracy')
+    plt.plot(nets, scLpa, 'g', label= str(algName[1]) + ' resolution: 4.0 ' + ' accuracy')
+    plt.plot(nets, scLouvain, 'c', label= str(algName[2]) + ' resolution: 4.5 ' + ' accuracy')
+    plt.plot(nets, scGreedy, 'm', label= str(algName[3]) + ' resolution: 5.0 ' + ' accuracy')
+    # plt.plot(nets, scRC, 'r', label='RC accuracy')
+    # plt.plot(nets, scLpa, 'g', label='Lpa accuracy')
+    # plt.plot(nets, scLouvain, 'c', label='Louvain accuracy')
+    # plt.plot(nets, scGreedy, 'm', label='Greedy accuracy')
+    # plt.plot(nets, scInfomap, 'b', label='Infomap accuracy')
     
     plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
     plt.xlabel('Nets')
@@ -239,9 +287,9 @@ if __name__ == "__main__":
     # create Data Structure
     m = Matrix([], {},[])
     # run algorithm
-    # runAlgorithmSimple(m, 'NetsType_1.3')
-
-    # drawResultAlgorithm('NetsType_1.3', 'NetsType_1.3_result.txt')
+    # runAlgorithmSimple(m, 'NetsType_1.1')
+    # runAlgorithmSimpleTunning(m, 'NetsType_1.1_Tunning')
+    drawResultAlgorithm('NetsType_1.1_Tunning', 'NetsType_1.1_Tunning_result.txt')
 
     #generate_pkl('NetsType_1.3')
 
