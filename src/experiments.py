@@ -1,5 +1,8 @@
 from matrix import *
 import re
+import matplotlib as ptl
+import pandas as pd
+import math
 
 def read_GT(path: str) -> dict:
 
@@ -137,7 +140,7 @@ def generate_pkl(path: str) -> None:
         pickle.dump(G, open('dataset/' + path + '/' + file + '/' + file + '.pkl', 'wb'))
         G.clear()
 
-def runAlgorithmSimple(m, folder_version = 'NetsType_1.1'):
+def runAlgorithmSimple(m, folder_version = 'NetsType_1.3'):
 
     for j in range(1, 12):
 
@@ -164,15 +167,83 @@ def runAlgorithmSimple(m, folder_version = 'NetsType_1.1'):
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
 
     print('done')
+
+def drawResultAlgorithm(folderpath, nameFile):
+
+    print('Begin!!!!!!!!!!!')
+
+    columnsName = ['Algorithms', 'network1', 'network2', 'network3', 'network4', 'network5',
+               'network6', 'network7', 'network8', 'network9', 'network10', 'network11']
+    algName = ['RC', 'Lpa', 'Louvain', 'Greedy']
+
+    df = pd.DataFrame(columns= columnsName)
+    df['Algorithms'] = algName
+
+    with open('output/' + folderpath + '/' + nameFile, 'r') as file:
+        row_i =[]
+        currentLine = file.readline().replace('\n', '')
+        while currentLine:
+            if 'network' in currentLine:
+                net = currentLine
+                currentLine = file.readline().replace('\n', '')
+                scoresList = []
+                while '---------' not in currentLine:
+                    score_i = currentLine.split(': ')
+                    if 'Lpa' in score_i[0] or 'Louvain' in score_i[0] or 'Greedy' in score_i[0]:
+                        sc = round(float(score_i[1]), 2)
+                        scoresList.append(sc)
+                    else:
+                        sc = round(float(score_i[1]), 2)
+                        scoresList.append(sc)
+                    currentLine = file.readline().replace('\n', '')
+                df[net] = scoresList
+            currentLine = file.readline().replace('\n', '')
+            
+    print('created df done')
+    print(df)
+
+    algList = []
+    allScores = []
+    scRC = []
+    scLpa = []
+    scLouvain = []
+    scGreedy = []
+    for i in range(len(df)):
+        row_iValues = [df.iloc[i,j] for j in range(1,12)]
+        allScores.append(row_iValues)
+
+    print('begin draw')
+
+    scRC = allScores[0]
+    scLpa = allScores[1]
+    scLouvain = allScores[2]
+    scGreedy = allScores[3]
+
+
+
+    nets = range(1,12)
+    plt.plot(nets, scRC, 'g', label='RC accuracy')
+    plt.plot(nets, scLpa, 'b', label='Lpa accuracy')
+    plt.plot(nets, scLouvain, 'r', label='Louvain accuracy')
+    plt.plot(nets, scGreedy, 'm', label='Greedy accuracy')
+    
+    plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
+    plt.xlabel('Nets')
+    plt.ylabel('NMI Accuracy')
+    plt.legend()
+    plt.show()
+
    
 if __name__ == "__main__":
 
     # create Data Structure
     m = Matrix([], {},[])
     # run algorithm
-    runAlgorithmSimple(m, 'NetsType_1.2')
+    # runAlgorithmSimple(m, 'NetsType_1.3')
 
-    #generate_pkl('NetsType_1.2')
+    # drawResultAlgorithm('NetsType_1.3', 'NetsType_1.3_result.txt')
+
+    #generate_pkl('NetsType_1.3')
 
     # G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
 
