@@ -1689,7 +1689,7 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
     
         nodes = []
         outputs = ['', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
-
+        
         with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
 
@@ -1763,9 +1763,9 @@ if __name__ == '__main__':
     print(datetime.datetime.now())
     
     #runRoughClustering('NetsType_1.1')
-    #nmi_overlapping_evaluate('NetsType_1.1')
+    nmi_overlapping_evaluate('NetsType_1.3')
 
-    m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
+    #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
