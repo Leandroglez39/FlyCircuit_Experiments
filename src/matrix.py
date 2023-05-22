@@ -14,7 +14,7 @@ import scipy.stats as stats
 import statistics
 import random
 import re
-
+import itertools  
 
 
 
@@ -966,7 +966,41 @@ class Matrix:
                     nodei_hash = hash[nodei]
                     nodej_hash = hash[nodej]
                     match_array[nodei_hash, nodej_hash] += 1
- 
+
+    def update_match_array_faster(self, match_array: np.ndarray, community: list, hash: dict):
+    
+
+        '''
+        This function is for update the match array of the count of the communities.
+
+        Parameters
+        ----------
+        match_array : np.ndarray
+            A numpy array with the count of the ocurrances of the nodes in the communities.
+        community : list
+            A list of nodes of a community.
+        '''
+
+         # Create a dictionary to store the count of each combination of nodes
+        match_dict = {}
+
+        # For each community
+        for com in community:
+            # For each node in the community
+            com = list(com)
+            com.sort()
+            for combination in itertools.combinations(com, 2):        
+                match_dict[combination] = match_dict.get(combination, 0) + 1
+            
+            for key in match_dict.keys():
+                nodei = key[0]
+                nodej = key[1]
+                nodei_hash = hash[nodei]
+                nodej_hash = hash[nodej]
+                match_array[nodei_hash, nodej_hash] += match_dict[key]
+                match_dict[key] = 0
+
+
     def calculate_k(self, communities: list, statistic = True, ) -> int:
 
         '''
@@ -1830,17 +1864,17 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+   # m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
+    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
 
     start_time = datetime.datetime.now()
     print(start_time)
          
-    runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
+    #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
     #runRoughClustering('NetsType_1.3')
-    #nmi_overlapping_evaluate('NetsType_1.1')
+    nmi_overlapping_evaluate('NetsType_1.3')
 
     #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
