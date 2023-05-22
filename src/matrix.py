@@ -1713,6 +1713,76 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
         with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('------------------------\n')
 
+def nmi_overlapping_evaluateTunning(foldername: str) -> None:
+    '''
+    Evaluate the overlapping detection methods using NMI
+
+    Parameters
+    ----------
+    foldername: str
+        Path to folder containing  GT communities and detected communities
+
+    Returns
+    -------
+    None
+    '''
+    foldernameTunning = foldername
+    foldername = foldername.split('_Tunning')[0]
+
+    from cdlib import evaluation, NodeClustering
+
+    files = os.listdir('dataset/' + foldername)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    for file in files:
+        nodes = []
+        match = re.search(r'(network)(\d+)', file)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open('dataset/' + foldername + '/GT/community' + number + '_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+        
+        G = pickle.load(open('dataset/' + foldername + '/' + file + '/' + file + '.pkl', 'rb')) 
+    
+
+        nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    
+        nodes = []
+        # outputs = ['', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
+        outputs = ['_Greedy']
+
+        with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+            f.write('network' + number + '\n')
+        
+        for output in outputs:
+            for item in range(1, 5):
+                with open('output/' + foldernameTunning + '/network' + number + output + '_' + str(item) + '.txt', 'r') as f:
+                    lines = f.readlines()        
+                    for line in lines:
+                        line = line.strip('\n').rstrip()
+                        data = line.split(' ')
+                        inter_data = [int(x) for x in data]
+                        nodes.append(inter_data)
+            
+
+                nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=output, method_parameters={}, overlap=True)
+                
+                match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+
+                with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+                    f.write(output + '_' + str(item) + ': ' + str(match_resoult.score) + '\n')
+
+
+            nodes = []
+        with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+            f.write('------------------------\n')
+
 def runRoughClustering(folder_version = 'NetsType_1.1'):
 
     all_iterations = []
@@ -1763,9 +1833,10 @@ if __name__ == '__main__':
     print(datetime.datetime.now())
     
     #runRoughClustering('NetsType_1.1')
-    #nmi_overlapping_evaluate('NetsType_1.1')
+    # nmi_overlapping_evaluate('NetsType_1.1')
+    nmi_overlapping_evaluateTunning('NetsType_1.1_Tunning')
 
-    m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
+    # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
