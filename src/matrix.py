@@ -1802,9 +1802,11 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
             for _ in range(0, 1):
                 result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))  # type: ignore
                 result = [list(x) for x in result] # type: ignore
+                
                 for _ in range(0, int(top/1.5)):        
                     all_iterations.append(result) 
                 #print(all_iterations[-1])
+
             print(f'Greedy Algorithm finished')
 
             # Range of Resolution 2 - 3.5
@@ -1891,6 +1893,35 @@ def generate_pkl(path: str) -> None:
         pickle.dump(G, open('dataset/' + path + '/' + file + '/' + file + '.pkl', 'wb'))
         G.clear()
 
+def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
+
+    for j in range(1, 12):
+
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+
+        n = 0
+        top = 1
+
+        exportpath_Simple = folder_version
+
+        for i in range(n, top):
+            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
+        
+        for i in range(n, int(top)):
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+            communities = [list(x) for x in result] # type: ignore
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
+        
+        for i in range(n, top):
+            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+            communities = [list(x) for x in result] # type: ignore
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
+
+    print('done')
+
+
 if __name__ == '__main__':
     
 
@@ -1907,8 +1938,10 @@ if __name__ == '__main__':
          
     #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
-    generate_pkl('NetsType_1.4')
-    
+    #generate_pkl('NetsType_1.4')
+
+    runAlgorithmSimple(m, folder_version='NetsType_1.4')
+
     #runRoughClustering('NetsType_1.4')
     #nmi_overlapping_evaluate('NetsType_1.3')
 
