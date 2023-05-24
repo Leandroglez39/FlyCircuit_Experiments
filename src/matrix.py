@@ -1798,7 +1798,7 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
             print('async_lpa Algorithm finished')
             
             # Range of Resolution 3.5 - 5.5
-            print(f'Greedy Algorithm running ' + str(1) + ' times in {net}')
+            print(f'Greedy Algorithm running {str(1)} times in {net}')
             for _ in range(0, 1):
                 result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))  # type: ignore
                 result = [list(x) for x in result] # type: ignore
@@ -1810,7 +1810,7 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
             print(f'Greedy Algorithm finished')
 
             # Range of Resolution 2 - 3.5
-            print(f'Louvain Algorithm running ' + str(top) + ' times in {net}')
+            print(f'Louvain Algorithm running {str(top)}  times in {net}')
             for _ in range(n, top):
                 result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
                 #print(result)
@@ -1938,14 +1938,16 @@ if __name__ == '__main__':
          
     #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
-    #generate_pkl('NetsType_1.4')
+    #generate_pkl('NetsType_1.5')
 
-    runAlgorithmSimple(m, folder_version='NetsType_1.4')
+    #runAlgorithmSimple(m, folder_version='NetsType_1.5')
 
-    #runRoughClustering('NetsType_1.4')
-    #nmi_overlapping_evaluate('NetsType_1.3')
+    #m.export_infomap_iterations(folder_version='NetsType_1.5', end=5)
 
-    #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
+    runRoughClustering('NetsType_1.5')
+    #nmi_overlapping_evaluate('NetsType_1.5')
+
+    
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
