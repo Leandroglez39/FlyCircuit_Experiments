@@ -790,8 +790,8 @@ class Matrix:
         print('Updating ocurances in match array')
         start_time = datetime.datetime.now()
         for community in communities:
-            #self.update_match_array(community=community, match_array=match_array, hash=node_hash)
-            self.update_match_array_faster(communities=community, match_array=match_array, hash=node_hash)        
+            self.update_match_array(community=community, match_array=match_array, hash=node_hash)
+            #self.update_match_array_faster(communities=community, match_array=match_array, hash=node_hash)        
         
         end_time = datetime.datetime.now()
         print(f'Ocurances updated in match array in: {end_time - start_time}')
@@ -1858,23 +1858,58 @@ def runRoughClustering_on_FlyCircuit(m: Matrix ,version_dataset: str,  iteration
 
     m.export_RC('FlyCircuit', f'/FlyCircuit_{version_dataset}_RC.txt', consensus)
 
+def generate_pkl(path: str) -> None:
+
+    '''
+    Generate pkl files from txt files
+
+    Parameters
+    ----------
+    path: str
+        Path to folder containing txt files
+
+    Returns
+    -------
+    None
+    '''
+
+    files = os.listdir('dataset/' + path)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    for file in files:
+        G = nx.Graph()
+        with open('dataset/' + path + '/' + file + '/' + file + '.dat', 'r') as f:
+            lines = f.readlines()
+                
+        for line in lines:
+            a, b = line.split('\t')
+            G.add_edge(int(a) - 1, int(b) - 1)
+
+        #     #nx.nx_pylab.draw(G, with_labels=True)
+        #     #plt.show()
+        pickle.dump(G, open('dataset/' + path + '/' + file + '/' + file + '.pkl', 'wb'))
+        G.clear()
+
 if __name__ == '__main__':
     
 
     m = Matrix([], {},[])
     
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
 
     
-    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
+    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
 
     start_time = datetime.datetime.now()
     print(start_time)
          
-    runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
+    #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
-    #runRoughClustering('NetsType_1.3')
+    generate_pkl('NetsType_1.4')
+    
+    #runRoughClustering('NetsType_1.4')
     #nmi_overlapping_evaluate('NetsType_1.3')
 
     #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
