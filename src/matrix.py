@@ -1910,12 +1910,12 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
         
         for i in range(n, int(top)):
-            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)        
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))         # type: ignore
             communities = [list(x) for x in result] # type: ignore
             m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
         
         for i in range(n, top):
-            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
+            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
             communities = [list(x) for x in result] # type: ignore
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
 
