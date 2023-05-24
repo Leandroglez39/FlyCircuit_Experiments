@@ -1735,6 +1735,10 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     files.remove('GT')
     files.remove('README.txt')
 
+    files = sorted(files, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+
+    dictResult = dict()
+
     for file in files:
         nodes = []
         match = re.search(r'(network)(\d+)', file)
@@ -1750,38 +1754,62 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         
         G = pickle.load(open('dataset/' + foldername + '/' + file + '/' + file + '.pkl', 'rb')) 
     
-
+        # GT created
         nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
     
         nodes = []
-        # outputs = ['', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
-        outputs = ['_Greedy']
 
         with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
         
-        for output in outputs:
-            for item in range(1, 5):
-                with open('output/' + foldernameTunning + '/network' + number + output + '_' + str(item) + '.txt', 'r') as f:
+        # read files result
+        filesResultAlg = os.listdir('output/' + foldernameTunning)
+
+        # remove .txt, .pkl
+        if os.path.exists('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt'):
+            filesResultAlg.remove(foldernameTunning + '_result.txt')
+
+        if os.path.exists('output/' + foldernameTunning + '/' + foldernameTunning + '_result.pkl'):
+            filesResultAlg.remove(foldernameTunning + '_result.pkl')
+
+        # sorted files
+        filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+            
+        for file_i in filesResultAlg:
+            if file == file_i.split('_')[0]:
+                with open(f'output/{foldernameTunning}/{file_i}', 'r') as f:
                     lines = f.readlines()        
                     for line in lines:
                         line = line.strip('\n').rstrip()
                         data = line.split(' ')
                         inter_data = [int(x) for x in data]
                         nodes.append(inter_data)
-            
 
-                nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=output, method_parameters={}, overlap=True)
-                
-                match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+                    # community created
+                    nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=file_i, method_parameters={}, overlap=True)
+                    
+                    # evaluate GT vs community
+                    match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
 
-                with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
-                    f.write(output + '_' + str(item) + ': ' + str(match_resoult.score) + '\n')
+                    algName = file_i.split('_')[1] 
+                    num = file_i.split('_')[2].split('.txt')[0]
+                    fileNameMod = algName + '_' + str(num)
 
-
-            nodes = []
+                    with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+                        f.write(fileNameMod + ': ' + str(match_resoult.score) + '\n')
+                    
+                    
+                    if not fileNameMod in dictResult.keys():
+                        dictResult[fileNameMod] = {'Algorithms/Parameters': fileNameMod, file: match_resoult.score}
+                    else:
+                        dictResult[fileNameMod][file] = match_resoult.score
+                        
+                    nodes = []
         with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
             f.write('------------------------\n')
+
+        pickle.dump(dictResult, open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.pkl', 'wb'))
+        
 
 def runRoughClustering(folder_version = 'NetsType_1.1'):
 
