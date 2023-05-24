@@ -1864,25 +1864,26 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-   # m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
+
+    
+    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
 
     start_time = datetime.datetime.now()
     print(start_time)
          
-    #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
+    runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
 
     #runRoughClustering('NetsType_1.3')
-    nmi_overlapping_evaluate('NetsType_1.3')
+    #nmi_overlapping_evaluate('NetsType_1.3')
 
     #m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
     end_time = datetime.datetime.now()
-    real_time = end_time - start_time
-    print(end_time)
+    real_time = end_time - start_time    
     print(f'Elapsed time: {real_time}')
     
     
