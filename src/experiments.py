@@ -169,7 +169,7 @@ def runAlgorithmSimple(m, folder_version = 'NetsType_1.3'):
     print('done')
 
 
-def runAlgorithmSimpleTunning(m, folder_version = 'NetsType_1.1_Tunning'):
+def runAlgorithmSimpleTunning(m, init, step, top, folder_version = 'NetsType_1.1_Tunning'):
 
     exportpath_Simple = folder_version
     folder_version = folder_version.split('_Tunning')[0]
@@ -178,39 +178,27 @@ def runAlgorithmSimpleTunning(m, folder_version = 'NetsType_1.1_Tunning'):
 
         m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
 
-        n = 1
-        top = 5
-        
-        louvainParameters = []
-        greedyParameters = []
+        size = (top - init)/step
+        resolution = [init+(step*i) for i in range(int(size)+1)]
 
-        
-
-        init = 0
-        end = 250
-        lpaParameters = []
 
         # for i in range(n, top):
         #     seed_i = random.randint(init, end)
         #     result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=seed_i)
         #     communities = [list(x) for x in result]
         #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa_' + str(i)  + '.txt', communities)
-        #     init = end
-        #     end = end + 250
+
         
-        resolution = [3.5, 4.0, 4.5, 5.0]
-        for i in range(n, int(top)):
-            rs = resolution[i-1]
-            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= rs)        
+        for rs_i in resolution:
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution = rs_i)        
             communities = [list(x) for x in result]
-            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Greedy_' + str(i)  + '.txt', communities)
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Greedy_' + str(rs_i)  + '.txt', communities)
         
-        # resolution = [3.5, 4.0, 4.5, 5.0]
-        # for i in range(n, top):
-        #     rs = resolution[i-1]
-        #     result = nx.algorithms.community.louvain.louvain_communities(m.G, resolution = rs, seed=random.randint(0, 10000))
+        
+        # for rs_i in resolution:
+        #     result = nx.algorithms.community.louvain.louvain_communities(m.G, resolution = rs_i, seed=random.randint(0, 10000))
         #     communities = [list(x) for x in result]
-        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain_' + str(i)  + '.txt', communities)
+        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain_' + str(rs_i)  + '.txt', communities)
 
     print('done')
 
@@ -218,62 +206,29 @@ def drawResultAlgorithm(folderpath, nameFile):
 
     print('Begin!!!!!!!!!!!')
 
-    columnsName = ['Algorithms', 'network1', 'network2', 'network3', 'network4', 'network5',
-               'network6', 'network7', 'network8', 'network9', 'network10', 'network11']
-    # algName = ['RC', 'Lpa', 'Louvain', 'Greedy', '_Infomap']
-    algName = ['Greedy_1', 'Greedy_2', 'Greedy_3', 'Greedy_4']
-    df = pd.DataFrame(columns= columnsName)
-    df['Algorithms'] = algName
+    dictResult = pickle.load(open('output/' + folderpath + '/' + nameFile, 'rb'))
 
-    with open('output/' + folderpath + '/' + nameFile, 'r') as file:
-        row_i =[]
-        currentLine = file.readline().replace('\n', '')
-        while currentLine:
-            if 'network' in currentLine:
-                net = currentLine
-                currentLine = file.readline().replace('\n', '')
-                scoresList = []
-                while '---------' not in currentLine:
-                    score_i = currentLine.split(': ')
-                    sc = round(float(score_i[1]), 2)
-                    scoresList.append(sc)
-                    currentLine = file.readline().replace('\n', '')
-                df[net] = scoresList
-            currentLine = file.readline().replace('\n', '')
-            
+    df = pd.DataFrame()
+
+    for _ , v in dictResult.items():
+        df = df.append(v, ignore_index = True)
+    
+    columnsSorted = sorted(df.columns)
+    nameColumns = columnsSorted[0]
+    columnsSorted.remove(nameColumns)
+    columnsSorted = sorted(columnsSorted, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+    columnsSorted.insert(0, nameColumns)
+    
+    df = df.reindex(columnsSorted, axis=1)
+    df = df.set_index(nameColumns)
+    
     print('created df done')
-    print(df)
+    
 
-    allScores = []
-    scRC = []
-    scLpa = []
-    scLouvain = []
-    scGreedy = []
-    # scInfomap = []
-    for i in range(len(df)):
-        row_iValues = [df.iloc[i,j] for j in range(1,12)]
-        allScores.append(row_iValues)
-
-    print('begin draw')
-
-    scRC = allScores[0]
-    scLpa = allScores[1]
-    scLouvain = allScores[2]
-    scGreedy = allScores[3]
-    # scInfomap = allScores[4]
-
-
-
-    nets = range(1,12)
-    plt.plot(nets, scRC, 'r', label= str(algName[0]) + ' resolution: 3.5 ' + ' accuracy')
-    plt.plot(nets, scLpa, 'g', label= str(algName[1]) + ' resolution: 4.0 ' + ' accuracy')
-    plt.plot(nets, scLouvain, 'c', label= str(algName[2]) + ' resolution: 4.5 ' + ' accuracy')
-    plt.plot(nets, scGreedy, 'm', label= str(algName[3]) + ' resolution: 5.0 ' + ' accuracy')
-    # plt.plot(nets, scRC, 'r', label='RC accuracy')
-    # plt.plot(nets, scLpa, 'g', label='Lpa accuracy')
-    # plt.plot(nets, scLouvain, 'c', label='Louvain accuracy')
-    # plt.plot(nets, scGreedy, 'm', label='Greedy accuracy')
-    # plt.plot(nets, scInfomap, 'b', label='Infomap accuracy')
+    dfT = df.transpose()
+    print('df transpose done')
+    for item in dfT.columns:
+        dfT[item].plot()
     
     plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
     plt.xlabel('Nets')
@@ -286,36 +241,10 @@ if __name__ == "__main__":
 
     # create Data Structure
     m = Matrix([], {},[])
-    # run algorithm
-    # runAlgorithmSimple(m, 'NetsType_1.1')
-    # runAlgorithmSimpleTunning(m, 'NetsType_1.1_Tunning')
-    drawResultAlgorithm('NetsType_1.1_Tunning', 'NetsType_1.1_Tunning_result.txt')
-
-    #generate_pkl('NetsType_1.3')
-
-    # G = pickle.load(open('dataset/NetsType_1.1/network8/network8.pkl', 'rb'))
-
-    # result = nx.algorithms.community.label_propagation.asyn_lpa_communities(G, seed=random.randint(0, 10000))
-    # communities = [list(x) for x in result]
-    # print(len(communities))
+    # run Algorithm simple
+    # runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
+    # draw result
+    drawResultAlgorithm('NetsType_1.1_Tunning', 'NetsType_1.1_Tunning_result.pkl')
 
 
-    
 
-    
-
-    # gt = read_GT('LFRBenchamark')
-    # rc = read_rc_output('output/rc')
-
-    # over_gt = overlaping_detection(gt)
-    # over_rc = overlaping_detection(rc)
-
-
-    # for key, value in over_gt.items():
-    #     match = re.search(r'(community)(\d+)(_GT.dat)', key)
-    #     if match:
-    #         number = match.group(2)
-    #         rc_filename = 'network' + number + '_result.dat'
-    #         overlapint_iteration = over_rc[rc_filename]
-    #         print(rc_filename, overlapint_iteration)
-    #         print(len(value.intersection(overlapint_iteration)))
