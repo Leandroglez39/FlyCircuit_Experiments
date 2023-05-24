@@ -788,13 +788,13 @@ class Matrix:
         Gb0.add_nodes_from(nodes)
               
         print('Updating ocurances in match array')
+        start_time = datetime.datetime.now()
         for community in communities:
-            self.update_match_array(community=community, match_array=match_array, hash=node_hash)        
+            #self.update_match_array(community=community, match_array=match_array, hash=node_hash)
+            self.update_match_array_faster(communities=community, match_array=match_array, hash=node_hash)        
         
-
-        
-
-        print('Ocurances updated in match array')
+        end_time = datetime.datetime.now()
+        print(f'Ocurances updated in match array in: {end_time - start_time}')
 
         b0 = len(communities) * 0.75
 
@@ -847,6 +847,7 @@ class Matrix:
         similarity_values = []
 
         print('Calculating similarity')
+        start_time = datetime.datetime.now()
 
         for j in range( k + 1, len(seeds)):
 
@@ -900,7 +901,8 @@ class Matrix:
             else:
                 coverage_superior[max_similarity_index] = coverage_superior[max_similarity_index].union(set(grj1.nodes()))
                 coverage_inferior[max_similarity_index] = coverage_inferior[max_similarity_index].union(set(grj1.nodes()))
-                
+        end_time = datetime.datetime.now()
+        print(f'Similarity calculated in: {end_time - start_time}')        
         return (coverage_inferior, coverage_superior)
 
     
@@ -967,7 +969,7 @@ class Matrix:
                     nodej_hash = hash[nodej]
                     match_array[nodei_hash, nodej_hash] += 1
 
-    def update_match_array_faster(self, match_array: np.ndarray, community: list, hash: dict):
+    def update_match_array_faster(self, match_array: np.ndarray, communities: list, hash: dict):
     
 
         '''
@@ -980,25 +982,13 @@ class Matrix:
         community : list
             A list of nodes of a community.
         '''
+     
 
-         # Create a dictionary to store the count of each combination of nodes
-        match_dict = {}
-
-        # For each community
-        for com in community:
-            # For each node in the community
-            com = list(com)
-            com.sort()
-            for combination in itertools.combinations(com, 2):        
-                match_dict[combination] = match_dict.get(combination, 0) + 1
-            
-            for key in match_dict.keys():
-                nodei = key[0]
-                nodej = key[1]
-                nodei_hash = hash[nodei]
-                nodej_hash = hash[nodej]
-                match_array[nodei_hash, nodej_hash] += match_dict[key]
-                match_dict[key] = 0
+        for community in communities:
+            for combination in itertools.combinations(community, 2):
+                nodei_hash = hash[combination[0]]
+                nodej_hash = hash[combination[1]]
+                match_array[nodei_hash, nodej_hash] += 1
 
 
     def calculate_k(self, communities: list, statistic = True, ) -> int:
@@ -1784,51 +1774,60 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
 def runRoughClustering(folder_version = 'NetsType_1.1'):
 
     all_iterations = []
+    
+    if os.path.exists(f'dataset/{folder_version}'):
+        list_dir = os.listdir(f'dataset/{folder_version}')
 
-    for j in range(1, 12):
+        list_dir.remove('README.txt')
+        list_dir.remove('GT')
 
-        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
-
-        n = 0
-        top = 10
+        for net in list_dir:
         
-        print('async_lpa Algorithm running ' + str(top) + ' times in network' + str(j))
-        for _ in range(n, top):
-            result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-            communities = [list(x) for x in result]
-            if len(communities) > 1:
-                all_iterations.append(communities) # type: ignore
-            #print(all_iterations[-1])
-        print('async_lpa Algorithm finished')
-        
-        print('Greedy Algorithm running ' + str(1) + ' times in network' + str(j))
-        for _ in range(0, 1):
-            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= 1)
-            for _ in range(0, int(top/1.5)):        
+            m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
+
+            n = 0
+            top = 10
+            
+            print(f'async_lpa Algorithm running ' + str(top) + f' times in {net}')
+            for _ in range(n, top):
+                result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+                communities = [list(x) for x in result]
+                if len(communities) > 1:
+                    all_iterations.append(communities) # type: ignore
+                #print(all_iterations[-1])
+            print('async_lpa Algorithm finished')
+            
+            # Range of Resolution 3.5 - 5.5
+            print(f'Greedy Algorithm running ' + str(1) + ' times in {net}')
+            for _ in range(0, 1):
+                result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))  # type: ignore
+                result = [list(x) for x in result] # type: ignore
+                for _ in range(0, int(top/1.5)):        
+                    all_iterations.append(result) 
+                #print(all_iterations[-1])
+            print(f'Greedy Algorithm finished')
+
+            # Range of Resolution 2 - 3.5
+            print(f'Louvain Algorithm running ' + str(top) + ' times in {net}')
+            for _ in range(n, top):
+                result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
+                #print(result)
                 all_iterations.append([list(x) for x in result]) # type: ignore
-            #print(all_iterations[-1])
-        print('Greedy Algorithm finished')
+            print('Louvain Algorithm finished')
 
-        print('Louvain Algorithm running ' + str(top) + ' times in network' + str(j))
-        for _ in range(n, top):
-            result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000))
-            #print(result)
-            all_iterations.append([list(x) for x in result]) # type: ignore
-        print('Louvain Algorithm finished')
+            print(f'Infomap Algorithm loading ' + str(top) + ' times in {net}')
+            infomap_results = pickle.load(open(f'output/{folder_version}/{net}_Infomap.pkl', 'rb'))
+            all_iterations.extend(infomap_results) # type: ignore
+            print('Infomap Algorithm finished')
 
-        print('Infomap Algorithm loading ' + str(top) + ' times in network' + str(j))
-        infomap_results = pickle.load(open('output/' + folder_version + '/network'+ str(j) + '_Infomap.pkl', 'rb'))
-        all_iterations.extend(infomap_results) # type: ignore
-        print('Infomap Algorithm finished')
+            value = m.RoughClustering(communities=all_iterations)
 
-        value = m.RoughClustering(communities=all_iterations)
-
-        all_iterations = []
+            all_iterations = []
 
 
-        exportpath_RC = f'/network{str(j)}.txt'
+            exportpath_RC = f'/{net}.txt'
 
-        m.export_RC(folder_version, exportpath_RC, value)
+            m.export_RC(folder_version, exportpath_RC, value)
 
 def runRoughClustering_on_FlyCircuit(m: Matrix ,version_dataset: str,  iterations: list):
 
