@@ -854,8 +854,10 @@ class Matrix:
 
             grj1 = seeds[j] # Subgraph of the seed that will be calculated its similarity with all k seeds
 
-            similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
-            
+            #similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
+
+            similarity_values = [self.similarity_between_subgraphs_faster(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
+                        
             edges_values = [self.edges_between_subgraphs(grj1, seeds[i]) for i in range(k + 1)]
             
             #total_nodes = sum([len(seed.nodes()) for seed in seeds]) + len(grj1.nodes())
@@ -1145,7 +1147,7 @@ class Matrix:
             for node2 in subgraph2:
                 node_hash2 = hash[node2]
                 result += match_array[node_hash1, node_hash2]
-                result += match_array[node_hash2, node_hash1]
+                
                 
 
         
@@ -1171,8 +1173,11 @@ class Matrix:
             result : float
                 The similarity between the two subgraphs between 0 and 1.
             '''
-            result = np.sum(match_array[[hash[node1] for node1 in subgraph1.nodes()], :][:, [hash[node2] for node2 in subgraph2]])
-            result += np.sum(match_array[[hash[node2] for node2 in subgraph2], :][:, [hash[node1] for node1 in subgraph1.nodes()]])
+            nodes1 = np.array([hash[node1] for node1 in subgraph1.nodes()])
+            nodes2 = np.array([hash[node2] for node2 in subgraph2])
+
+            result = np.sum(match_array[nodes1[:, None], nodes2])
+            
             return result / (len(subgraph1.nodes()) * len(subgraph2))
     
 
@@ -2044,18 +2049,23 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
 
 
 if __name__ == '__main__':
-    
-
-    m = Matrix([], {},[])
-    
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
     print(datetime.datetime.now())
     start_time = datetime.datetime.now()
 
+    m = Matrix([], {},[])
+    
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+
+    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
+
+    runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
+
+    
+
     #runRoughClustering('NetsType_1.5')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    nmi_overlapping_evaluateTunning('NetsType_1.5')
+    #nmi_overlapping_evaluateTunning('NetsType_1.5')
 
     # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
