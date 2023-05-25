@@ -2151,17 +2151,17 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
-    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
+    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
 
-    runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
+    #runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
 
     
 
-    #runRoughClustering('NetsType_1.5')
+    #runRoughClustering('NetsType_1.4')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    #nmi_overlapping_evaluateTunning('NetsType_1.5')
+    #nmi_overlapping_evaluateTunning('NetsType_1.4')
 
     # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
