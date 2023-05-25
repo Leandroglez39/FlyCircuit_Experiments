@@ -1151,6 +1151,31 @@ class Matrix:
         
         return result / (len(subgraph1.nodes()) * len(subgraph2))
     
+    def similarity_between_subgraphs_faster(self, subgraph1: nx.Graph, subgraph2: set, match_array: np.ndarray, hash: dict) -> float:
+            '''
+            This function is for calculate the similarity between two subgraphs.
+            
+            Parameters
+            ----------
+            subgraph1 : nx.Graph
+                A subgraph.
+            subgraph2 : set
+                A set of nodes with represent an inferior coverage.
+            match_array : np.ndarray
+                A numpy array with the count of the ocurrances of the nodes in the communities.
+            hash : dict
+                A dict with the hash of the nodes correspondaing to the index of the match array.
+            
+            Returns
+            -------
+            result : float
+                The similarity between the two subgraphs between 0 and 1.
+            '''
+            result = np.sum(match_array[[hash[node1] for node1 in subgraph1.nodes()], :][:, [hash[node2] for node2 in subgraph2]])
+            result += np.sum(match_array[[hash[node2] for node2 in subgraph2], :][:, [hash[node1] for node1 in subgraph1.nodes()]])
+            return result / (len(subgraph1.nodes()) * len(subgraph2))
+    
+
     def edges_between_subgraphs(self, subgraph1: nx.Graph, subgraph2: nx.Graph) -> int:
             
             '''
@@ -2026,10 +2051,11 @@ if __name__ == '__main__':
     #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
     print(datetime.datetime.now())
-    
-    #runRoughClustering('NetsType_1.1')
+    start_time = datetime.datetime.now()
+
+    #runRoughClustering('NetsType_1.5')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    nmi_overlapping_evaluateTunning('NetsType_1.1_Tunning')
+    nmi_overlapping_evaluateTunning('NetsType_1.5')
 
     # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
