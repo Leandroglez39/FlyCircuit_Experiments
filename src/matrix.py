@@ -1784,9 +1784,6 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     -------
     None
     '''
-    foldernameTunning = foldername
-    foldername = foldername.split('_Tunning')[0]
-
     from cdlib import evaluation, NodeClustering
 
     files = os.listdir('dataset/' + foldername)
@@ -1798,6 +1795,8 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     dictResult = dict()
 
     for file in files:
+        if '.pkl' in file:
+            continue
         nodes = []
         match = re.search(r'(network)(\d+)', file)
         number = '0'
@@ -1817,25 +1816,25 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     
         nodes = []
 
-        with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
         
         # read files result
-        filesResultAlg = os.listdir('output/' + foldernameTunning)
+        filesResultAlg = os.listdir('output/' + foldername)
 
         # remove .txt, .pkl
-        if os.path.exists('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt'):
-            filesResultAlg.remove(foldernameTunning + '_result.txt')
+        if os.path.exists('output/' + foldername + '/' + foldername + '_result.txt'):
+            filesResultAlg.remove(foldername + '_result.txt')
 
-        if os.path.exists('output/' + foldernameTunning + '/' + foldernameTunning + '_result.pkl'):
-            filesResultAlg.remove(foldernameTunning + '_result.pkl')
+        # if os.path.exists('output/' + foldername + '/' + foldername + '_result.pkl'):
+        #     filesResultAlg.remove(foldername + '_result.pkl')
 
         # sorted files
         filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
             
         for file_i in filesResultAlg:
-            if file == file_i.split('_')[0]:
-                with open(f'output/{foldernameTunning}/{file_i}', 'r') as f:
+            if '.pkl' not in file_i and file == file_i.split('_')[0]:
+                with open(f'output/{foldername}/{file_i}', 'r') as f:
                     lines = f.readlines()        
                     for line in lines:
                         line = line.strip('\n').rstrip()
@@ -1849,11 +1848,10 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
                     # evaluate GT vs community
                     match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
 
-                    algName = file_i.split('_')[1] 
-                    num = file_i.split('_')[2].split('.txt')[0]
-                    fileNameMod = algName + '_' + str(num)
+                    algName = file_i.split('_')[1].removesuffix('.txt')
+                    fileNameMod = '_' + algName
 
-                    with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+                    with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
                         f.write(fileNameMod + ': ' + str(match_resoult.score) + '\n')
                     
                     
@@ -1863,10 +1861,10 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
                         dictResult[fileNameMod][file] = match_resoult.score
                         
                     nodes = []
-        with open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.txt', 'a') as f:
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('------------------------\n')
 
-        pickle.dump(dictResult, open('output/' + foldernameTunning + '/' + foldernameTunning + '_result.pkl', 'wb'))
+        pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
         
 
 def runRoughClustering(folder_version = 'NetsType_1.1'):
@@ -1925,7 +1923,7 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
             all_iterations = []
 
 
-            exportpath_RC = f'/{net}.txt'
+            exportpath_RC = f'/{net}_RC.txt'
 
             m.export_RC(folder_version, exportpath_RC, value)
 
