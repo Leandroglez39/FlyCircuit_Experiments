@@ -1944,8 +1944,8 @@ if __name__ == '__main__':
 
     #m.export_infomap_iterations(folder_version='NetsType_1.5', end=5)
 
-    runRoughClustering('NetsType_1.5')
-    #nmi_overlapping_evaluate('NetsType_1.5')
+    #runRoughClustering('NetsType_1.5')
+    nmi_overlapping_evaluate('NetsType_1.5')
 
     
     
