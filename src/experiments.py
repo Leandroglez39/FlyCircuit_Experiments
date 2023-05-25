@@ -223,9 +223,12 @@ def drawResultAlgorithm(folderpath, nameFile):
     df = df.set_index(nameColumns)
     
     print('created df done')
-    
-
+    print(df.columns)
+    print(df)
     dfT = df.transpose()
+    print(dfT)
+    
+    
     print('df transpose done')
     for item in dfT.columns:
         dfT[item].plot()
@@ -244,7 +247,7 @@ if __name__ == "__main__":
     # run Algorithm simple
     # runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.1_Tunning', 'NetsType_1.1_Tunning_result.pkl')
+    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
 
 
 
