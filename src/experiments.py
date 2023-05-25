@@ -202,6 +202,40 @@ def runAlgorithmSimpleTunning(m, init, step, top, folder_version = 'NetsType_1.1
 
     print('done')
 
+
+def runAlgorithmSimpleTunning(m, init, step, top, folder_version = 'NetsType_1.1_Tunning'):
+
+    exportpath_Simple = folder_version
+    folder_version = folder_version.split('_Tunning')[0]
+
+    for j in range(1, 12):
+
+        m.G = pickle.load(open('dataset/' + folder_version + '/network'+ str(j) + '/network'+ str(j) + '.pkl', 'rb'))
+
+        size = (top - init)/step
+        resolution = [init+(step*i) for i in range(int(size)+1)]
+
+
+        # for i in range(n, top):
+        #     seed_i = random.randint(init, end)
+        #     result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=seed_i)
+        #     communities = [list(x) for x in result]
+        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa_' + str(i)  + '.txt', communities)
+
+        
+        for rs_i in resolution:
+            result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution = rs_i)        
+            communities = [list(x) for x in result]
+            m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Greedy_' + str(rs_i)  + '.txt', communities)
+        
+        
+        # for rs_i in resolution:
+        #     result = nx.algorithms.community.louvain.louvain_communities(m.G, resolution = rs_i, seed=random.randint(0, 10000))
+        #     communities = [list(x) for x in result]
+        #     m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain_' + str(rs_i)  + '.txt', communities)
+
+    print('done')
+
 def drawResultAlgorithm(folderpath, nameFile):
 
     print('Begin!!!!!!!!!!!')

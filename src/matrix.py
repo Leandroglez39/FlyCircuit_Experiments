@@ -854,8 +854,10 @@ class Matrix:
 
             grj1 = seeds[j] # Subgraph of the seed that will be calculated its similarity with all k seeds
 
-            similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
-            
+            #similarity_values = [self.similarity_between_subgraphs(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
+
+            similarity_values = [self.similarity_between_subgraphs_faster(grj1, coverage_inferior[i], match_array, node_hash) for i in range(k + 1)]
+                        
             edges_values = [self.edges_between_subgraphs(grj1, seeds[i]) for i in range(k + 1)]
             
             #total_nodes = sum([len(seed.nodes()) for seed in seeds]) + len(grj1.nodes())
@@ -1145,12 +1147,40 @@ class Matrix:
             for node2 in subgraph2:
                 node_hash2 = hash[node2]
                 result += match_array[node_hash1, node_hash2]
-                result += match_array[node_hash2, node_hash1]
+                
                 
 
         
         return result / (len(subgraph1.nodes()) * len(subgraph2))
     
+    def similarity_between_subgraphs_faster(self, subgraph1: nx.Graph, subgraph2: set, match_array: np.ndarray, hash: dict) -> float:
+            '''
+            This function is for calculate the similarity between two subgraphs.
+            
+            Parameters
+            ----------
+            subgraph1 : nx.Graph
+                A subgraph.
+            subgraph2 : set
+                A set of nodes with represent an inferior coverage.
+            match_array : np.ndarray
+                A numpy array with the count of the ocurrances of the nodes in the communities.
+            hash : dict
+                A dict with the hash of the nodes correspondaing to the index of the match array.
+            
+            Returns
+            -------
+            result : float
+                The similarity between the two subgraphs between 0 and 1.
+            '''
+            nodes1 = np.array([hash[node1] for node1 in subgraph1.nodes()])
+            nodes2 = np.array([hash[node2] for node2 in subgraph2])
+
+            result = np.sum(match_array[nodes1[:, None], nodes2])
+            
+            return result / (len(subgraph1.nodes()) * len(subgraph2))
+    
+
     def edges_between_subgraphs(self, subgraph1: nx.Graph, subgraph2: nx.Graph) -> int:
             
             '''
@@ -1867,6 +1897,102 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
         
 
+def nmi_overlapping_evaluateTunning(foldername: str) -> None:
+    '''
+    Evaluate the overlapping detection methods using NMI
+
+    Parameters
+    ----------
+    foldername: str
+        Path to folder containing  GT communities and detected communities
+
+    Returns
+    -------
+    None
+    '''
+    from cdlib import evaluation, NodeClustering
+
+    files = os.listdir('dataset/' + foldername)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    files = sorted(files, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+
+    dictResult = dict()
+
+    for file in files:
+        if '.pkl' in file:
+            continue
+        nodes = []
+        match = re.search(r'(network)(\d+)', file)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open('dataset/' + foldername + '/GT/community' + number + '_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+        
+        G = pickle.load(open('dataset/' + foldername + '/' + file + '/' + file + '.pkl', 'rb')) 
+    
+        # GT created
+        nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    
+        nodes = []
+
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+            f.write('network' + number + '\n')
+        
+        # read files result
+        filesResultAlg = os.listdir('output/' + foldername)
+
+        # remove .txt, .pkl
+        if os.path.exists('output/' + foldername + '/' + foldername + '_result.txt'):
+            filesResultAlg.remove(foldername + '_result.txt')
+
+        # if os.path.exists('output/' + foldername + '/' + foldername + '_result.pkl'):
+        #     filesResultAlg.remove(foldername + '_result.pkl')
+
+        # sorted files
+        filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+            
+        for file_i in filesResultAlg:
+            if '.pkl' not in file_i and file == file_i.split('_')[0]:
+                with open(f'output/{foldername}/{file_i}', 'r') as f:
+                    lines = f.readlines()        
+                    for line in lines:
+                        line = line.strip('\n').rstrip()
+                        data = line.split(' ')
+                        inter_data = [int(x) for x in data]
+                        nodes.append(inter_data)
+
+                    # community created
+                    nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=file_i, method_parameters={}, overlap=True)
+                    
+                    # evaluate GT vs community
+                    match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+
+                    algName = file_i.split('_')[1].removesuffix('.txt')
+                    fileNameMod = algName
+
+                    with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+                        f.write(fileNameMod + ': ' + str(match_resoult.score) + '\n')
+                    
+                    
+                    if not fileNameMod in dictResult.keys():
+                        dictResult[fileNameMod] = {'Algorithms/Parameters': fileNameMod, file: match_resoult.score}
+                    else:
+                        dictResult[fileNameMod][file] = match_resoult.score
+                        
+                    nodes = []
+        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+            f.write('------------------------\n')
+
+        pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
+        
+
 def runRoughClustering(folder_version = 'NetsType_1.1'):
 
     all_iterations = []
@@ -1913,7 +2039,7 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
                 all_iterations.append([list(x) for x in result]) # type: ignore
             print('Louvain Algorithm finished')
 
-            print(f'Infomap Algorithm loading ' + str(top) + ' times in {net}')
+            print(f'Infomap Algorithm loading {str(top)} times in {net}')
             infomap_results = pickle.load(open(f'output/{folder_version}/{net}_Infomap.pkl', 'rb'))
             all_iterations.extend(infomap_results) # type: ignore
             print('Infomap Algorithm finished')
@@ -2019,31 +2145,25 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
 
 
 if __name__ == '__main__':
-    
+
+    print(datetime.datetime.now())
+    start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
     
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
+    iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
 
-    
-    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'lpa', 'greedy', 'infomap'])
-
-    start_time = datetime.datetime.now()
-    print(start_time)
-         
-    #runRoughClustering_on_FlyCircuit(m, '1.4',iterations=iterations)
-
-    #generate_pkl('NetsType_1.5')
-
-    #runAlgorithmSimple(m, folder_version='NetsType_1.5')
-
-    #m.export_infomap_iterations(folder_version='NetsType_1.5', end=5)
-
-    # runRoughClustering('NetsType_1.5')
-    nmi_overlapping_evaluateTunning('NetsType_1.4')
+    runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
 
     
+
+    #runRoughClustering('NetsType_1.5')
+    # nmi_overlapping_evaluate('NetsType_1.1')
+    #nmi_overlapping_evaluateTunning('NetsType_1.5')
+
+    # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
