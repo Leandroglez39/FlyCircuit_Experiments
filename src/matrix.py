@@ -1817,7 +1817,7 @@ def runRoughClustering(folder_version = 'NetsType_1.1'):
                 all_iterations.append([list(x) for x in result]) # type: ignore
             print('Louvain Algorithm finished')
 
-            print(f'Infomap Algorithm loading ' + str(top) + ' times in {net}')
+            print(f'Infomap Algorithm loading {str(top)} times in {net}')
             infomap_results = pickle.load(open(f'output/{folder_version}/{net}_Infomap.pkl', 'rb'))
             all_iterations.extend(infomap_results) # type: ignore
             print('Infomap Algorithm finished')
