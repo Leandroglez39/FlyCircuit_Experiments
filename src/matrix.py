@@ -1849,7 +1849,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
                     match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
 
                     algName = file_i.split('_')[1].removesuffix('.txt')
-                    fileNameMod = '_' + algName
+                    fileNameMod = algName
 
                     with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
                         f.write(fileNameMod + ': ' + str(match_resoult.score) + '\n')
