@@ -2169,9 +2169,9 @@ if __name__ == '__main__':
 
     #runAlgorithmSimple(m, folder_version='NetsType_1.6')
     
-    runRoughClustering('NetsType_1.6')
+    # runRoughClustering('NetsType_1.6')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    #nmi_overlapping_evaluateTunning('NetsType_1.4')
+    nmi_overlapping_evaluateTunning('NetsType_1.6')
 
     #end Benchmark Region
     
