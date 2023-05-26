@@ -2126,17 +2126,17 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
 
         exportpath_Simple = folder_version
 
-        for i in range(n, top):
+        for _ in range(n, top):
             result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
             communities = [list(x) for x in result]
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Lpa.txt', communities)
         
-        for i in range(n, int(top)):
+        for _ in range(n, int(top)):
             result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))         # type: ignore
             communities = [list(x) for x in result] # type: ignore
             m.export_Simple(exportpath_Simple, '/network'+ str(j) +'_Greedy.txt', communities)
         
-        for i in range(n, top):
+        for _ in range(n, top):
             result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
             communities = [list(x) for x in result] # type: ignore
             m.export_Simple(exportpath_Simple, '/network'+ str(j) + '_Louvain.txt', communities)
@@ -2151,19 +2151,29 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
+    # FlyCircuit Region
+
     #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
     #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
 
     #runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
 
-    
+    #end FlyCircuit Region
 
-    #runRoughClustering('NetsType_1.4')
+    # Benchmark Region
+
+    #generate_pkl('NetsType_1.6')
+
+    #m.export_infomap_iterations(folder_version='NetsType_1.6', end=5)
+
+    #runAlgorithmSimple(m, folder_version='NetsType_1.6')
+    
+    runRoughClustering('NetsType_1.6')
     # nmi_overlapping_evaluate('NetsType_1.1')
     #nmi_overlapping_evaluateTunning('NetsType_1.4')
 
-    # m.export_infomap_iterations(folder_version='NetsType_1.3', end=5)
+    #end Benchmark Region
     
     #print(len(pickle.load(open('output/NetsType_1.1/network2_Infomap.pkl', 'rb'))))
 
