@@ -279,9 +279,9 @@ if __name__ == "__main__":
     # create Data Structure
     m = Matrix([], {},[])
     # run Algorithm simple
-    # runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
+    runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    # drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
 
 
 
