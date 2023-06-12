@@ -2143,6 +2143,59 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
 
     print('done')
 
+def plot_degree_distribution(m: Matrix):
+
+    # Calculate the degree distribution
+    degree_sequence = sorted([d for _, d in m.G.degree()], reverse=True) # type: ignore
+    
+    degree_count = {}
+    for degree in degree_sequence:
+        if degree in degree_count:
+            degree_count[degree] += 1            
+        else:
+            degree_count[degree] = 1
+    deg, cnt = zip(*degree_count.items())
+
+    
+
+    # Plot the degree distribution
+    plt.style.use('tableau-colorblind10')
+    plt.bar(deg, cnt, width=0.80, color='b')
+    #plt.gca().invert_xaxis()
+    plt.title("Degree Distribution")
+    plt.ylabel("Count")
+    plt.xlabel("Degree")
+
+    # Add mean line
+    mean = np.average(deg)
+  
+    plt.axvline(mean, color='r', linestyle='--', label=f'Mean: {mean:.2f}') # type: ignore
+    #plt.text(mean, max(cnt), f'Mean: {mean:.2f}', ha='left', va='top', fontsize=12, color='r')
+    
+    
+    total = sum([ d * c for d, c in zip(deg, cnt)])
+    portion = total * 0.8
+    
+    index = 0
+    
+    count = 0
+    increment = 0
+    for d, c in zip(deg, cnt):
+        increment += (d * c)
+        count += c
+        if increment >= portion:
+            plt.axvline(d, color='g', linestyle='--', label=f'80%: {d}')
+            #plt.text(v, max(cnt), f'80%: {v}', ha='left', va='top', fontsize=12, color='g')
+            index = deg.index(d)
+            break
+
+    
+    print(count)
+    print(index)
+    plt.legend()
+    plt.show()
+
+
 
 if __name__ == '__main__':
 
@@ -2153,7 +2206,12 @@ if __name__ == '__main__':
     
     # FlyCircuit Region
 
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+
+    
+    plot_degree_distribution(m)
+
+    
 
     #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
 
