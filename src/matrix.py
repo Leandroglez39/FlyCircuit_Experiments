@@ -2146,7 +2146,7 @@ def runAlgorithmSimple(m: Matrix, folder_version = 'NetsType_1.3'):
 def plot_degree_distribution(m: Matrix):
 
     # Calculate the degree distribution
-    degree_sequence = sorted([d for _, d in m.G.degree()], reverse=True) # type: ignore
+    degree_sequence = sorted([d for _, d in m.G.degree(weight='weight')], reverse=True) # type: ignore
     
     degree_count = {}
     for degree in degree_sequence:
@@ -2159,42 +2159,50 @@ def plot_degree_distribution(m: Matrix):
     
 
     # Plot the degree distribution
-    plt.style.use('tableau-colorblind10')
-    plt.bar(deg, cnt, width=0.80, color='b')
-    #plt.gca().invert_xaxis()
-    plt.title("Degree Distribution")
-    plt.ylabel("Count")
-    plt.xlabel("Degree")
+    with plt.style.context('tableau-colorblind10'):
+        #plt.style.use('seaborn-v0_8-dark')
+        #plt.bar(deg, cnt, width=0.80)
+        plt.hist(degree_sequence, bins=100, alpha=0.5)
+        plt.hist([1], bins=1, alpha=0.5, color='red')
+        #plt.gca().invert_xaxis()
+        plt.title("Weight Distribution")
+        plt.ylabel("Count")
+        plt.xlabel("Degree")
 
-    # Add mean line
-    mean = np.average(deg)
-  
-    plt.axvline(mean, color='r', linestyle='--', label=f'Mean: {mean:.2f}') # type: ignore
-    #plt.text(mean, max(cnt), f'Mean: {mean:.2f}', ha='left', va='top', fontsize=12, color='r')
-    
-    
-    total = sum([ d * c for d, c in zip(deg, cnt)])
-    portion = total * 0.8
-    
-    index = 0
-    
-    count = 0
-    increment = 0
-    for d, c in zip(deg, cnt):
-        increment += (d * c)
-        count += c
-        if increment >= portion:
-            plt.axvline(d, color='g', linestyle='--', label=f'80%: {d}')
-            #plt.text(v, max(cnt), f'80%: {v}', ha='left', va='top', fontsize=12, color='g')
-            index = deg.index(d)
-            break
+        data = []
 
+        for d, c in zip(deg, cnt):
+            for _ in range(c):
+                data.append(d)
+                
+        # Add mean line
+        mean = np.average(data)
     
-    print(count)
-    print(index)
-    plt.legend()
-    plt.show()
+        plt.axvline(mean, color='r', linestyle='--', label=f'Mean: {mean:.2f}') # type: ignore
+        #plt.text(mean, max(cnt), f'Mean: {mean:.2f}', ha='left', va='top', fontsize=12, color='r')
+        
+        
+        total = sum([ d * c for d, c in zip(deg, cnt)])
+        portion = total * 0.8
+        
+        index = 0
+        
+        count = 0
+        increment = 0
+        for d, c in zip(deg, cnt):
+            increment += (d * c)
+            count += c
+            if increment >= portion:
+                plt.axvline(d, color='g', linestyle='--', label=f'80%: {d}')
+                #plt.text(v, max(cnt), f'80%: {v}', ha='left', va='top', fontsize=12, color='g')
+                index = deg.index(d)
+                break
 
+        
+        print(count)
+        print(index)
+        plt.legend()
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -2208,8 +2216,49 @@ if __name__ == '__main__':
 
     m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
 
+    df = pd.read_csv('output/summary_communities.csv', sep=',', header=0)
+
+    greedycolums = [f'greedy_{i}_ci' for i in range(0, 8)]
+    louvaincolums = [f'louvain_{i}_ci' for i in range(0, 10)]
+    lpacolums = [f'lpa_{i}_ci' for i in range(0, 9)]
+    infomapcolums = [f'infomap_{i}_ci' for i in range(0, 10)]
+
+    gp = [f'greedy_{i}_ci_participation_coefficient' for i in range(0, 8)]
+    gwdw = [f'greedy_{i}_ci_whiting_directed_weighted' for i in range(0, 8)]
+    gwdnw = [f'greedy_{i}_ci_whiting_directed_notweighted' for i in range(0, 8)]
+    gndw = [f'greedy_{i}_ci_whiting_notdirected_weighted' for i in range(0, 8)]
+    gndnw = [f'greedy_{i}_ci_whiting_notdirected_notweighted' for i in range(0, 8)]
     
-    plot_degree_distribution(m)
+    lpap = [f'lpa_{i}_ci_participation_coefficient' for i in range(0, 9)]
+    lpadw = [f'lpa_{i}_ci_whiting_directed_weighted' for i in range(0, 9)]
+    lpadnw = [f'lpa_{i}_ci_whiting_directed_notweighted' for i in range(0, 9)]
+    lpandw = [f'lpa_{i}_ci_whiting_notdirected_weighted' for i in range(0, 9)]
+    lpandnw = [f'lpa_{i}_ci_whiting_notdirected_notweighted' for i in range(0, 9)]
+
+    infomap_p = [f'infomap_{i}_ci_participation_coefficient' for i in range(0, 10)]
+    infomap_dw = [f'infomap_{i}_ci_whiting_directed_weighted' for i in range(0, 10)]
+    infomap_dnw = [f'infomap_{i}_ci_whiting_directed_notweighted' for i in range(0, 10)]
+    infomap_ndw = [f'infomap_{i}_ci_whiting_notdirected_weighted' for i in range(0, 10)]
+    infomap_ndnw = [f'infomap_{i}_ci_whiting_notdirected_notweighted' for i in range(0, 10)]
+    
+    lp = [f'louvain_{i}_ci_participation_coefficient' for i in range(0, 10)]
+    ldw = [f'louvain_{i}_ci_whiting_directed_weighted' for i in range(0, 10)]
+    ldnw = [f'louvain_{i}_ci_whiting_directed_notweighted' for i in range(0, 10)]
+    lndw = [f'louvain_{i}_ci_whiting_notdirected_weighted' for i in range(0, 10)]
+    lndnw = [f'louvain_{i}_ci_whiting_notdirected_notweighted' for i in range(0, 10)]
+
+    columns_set = [gp, gwdw, gwdnw, gndw, gndnw, lpap, lpadw, lpadnw, lpandw, lpandnw, infomap_p, infomap_dw, infomap_dnw, infomap_ndw, infomap_ndnw, lp, ldw, ldnw, lndw, lndnw]
+    columns_set_name = ['gp', 'gwdw', 'gwdnw', 'gndw', 'gndnw', 'lpap', 'lpadw', 'lpadnw', 'lpandw', 'lpandnw', 'infomap_p', 'infomap_dw', 'infomap_dnw', 'infomap_ndw', 'infomap_ndnw', 'lp', 'ldw', 'ldnw', 'lndw', 'lndnw']
+    for i in range(len(columns_set)):
+        df = df.assign(**{columns_set_name[i]: df[columns_set[i]].mean(axis=1)})
+
+    
+    
+    result = pd.concat([df.iloc[:, 0:1], df.iloc[:, -20:]], axis=1)
+
+    result.to_csv('output/summary_communities_measures.csv', index=False)
+    
+    #plot_degree_distribution(m)
 
     
 
@@ -2229,7 +2278,7 @@ if __name__ == '__main__':
     
     # runRoughClustering('NetsType_1.6')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    nmi_overlapping_evaluateTunning('NetsType_1.6')
+    #nmi_overlapping_evaluateTunning('NetsType_1.6')
 
     #end Benchmark Region
     
