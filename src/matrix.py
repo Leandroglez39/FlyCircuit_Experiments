@@ -2204,17 +2204,7 @@ def plot_degree_distribution(m: Matrix):
         plt.legend()
         plt.show()
 
-
-if __name__ == '__main__':
-
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
-
-    m = Matrix([], {},[])
-    
-    # FlyCircuit Region
-
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+def save_comunities_summary():
 
     df = pd.read_csv('output/summary_communities.csv', sep=',', header=0)
 
@@ -2257,6 +2247,19 @@ if __name__ == '__main__':
     result = pd.concat([df.iloc[:, 0:1], df.iloc[:, -20:]], axis=1)
 
     result.to_csv('output/summary_communities_measures.csv', index=False)
+
+if __name__ == '__main__':
+
+    print(datetime.datetime.now())
+    start_time = datetime.datetime.now()
+
+    m = Matrix([], {},[])
+    
+    # FlyCircuit Region
+
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    
+    nx.write_gexf(m.G, 'output/flycircuit.gexf')
     
     #plot_degree_distribution(m)
 
