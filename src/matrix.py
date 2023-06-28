@@ -2254,8 +2254,8 @@ def evaluate_overlaping(net_path : str):
     folder_path_alg = f'output/{net_path}/'
 
     list_files = os.listdir(folder_path_gt)
-    data = []
-
+    data_final = []
+    
     for file in list_files:
         nodes_gt = []
         nodes_alg = []
@@ -2286,9 +2286,10 @@ def evaluate_overlaping(net_path : str):
 
 
             result = compare_overlapings(list_nodes_overlaping_gt, list_nodes_overlaping_rc)
-            data.append(result)
+            data_final.append(result)
     
-    return data
+    
+    return data_final
 
 
 
@@ -2325,7 +2326,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    datas = evaluate_overlaping('NetsType_1.6')
+    datas = evaluate_overlaping('NetsType_1.4')
+
+    
 
     for data in datas:
         print(len(data[0]), len(data[1]))
