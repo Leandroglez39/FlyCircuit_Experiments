@@ -2400,37 +2400,70 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
 
     folder_path = f'output/stability/{folder_version}'
     
-    net = 'network1'
-    m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
-
-    for i in range(sequence):
-
-        all_communities = []
+    folder_list = os.listdir(folder_path)
+    for net in folder_list:
         
-        greedy_communities = pickle.load(open(f'{folder_path}/{net}/greedy_{r}_run_{0}.pkl', 'rb'))
-        all_communities.append(greedy_communities)
+        m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
 
-        louvain_communities = pickle.load(open(f'{folder_path}/{net}/louvain_{r}_run_{i}.pkl', 'rb'))
-        louvain_communities = [list(x) for x in louvain_communities] # type: ignore
-        all_communities.append(louvain_communities)
+        for i in range(sequence):
 
-        async_lpa_communities = pickle.load(open(f'{folder_path}/{net}/async_lpa_{r}_run_{i}.pkl', 'rb'))
-        async_lpa_communities = [list(x) for x in async_lpa_communities] # type: ignore
-        all_communities.append(async_lpa_communities)
+            all_communities = []
+            
+            greedy_communities = pickle.load(open(f'{folder_path}/{net}/greedy_{r}_run_{0}.pkl', 'rb'))
+            all_communities.append(greedy_communities)
 
-        infomap_communities = pickle.load(open(f'{folder_path}/{net}/infomap_{r}_run_{i}.pkl', 'rb'))
-        all_communities.extend(infomap_communities)
+            louvain_communities = pickle.load(open(f'{folder_path}/{net}/louvain_{r}_run_{i}.pkl', 'rb'))
+            louvain_communities = [list(x) for x in louvain_communities] # type: ignore
+            all_communities.extend(louvain_communities)
 
-                   
-        value = m.RoughClustering(communities=all_communities)
+            async_lpa_communities = pickle.load(open(f'{folder_path}/{net}/async_lpa_{r}_run_{i}.pkl', 'rb'))
+            async_lpa_communities = [list(x) for x in async_lpa_communities] # type: ignore
+            all_communities.extend(async_lpa_communities)
 
-        all_communities = []
+            infomap_communities = pickle.load(open(f'{folder_path}/{net}/infomap_{r}_run_{i}.pkl', 'rb'))
+            all_communities.extend(infomap_communities)
+
+                    
+            value = m.RoughClustering(communities=all_communities)
+
+            all_communities = []
 
 
-        exportpath_RC = f'{folder_path}/{net}_RC.txt'
+            exportpath_RC = f'{net}_RC.txt'
 
-        m.export_RC(folder_version, exportpath_RC, value)
+            m.export_RC(f'stability/{folder_version}/{net}/', exportpath_RC, value)
 
+def apply_PC_to_GT(net_version : str):
+
+    folder_path = f'dataset/{net_version}'
+    
+    
+    folder_list = os.listdir(folder_path)
+    folder_list.remove('GT')
+    folder_list.remove('README.txt')
+    m = Matrix([], {},[])
+
+    for net in folder_list:
+        
+        m.G = pickle.load(open(f'dataset/{net_version}/{net}/{net}.pkl', 'rb'))
+
+        communities = []
+        match = re.search(r'(network)(\d+)', net)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open(f'dataset/{net_version}/GT/community{number}_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    communities.append(inter_data)
+
+        dict_node = m.participation_coefficient(communities)
+
+        pickle.dump(dict_node, open(f'dataset/{net_version}/{net}/{net}_GT_PC.pkl', 'wb'))
+
+        
 
 if __name__ == '__main__':
 
@@ -2443,10 +2476,12 @@ if __name__ == '__main__':
 
     #stability(1, 100, 'NetsType_1.4')
 
-    run_RC_sequences(1, 'NetsType_1.4', 100)
+    #run_RC_sequences(1, 'NetsType_1.4', 100)
     
-    
+    #apply_PC_to_GT('NetsType_1.4')
 
+    PC_data = pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')) 
+    print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
     #stability_infomap(20, 1000, 'NetsType_1.4')
 
     # FlyCircuit Region
