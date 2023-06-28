@@ -2357,13 +2357,15 @@ def stability(sequence : int, num_run : int, net_path : str):
             print('louvain Algorithm finished')
 
 
-        print(f'greedy Algorithm running ' + str(0) + f' times in {file}')
+            print(f'greedy Algorithm running ' + str(seq) + f' times in {file}')
 
-        communities = nx.algorithms.community.greedy_modularity_communities(G, resolution= random.uniform(3.5, 5.5), cutoff=1)  # type: ignore
-        communities = [list(x) for x in communities] # type: ignore
-        pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{0}.pkl', 'wb'))
-                        
-        print(f'Greedy Algorithm finished')
+            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+                communities = pool.starmap(nx_comm.greedy_modularity_communities, [(G, None ,random.uniform(3.5, 5.5), 1, None) for _ in range(int(num_run/1.5))])
+                communities = [[list(x) for x in com] for com in communities]
+            
+                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{0}.pkl', 'wb'))
+                            
+            print(f'Greedy Algorithm finished')
 
 import concurrent.futures
 
@@ -2410,7 +2412,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
             all_communities = []
             
             greedy_communities = pickle.load(open(f'{folder_path}/{net}/greedy_{r}_run_{0}.pkl', 'rb'))
-            all_communities.append(greedy_communities)
+            all_communities.extend(greedy_communities)
 
             louvain_communities = pickle.load(open(f'{folder_path}/{net}/louvain_{r}_run_{i}.pkl', 'rb'))
             louvain_communities = [list(x) for x in louvain_communities] # type: ignore
