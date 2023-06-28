@@ -2363,14 +2363,34 @@ def stability(sequence : int, num_run : int, net_path : str):
                         
         print(f'Greedy Algorithm finished')
 
+import concurrent.futures
+
 def stability_infomap(sequence : int, num_run : int, net_path : str):
     from cdlib import algorithms # type: ignore Only necesary with cdlib environment #TODO
 
-    
-    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-        communities = pool.starmap(algorithms.infomap, [(G, '--seed ' + f'{i}') for i in range(num_run)])
-    
+    folder_path_gt = f'dataset/{net_path}'
 
+    files = os.listdir(folder_path_gt)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    for file in files:
+        G = pickle.load(open(f'{folder_path_gt}/{file}/{file}.pkl', 'rb'))        
+
+        for seq in range(sequence):
+
+            print(f'infomap Algorithm running ' + str(num_run) + f' times in {file}')
+            
+            communities = []
+            
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                futures = [executor.submit(algorithms.infomap, G, flags='--seed ' + str(i+1)) for i in range(num_run)]
+                for future in concurrent.futures.as_completed(futures):
+                    communities.append(future.result().communities)
+            
+            pickle.dump(communities, open(f'output/stability/{net_path}/{file}/infomap_{num_run}_run_{seq}.pkl', 'wb'))
+            
+            print('Infomap Algorithm finished')
 
 
 if __name__ == '__main__':
@@ -2382,16 +2402,14 @@ if __name__ == '__main__':
     
     # datas = evaluate_overlaping('NetsType_1.4')
 
-    G = pickle.load(open('dataset/NetsType_1.6/network11/network11.pkl', 'rb'))
+    
+    #stability(20, 1000, 'NetsType_1.4')
 
-    stability(20, 100, 'NetsType_1.4')
-
-    # for data in datas:
-    #     print(len(data[0]), len(data[1]))
+    stability_infomap(20, 1000, 'NetsType_1.4')
 
     # FlyCircuit Region
 
-    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
     
     #nx.write_gexf(m.G, 'output/flycircuit.gexf')
     
