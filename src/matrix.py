@@ -2478,10 +2478,10 @@ if __name__ == '__main__':
 
     #run_RC_sequences(1, 'NetsType_1.4', 100)
     
-    #apply_PC_to_GT('NetsType_1.4')
+    apply_PC_to_GT('NetsType_1.6')
 
-    PC_data = pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')) 
-    print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
+    #PC_data = pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')) 
+    #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
     #stability_infomap(20, 1000, 'NetsType_1.4')
 
     # FlyCircuit Region
