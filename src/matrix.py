@@ -2248,6 +2248,76 @@ def save_comunities_summary():
 
     result.to_csv('output/summary_communities_measures.csv', index=False)
 
+def evaluate_overlaping(net_path : str):
+
+    folder_path_gt = f'dataset/{net_path}/GT/'
+    folder_path_alg = f'output/{net_path}/'
+
+    list_files = os.listdir(folder_path_gt)
+    data = []
+
+    for file in list_files:
+        nodes_gt = []
+        nodes_alg = []
+        match = re.search(r'(community)(\d+)(_GT.dat)', file)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open(f'{folder_path_gt}community{number}_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes_gt.append(inter_data)
+
+            list_nodes_overlaping_gt = detect_nodes_with_overlapping(nodes_gt)
+
+            
+
+            with open(f'{folder_path_alg}network{number}_RC.txt', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    data.remove('\n')
+                    inter_data = [int(x) for x in data]
+                    nodes_alg.append(inter_data)
+
+            list_nodes_overlaping_rc = detect_nodes_with_overlapping(nodes_alg)
+
+
+            result = compare_overlapings(list_nodes_overlaping_gt, list_nodes_overlaping_rc)
+            data.append(result)
+    
+    return data
+
+
+
+
+
+def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
+    from collections import Counter
+    nodes_with_overlapping = {}
+    node_counts = Counter(node for com in node_list for node in com)
+    
+    for node, count in node_counts.items():
+        if count > 1:
+            nodes_with_overlapping[node] = count
+
+    return nodes_with_overlapping
+
+def compare_overlapings(gt : dict, algorithm : dict) -> tuple[list[int], list[int]]:
+    true_overlaping = []
+    false_overlaping = []
+
+    for node in algorithm.keys():
+        if node in gt.keys():
+            true_overlaping.append(node)
+        else:
+            false_overlaping.append(node)
+
+    return (true_overlaping, false_overlaping)
+
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -2255,11 +2325,16 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
+    datas = evaluate_overlaping('NetsType_1.6')
+
+    for data in datas:
+        print(len(data[0]), len(data[1]))
+
     # FlyCircuit Region
 
     m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
     
-    nx.write_gexf(m.G, 'output/flycircuit.gexf')
+    #nx.write_gexf(m.G, 'output/flycircuit.gexf')
     
     #plot_degree_distribution(m)
 
