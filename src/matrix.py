@@ -2363,7 +2363,7 @@ def stability(sequence : int, num_run : int, net_path : str):
                 communities = pool.starmap(nx_comm.greedy_modularity_communities, [(G, None ,random.uniform(3.5, 5.5), 1, None) for _ in range(int(num_run/1.5))])
                 communities = [[list(x) for x in com] for com in communities]
             
-                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{0}.pkl', 'wb'))
+                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{seq}.pkl', 'wb'))
                             
             print(f'Greedy Algorithm finished')
 
