@@ -2318,6 +2318,60 @@ def compare_overlapings(gt : dict, algorithm : dict) -> tuple[list[int], list[in
 
     return (true_overlaping, false_overlaping)
 
+def lpa_wrapper(G, seed = 1):
+
+        import networkx.algorithms.community as nx_comm
+        return list(nx_comm.asyn_lpa_communities(G, seed=seed)) # type: ignore
+    
+
+def stability(sequence : int, num_run : int, net_path : str):
+
+    folder_path_gt = f'dataset/{net_path}'
+
+    files = os.listdir(folder_path_gt)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    for file in files:
+        G = pickle.load(open(f'{folder_path_gt}/{file}/{file}.pkl', 'rb'))        
+
+        for seq in range(sequence):
+            
+
+            print(f'async_lpa Algorithm running ' + str(seq) + f' times in {file}')
+            
+            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+                communities = pool.starmap(lpa_wrapper, [(G, i) for i in range(num_run)])
+                os.makedirs(f'output/stability/{net_path}/{file}/', exist_ok=True)
+                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/async_lpa_{num_run}_run_{seq}.pkl', 'wb'))
+            print('async_lpa Algorithm finished')
+
+
+            print(f'louvain Algorithm running ' + str(seq) + f' times in {file}')
+
+            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+                communities = pool.starmap(nx_comm.louvain_communities, [(G, 'weight', random.uniform(2, 3.5), 1e-07, i) for i in range(num_run)])
+                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/louvain_{num_run}_run_{seq}.pkl', 'wb'))
+            print('louvain Algorithm finished')
+
+
+        print(f'greedy Algorithm running ' + str(0) + f' times in {file}')
+
+        communities = nx.algorithms.community.greedy_modularity_communities(G, resolution= random.uniform(3.5, 5.5), cutoff=1)  # type: ignore
+        communities = [list(x) for x in communities] # type: ignore
+        pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{0}.pkl', 'wb'))
+                        
+        print(f'Greedy Algorithm finished')
+
+def stability_infomap(sequence : int, num_run : int, net_path : str):
+    from cdlib import algorithms # type: ignore Only necesary with cdlib environment #TODO
+
+    
+    with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+        communities = pool.starmap(algorithms.infomap, [(G, '--seed ' + f'{i}') for i in range(num_run)])
+    
+
+
 
 if __name__ == '__main__':
 
@@ -2326,12 +2380,14 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    datas = evaluate_overlaping('NetsType_1.4')
+    # datas = evaluate_overlaping('NetsType_1.4')
 
-    
+    G = pickle.load(open('dataset/NetsType_1.6/network11/network11.pkl', 'rb'))
 
-    for data in datas:
-        print(len(data[0]), len(data[1]))
+    stability(20, 100, 'NetsType_1.4')
+
+    # for data in datas:
+    #     print(len(data[0]), len(data[1]))
 
     # FlyCircuit Region
 
