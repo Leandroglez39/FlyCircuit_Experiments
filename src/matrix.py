@@ -1993,7 +1993,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
         
 
-def runRoughClustering(folder_version = 'NetsType_1.1'):
+def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1'):
 
     all_iterations = []
     
@@ -2342,6 +2342,7 @@ def stability(sequence : int, num_run : int, net_path : str):
             
             with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
                 communities = pool.starmap(lpa_wrapper, [(G, i) for i in range(num_run)])
+                communities = [[list(x) for x in com] for com in communities]                
                 os.makedirs(f'output/stability/{net_path}/{file}/', exist_ok=True)
                 pickle.dump(communities, open(f'output/stability/{net_path}/{file}/async_lpa_{num_run}_run_{seq}.pkl', 'wb'))
             print('async_lpa Algorithm finished')
@@ -2351,6 +2352,7 @@ def stability(sequence : int, num_run : int, net_path : str):
 
             with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
                 communities = pool.starmap(nx_comm.louvain_communities, [(G, 'weight', random.uniform(2, 3.5), 1e-07, i) for i in range(num_run)])
+                communities = [[list(x) for x in com] for com in communities]
                 pickle.dump(communities, open(f'output/stability/{net_path}/{file}/louvain_{num_run}_run_{seq}.pkl', 'wb'))
             print('louvain Algorithm finished')
 
@@ -2392,6 +2394,43 @@ def stability_infomap(sequence : int, num_run : int, net_path : str):
             
             print('Infomap Algorithm finished')
 
+def run_RC_sequences(sequence : int, folder_version: str, r: int):
+    
+    m = Matrix([], {},[])
+
+    folder_path = f'output/stability/{folder_version}'
+    
+    net = 'network1'
+    m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
+
+    for i in range(sequence):
+
+        all_communities = []
+        
+        greedy_communities = pickle.load(open(f'{folder_path}/{net}/greedy_{r}_run_{0}.pkl', 'rb'))
+        all_communities.append(greedy_communities)
+
+        louvain_communities = pickle.load(open(f'{folder_path}/{net}/louvain_{r}_run_{i}.pkl', 'rb'))
+        louvain_communities = [list(x) for x in louvain_communities] # type: ignore
+        all_communities.append(louvain_communities)
+
+        async_lpa_communities = pickle.load(open(f'{folder_path}/{net}/async_lpa_{r}_run_{i}.pkl', 'rb'))
+        async_lpa_communities = [list(x) for x in async_lpa_communities] # type: ignore
+        all_communities.append(async_lpa_communities)
+
+        infomap_communities = pickle.load(open(f'{folder_path}/{net}/infomap_{r}_run_{i}.pkl', 'rb'))
+        all_communities.extend(infomap_communities)
+
+                   
+        value = m.RoughClustering(communities=all_communities)
+
+        all_communities = []
+
+
+        exportpath_RC = f'{folder_path}/{net}_RC.txt'
+
+        m.export_RC(folder_version, exportpath_RC, value)
+
 
 if __name__ == '__main__':
 
@@ -2402,10 +2441,13 @@ if __name__ == '__main__':
     
     # datas = evaluate_overlaping('NetsType_1.4')
 
-    
-    #stability(20, 1000, 'NetsType_1.4')
+    #stability(1, 100, 'NetsType_1.4')
 
-    stability_infomap(20, 1000, 'NetsType_1.4')
+    run_RC_sequences(1, 'NetsType_1.4', 100)
+    
+    
+
+    #stability_infomap(20, 1000, 'NetsType_1.4')
 
     # FlyCircuit Region
 
