@@ -9,3 +9,4 @@ envNX
 output/edgesMeasure.csv
 testing.py
 src/__pycache__/
+output/flycircuit.gexf
