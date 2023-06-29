@@ -15,6 +15,7 @@ import statistics
 import random
 import re
 import itertools  
+import fnmatch
 
 
 
@@ -1282,6 +1283,7 @@ class Matrix:
     # Begining of Horacio's Region
 
     def edgeWithinComm(self, vi, si, w, directed):
+
         sugSi = nx.subgraph(self.G, si) # type: ignore
         if not directed:
             ki = sugSi.degree(vi, weight = w)
@@ -1387,6 +1389,150 @@ class Matrix:
 
         # close file
         f.close()
+    
+    def withinCommunity(self, foldername, clustering_i: list, algName, networkName):
+
+        '''
+        This function is for calculate the within community of a community.
+
+        Parameters
+        ----------        
+        communities : list
+            A list of comunities.
+        
+        Returns
+        -------
+        result : dict
+            The within community of every node.
+        '''
+        zi = dict()
+        run_community_mean = dict()
+        run_community_vi = dict()
+        run_community_desv = dict()
+        w = 'None'
+        directed = False
+
+        # iterate through all commnunities
+        for c_j in range(0, len(clustering_i)):
+            sumMean = 0
+            key_RunComm = (c_j)
+            for vi in clustering_i[c_j]:
+                key_RunCommVi = (c_j, vi)
+                if key_RunCommVi not in run_community_vi:
+                    ki = self.edgeWithinComm(vi, clustering_i[c_j], w, directed)
+                    run_community_vi[key_RunCommVi] = ki
+                    sumMean += ki
+            if key_RunComm not in run_community_mean:
+                ciMean = sumMean/len(clustering_i[c_j])
+                run_community_mean[key_RunComm] = ciMean
+        # ki, mean(si) -> DONE
+        print('ki, mean(si) -> DONE')
+
+        # iterate through all commnunities
+        for c_j in range(0, len(clustering_i)):
+            sumDesv = 0
+            key_runC = (c_j)
+            meanCj = run_community_mean[key_runC]
+            for vi in clustering_i[c_j]:
+                key_RunCVi = (c_j, vi)
+                kVi = run_community_vi[key_RunCVi]
+                sumDesv += math.pow((kVi - meanCj), 2)
+            if key_runC not in run_community_desv:
+                desvCj = math.sqrt(sumDesv/len(clustering_i[c_j]))
+                run_community_desv[key_runC] = desvCj
+        print('desviation -> DONE')
+        # print(run_community_vi)
+
+        print(self.G.number_of_nodes())
+        
+        # iterate through all vertex
+        for vi in self.G.nodes:
+            # iterate through all commnunities
+            for c_j in range(0, len(clustering_i)):
+                # identify the Ci 
+                if vi in clustering_i[c_j]:
+                    desvSi = run_community_desv[(c_j)]
+                    ziValue = 0
+                    if desvSi != 0:
+                        meanSi = run_community_mean[(c_j)]
+                        ki = run_community_vi[(c_j, vi)]
+                        ziValue = (ki - meanSi)/desvSi
+                    if vi not in zi:
+                        listTupleValue = []
+                        listTupleValue.append(ziValue)
+                        zi[vi] = listTupleValue
+                    else:
+                        zi[vi].append(ziValue)
+                    break
+        
+            # count+=1
+            # print('vertex: ', vi, ' Done', ' numbers of items: ', count)
+        print('zi -> DONE')
+
+        nameFile = 'within_' + algName + '_' + networkName
+        # create a binary pickle file 
+        f = open('output/' + foldername + '/' + nameFile + '.pkl' ,"wb")
+
+        # write the python object (dict) to pickle file
+        pickle.dump(zi, f)
+
+        # close file
+        f.close()
+
+
+    def calculateWithinCommunityScore(self, foldername):
+
+        # read GT files
+        filesGT = os.listdir('dataset/' + foldername + '/GT/')
+        filesGT = sorted(filesGT, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+
+        for file in filesGT:
+            nameFileGT = file
+            numberGT = nameFileGT.split('_GT')[0].split('community')[1]
+
+            m.G = pickle.load(open('dataset/' + foldername + '/' + 'network'+str(numberGT) + '/' + 'network'+str(numberGT) + '.pkl', 'rb')) 
+            
+            nodes = []
+            with open('dataset/' + foldername + '/GT/' +  file, 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+                # clustering i-esimo
+                clustering_i = nodes
+                m.withinCommunity(foldername, clustering_i, 'GT', 'network'+str(numberGT))
+
+        # read files result
+        filesResultAlg = os.listdir('output/' + foldername)
+        pattern = "network*_RC.txt"
+        filesResultRC = []
+        # filter to get RC result file
+        for file_i in filesResultAlg:
+            if fnmatch.fnmatch(file_i, pattern):
+                filesResultRC.append(file_i)
+
+        # sorted files
+        filesResultRC = sorted(filesResultRC, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+            
+        for file_i in filesResultRC:
+            nameFileRCResult = file_i
+            numberRCNet = nameFileRCResult.split('_RC')[0].split('network')[1]
+
+            m.G = pickle.load(open('dataset/' + foldername + '/' + 'network'+str(numberRCNet) + '/' + 'network'+str(numberRCNet) + '.pkl', 'rb'))
+            nodes = []
+            with open(f'output/{foldername}/{file_i}', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    line = line.strip('\n').rstrip()
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+                # clustering i-esimo
+                clustering_i = nodes
+                m.withinCommunity(foldername, clustering_i, 'RC', 'network'+str(numberRCNet))
+        
+        print('Done')
 
     def calculateWithin(self, algList = ['louvain', 'greedy', 'lpa', 'infomap'], wegList = ['weight', 'none'], directList = [True, False]):
         for alg_i in algList:
@@ -1409,10 +1555,7 @@ class Matrix:
             for u,v in self.G.edges:
                 f.write(u + ', ' + v + ', ' + str(self.G.edges[u,v]['weight']) + ', ' + str(self.G.edges[u,v]['edge_betweenes']))
                 f.write('\n')
-                
-        
-
-        
+       
     def update_graph_with_within_measure(self, communities ,algorithms = ['louvain', 'greedy', 'lpa', 'infomap']):
 
         for algorithm in algorithms:
@@ -2150,6 +2293,9 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
+
+    # m.calculateWithinCommunityScore('NetsType_1.4')
+    m.calculateWithinCommunityScore('NetsType_1.6')
     
     # FlyCircuit Region
 
@@ -2171,7 +2317,7 @@ if __name__ == '__main__':
     
     # runRoughClustering('NetsType_1.6')
     # nmi_overlapping_evaluate('NetsType_1.1')
-    nmi_overlapping_evaluateTunning('NetsType_1.6')
+    # nmi_overlapping_evaluateTunning('NetsType_1.6')
 
     #end Benchmark Region
     
