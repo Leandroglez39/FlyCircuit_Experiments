@@ -2435,6 +2435,18 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
 
             m.export_RC(f'stability/{folder_version}/{net}/', exportpath_RC, value)
 
+def read_communities_from_dat(path : str) -> list[list[int]]:
+    
+    communities = []
+    with open(path, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            data = line.split(' ')
+            data.remove('\n')
+            inter_data = [int(x) for x in data]
+            communities.append(inter_data)
+    return communities
+
 def apply_PC_to_GT(net_version : str):
 
     folder_path = f'dataset/{net_version}'
@@ -2465,7 +2477,19 @@ def apply_PC_to_GT(net_version : str):
 
         pickle.dump(dict_node, open(f'dataset/{net_version}/{net}/{net}_GT_PC.pkl', 'wb'))
 
-        
+def apply_PC_to_RC(net_version: str):
+    
+    folder_path = f'output/{net_version}'
+
+    files_list = os.listdir(folder_path)
+    m = Matrix([], {},[])
+
+    for file in files_list:
+        if file.endswith('_RC.txt'):
+            m.G = pickle.load(open(f'dataset/{net_version}/{file[:-7]}/{file[:-7]}.pkl', 'rb'))
+            communities = read_communities_from_dat(f'{folder_path}/{file}')
+            dict_node = m.participation_coefficient(communities)
+            pickle.dump(dict_node, open(f'{folder_path}/{file[:-7]}_RC_PC.pkl', 'wb'))
 
 if __name__ == '__main__':
 
@@ -2476,12 +2500,13 @@ if __name__ == '__main__':
     
     # datas = evaluate_overlaping('NetsType_1.4')
 
-    stability(4, 10, 'NetsType_1.6')
+    #stability(4, 10, 'NetsType_1.6')
 
     #run_RC_sequences(1, 'NetsType_1.4', 100)
     
     #apply_PC_to_GT('NetsType_1.6')
 
+    apply_PC_to_RC('NetsType_1.4')
     #PC_data = pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')) 
     #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
     #stability_infomap(20, 100, 'NetsType_1.6')
