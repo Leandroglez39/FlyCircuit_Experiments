@@ -18,6 +18,7 @@ import itertools
 import concurrent.futures
 
 
+
 @dataclass
 class Matrix:
     """    
@@ -2254,8 +2255,11 @@ def evaluate_overlaping(net_path : str):
     folder_path_alg = f'output/{net_path}/'
 
     list_files = os.listdir(folder_path_gt)
+    list_files.sort(key=lambda f: int(re.sub(r'\D', '', f)))
     data_final = []
     
+    
+
     for file in list_files:
         nodes_gt = []
         nodes_alg = []
@@ -2306,37 +2310,98 @@ def analyze_overlaping(net_type : str):
 
     for i in range(1, 12):
 
-        nodes_gt_everlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
-        nodes_rc_everlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/{net_type}/network{i}_RC.txt'))
+        nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
+        nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/{net_type}/network{i}_RC.txt'))
+        
+        nodes_gt_overlaping = dict(sorted(nodes_gt_overlaping.items(), key=lambda x: x[0]))
 
+        nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
+
+        print(nodes_gt_overlaping)
+        print(nodes_rc_overlaping)
+
+        
+
+        match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
+
+        
         whiting_gt = pickle.load(open(f'output/{net_type}/within_GT_network{i}.pkl', 'rb'))
         whithing_rc = pickle.load(open(f'output/{net_type}/within_RC_network{i}.pkl', 'rb'))
 
-        pc_gt = pickle.load(open(f'dataset/{net_type}/network1/network{i}_GT_PC.pkl', 'rb'))
+        pc_gt = pickle.load(open(f'dataset/{net_type}/network{i}/network{i}_GT_PC.pkl', 'rb'))
         pc_rc = pickle.load(open(f'output/{net_type}/network{i}_RC_PC.pkl', 'rb'))
 
-        nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_everlaping.keys()}
-        nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_gt_everlaping.keys()}
+        nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_overlaping.keys()}
+        nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_rc_overlaping.keys()}
+        
+        nodes_id = list(range(1000))
 
+        nodes_whiting_gt_inf = {key: whiting_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        nodes_whiting_rc_inf = {key: whithing_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        
+        
+
+        # # Create a line plot of the first dictionary values
+        # plt.scatter(nodes_whiting_gt_inf.keys(), nodes_whiting_gt_inf.values(), label='GT', marker='^') # type: ignore
+
+        # # Create a line plot of the second dictionary values
+        # plt.scatter(nodes_whiting_rc_inf.keys(), nodes_whiting_rc_inf.values(), label='RC') # type: ignore
+
+        # # Set the plot title and axis labels
+        # plt.title('GT vs RC - Whiting in not overlaping nodes')
+        # plt.xlabel('Keys')
+        # plt.ylabel('Values')
+
+        # # Add a legend to the plot
+        # plt.legend()
+
+      
+
+        # gt_mean = np.mean(list(nodes_whiting_gt_inf.values())) # type: ignore
+        # rc_mean = np.mean(list(nodes_whiting_rc_inf.values())) # type: ignore
+        
+        # plt.axhline(y=gt_mean, color='b', linestyle='--')
+        # plt.axhline(y=rc_mean, color='orange')
+
+        # # Show the plot
+        # plt.show()
+        
+        
+
+        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_overlaping.keys()}
+        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys()}
+
+        nodes_pc_gt_inf = {key: pc_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        nodes_pc_rc_inf = {key: pc_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        
+        print(len(set(nodes_pc_rc_inf.keys())))
+        
+       
         # Create a line plot of the first dictionary values
-        plt.plot(nodes_whiting_gt.keys(), nodes_whiting_gt.values(), label='GT')
+        plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^') # type: ignore
 
         # Create a line plot of the second dictionary values
-        plt.plot(nodes_whiting_gt.keys(), nodes_whiting_rc.values(), label='RC')
+        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC') # type: ignore
+
+        #for node in match:
+        #    plt.axvline(x=node, ymin=nodes_pc_rc[node] , ymax=nodes_pc_gt[node], color='r')
 
         # Set the plot title and axis labels
-        plt.title('GT vs RC - Whiting in overlaping nodes')
+        plt.title('GT vs RC - PC in overlaping nodes')
         plt.xlabel('Keys')
         plt.ylabel('Values')
 
         # Add a legend to the plot
         plt.legend()
 
+        gt_mean = np.mean(list(nodes_pc_gt.values())) # type: ignore
+        rc_mean = np.mean(list(nodes_pc_rc.values())) # type: ignore
+        
+        plt.axhline(y=gt_mean, color='b', linestyle='--')
+        plt.axhline(y=rc_mean, color='orange')
+
         # Show the plot
         plt.show()
-        
-        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_everlaping.keys()}
-        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_everlaping.keys()}
 
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
@@ -2544,7 +2609,7 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
 
     analyze_overlaping('NetsType_1.4')
-
+    
     # datas = evaluate_overlaping('NetsType_1.4')
 
     #stability(4, 10, 'NetsType_1.6')
