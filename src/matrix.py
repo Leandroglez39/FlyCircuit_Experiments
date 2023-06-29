@@ -2603,6 +2603,21 @@ def apply_PC_to_RC(net_version: str):
             dict_node = m.participation_coefficient(communities)
             pickle.dump(dict_node, open(f'{folder_path}/{file[:-7]}_RC_PC.pkl', 'wb'))
 
+def increse_greedy_files(net_version: str):
+
+    folder_path = f'output/stability/{net_version}'
+
+    folder_list = os.listdir(folder_path)
+
+    for folder in folder_list:
+
+        for i in range(4):
+
+            communities = pickle.load(open(f'{folder_path}/{folder}/greedy_10_run_{i}.pkl', 'rb'))
+            for j in range(i*5, (i+1)*5):
+                pickle.dump(communities, open(f'{folder_path}/{folder}/greedy_100_run_{j}.pkl', 'wb'))
+
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -2610,6 +2625,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
+    increse_greedy_files('NetsType_1.6')
     #analyze_overlaping('NetsType_1.4')
     
     # datas = evaluate_overlaping('NetsType_1.4')
@@ -2624,7 +2640,7 @@ if __name__ == '__main__':
     #apply_PC_to_RC('NetsType_1.6')
     #PC_data = pickle.load(open('output/NetsType_1.4/network10_RC_PC.pkl', 'rb')) 
     #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
-    stability_infomap(20, 100, 'NetsType_1.6')
+    #stability_infomap(20, 100, 'NetsType_1.6')
 
     # FlyCircuit Region
 
