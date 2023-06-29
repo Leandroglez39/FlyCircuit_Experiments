@@ -2615,7 +2615,9 @@ def increse_greedy_files(net_version: str):
 
             communities = pickle.load(open(f'{folder_path}/{folder}/greedy_10_run_{i}.pkl', 'rb'))
             for j in range(i*5, (i+1)*5):
-                pickle.dump(communities, open(f'{folder_path}/{folder}/greedy_100_run_{j}.pkl', 'wb'))
+                file_path = f'{folder_path}/{folder}/greedy_100_run_{j}.pkl'
+                if not os.path.exists(file_path):
+                    pickle.dump(communities, open(file_path, 'wb'))
 
 
 if __name__ == '__main__':
