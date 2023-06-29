@@ -2338,34 +2338,34 @@ def stability(sequence : int, num_run : int, net_path : str):
         for seq in range(sequence):
             
 
-            print(f'async_lpa Algorithm running ' + str(seq) + f' times in {file}')
+            # print(f'async_lpa Algorithm running ' + str(seq) + f' times in {file}')
             
-            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-                communities = pool.starmap(lpa_wrapper, [(G, i) for i in range(num_run)])
-                communities = [[list(x) for x in com] for com in communities]                
-                os.makedirs(f'output/stability/{net_path}/{file}/', exist_ok=True)
-                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/async_lpa_{num_run}_run_{seq}.pkl', 'wb'))
-            print('async_lpa Algorithm finished')
+            # with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+            #     communities = pool.starmap(lpa_wrapper, [(G, i) for i in range(num_run)])
+            #     communities = [[list(x) for x in com] for com in communities]                
+            #     os.makedirs(f'output/stability/{net_path}/{file}/', exist_ok=True)
+            #     pickle.dump(communities, open(f'output/stability/{net_path}/{file}/async_lpa_{num_run}_run_{seq}.pkl', 'wb'))
+            # print('async_lpa Algorithm finished')
 
 
-            print(f'louvain Algorithm running ' + str(seq) + f' times in {file}')
-
-            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-                communities = pool.starmap(nx_comm.louvain_communities, [(G, 'weight', random.uniform(2, 3.5), 1e-07, i) for i in range(num_run)])
-                communities = [[list(x) for x in com] for com in communities]
-                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/louvain_{num_run}_run_{seq}.pkl', 'wb'))
-            print('louvain Algorithm finished')
-
-
-            # print(f'greedy Algorithm running ' + str(seq) + f' times in {file}')
+            # print(f'louvain Algorithm running ' + str(seq) + f' times in {file}')
 
             # with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-            #     communities = pool.starmap(nx_comm.greedy_modularity_communities, [(G, None ,random.uniform(3.5, 5.5), 1, None) for _ in range(int(num_run/1.5))])
+            #     communities = pool.starmap(nx_comm.louvain_communities, [(G, 'weight', random.uniform(2, 3.5), 1e-07, i) for i in range(num_run)])
             #     communities = [[list(x) for x in com] for com in communities]
-            
-            #     pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{seq}.pkl', 'wb'))
+            #     pickle.dump(communities, open(f'output/stability/{net_path}/{file}/louvain_{num_run}_run_{seq}.pkl', 'wb'))
+            # print('louvain Algorithm finished')
+
+
+            print(f'greedy Algorithm running ' + str(seq) + f' times in {file}')
+
+            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+                communities = pool.starmap(nx_comm.greedy_modularity_communities, [(G, None ,random.uniform(3.5, 5.5), 1, None) for _ in range(int(num_run/1.5))])
+                communities = [[list(x) for x in com] for com in communities]
+                os.makedirs(f'output/stability/{net_path}/{file}/', exist_ok=True)
+                pickle.dump(communities, open(f'output/stability/{net_path}/{file}/greedy_{num_run}_run_{seq}.pkl', 'wb'))
                             
-            # print(f'Greedy Algorithm finished')
+            print(f'Greedy Algorithm finished')
 
 import concurrent.futures
 
