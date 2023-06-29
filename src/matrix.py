@@ -15,7 +15,7 @@ import statistics
 import random
 import re
 import itertools  
-
+import concurrent.futures
 
 
 @dataclass
@@ -2292,7 +2292,51 @@ def evaluate_overlaping(net_path : str):
     return data_final
 
 
+def analyze_overlaping(net_type : str):
 
+    gt_files = os.listdir(f'dataset/{net_type}/GT/')
+    rc_files = os.listdir(f'output/{net_type}/')
+
+    rc_files = [file for file in rc_files if file.endswith('_RC.txt')]
+
+    gt_files.sort(key=lambda f: int(re.sub(r'\D', '', f))) 
+    rc_files.sort(key=lambda f: int(re.sub(r'\D', '', f)))
+
+    
+
+    for i in range(1, 12):
+
+        nodes_gt_everlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
+        nodes_rc_everlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/{net_type}/network{i}_RC.txt'))
+
+        whiting_gt = pickle.load(open(f'output/{net_type}/within_GT_network{i}.pkl', 'rb'))
+        whithing_rc = pickle.load(open(f'output/{net_type}/within_RC_network{i}.pkl', 'rb'))
+
+        pc_gt = pickle.load(open(f'dataset/{net_type}/network1/network{i}_GT_PC.pkl', 'rb'))
+        pc_rc = pickle.load(open(f'output/{net_type}/network{i}_RC_PC.pkl', 'rb'))
+
+        nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_everlaping.keys()}
+        nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_gt_everlaping.keys()}
+
+        # Create a line plot of the first dictionary values
+        plt.plot(nodes_whiting_gt.keys(), nodes_whiting_gt.values(), label='GT')
+
+        # Create a line plot of the second dictionary values
+        plt.plot(nodes_whiting_gt.keys(), nodes_whiting_rc.values(), label='RC')
+
+        # Set the plot title and axis labels
+        plt.title('GT vs RC - Whiting in overlaping nodes')
+        plt.xlabel('Keys')
+        plt.ylabel('Values')
+
+        # Add a legend to the plot
+        plt.legend()
+
+        # Show the plot
+        plt.show()
+        
+        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_everlaping.keys()}
+        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_everlaping.keys()}
 
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
@@ -2367,7 +2411,7 @@ def stability(sequence : int, num_run : int, net_path : str):
                             
             print(f'Greedy Algorithm finished')
 
-import concurrent.futures
+
 
 def stability_infomap(sequence : int, num_run : int, net_path : str):
     from cdlib import algorithms # type: ignore Only necesary with cdlib environment #TODO
@@ -2442,7 +2486,8 @@ def read_communities_from_dat(path : str) -> list[list[int]]:
         lines = f.readlines()
         for line in lines:
             data = line.split(' ')
-            data.remove('\n')
+            if data[-1] == '\n':
+                data.remove('\n')
             inter_data = [int(x) for x in data]
             communities.append(inter_data)
     return communities
@@ -2497,7 +2542,9 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
-    
+
+    analyze_overlaping('NetsType_1.4')
+
     # datas = evaluate_overlaping('NetsType_1.4')
 
     #stability(4, 10, 'NetsType_1.6')
@@ -2507,7 +2554,7 @@ if __name__ == '__main__':
     #apply_PC_to_GT('NetsType_1.6')
 
     
-    apply_PC_to_RC('NetsType_1.6')
+    #apply_PC_to_RC('NetsType_1.6')
     #PC_data = pickle.load(open('output/NetsType_1.4/network10_RC_PC.pkl', 'rb')) 
     #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
     #stability_infomap(20, 100, 'NetsType_1.6')
