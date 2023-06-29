@@ -2476,7 +2476,7 @@ if __name__ == '__main__':
     
     # datas = evaluate_overlaping('NetsType_1.4')
 
-    stability(20, 100, 'NetsType_1.6')
+    stability(4, 10, 'NetsType_1.6')
 
     #run_RC_sequences(1, 'NetsType_1.4', 100)
     
@@ -2484,7 +2484,7 @@ if __name__ == '__main__':
 
     #PC_data = pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')) 
     #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
-    #stability_infomap(20, 1000, 'NetsType_1.4')
+    #stability_infomap(20, 100, 'NetsType_1.6')
 
     # FlyCircuit Region
 
