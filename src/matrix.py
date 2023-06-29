@@ -2488,6 +2488,8 @@ def stability_infomap(sequence : int, num_run : int, net_path : str):
     files.remove('README.txt')
 
     for file in files:
+        if file == 'network1' or file == 'network2':
+            continue
         G = pickle.load(open(f'{folder_path_gt}/{file}/{file}.pkl', 'rb'))        
 
         for seq in range(sequence):
@@ -2608,7 +2610,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    analyze_overlaping('NetsType_1.4')
+    #analyze_overlaping('NetsType_1.4')
     
     # datas = evaluate_overlaping('NetsType_1.4')
 
@@ -2622,7 +2624,7 @@ if __name__ == '__main__':
     #apply_PC_to_RC('NetsType_1.6')
     #PC_data = pickle.load(open('output/NetsType_1.4/network10_RC_PC.pkl', 'rb')) 
     #print(sorted(PC_data.items(), key=lambda x: x[1], reverse=True)[-10:-1])
-    #stability_infomap(20, 100, 'NetsType_1.6')
+    stability_infomap(20, 100, 'NetsType_1.6')
 
     # FlyCircuit Region
 
