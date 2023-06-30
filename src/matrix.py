@@ -2290,6 +2290,7 @@ def evaluate_overlaping(net_path : str):
 
 
             result = compare_overlapings(list_nodes_overlaping_gt, list_nodes_overlaping_rc)
+            
             data_final.append(result)
     
     
@@ -2317,27 +2318,26 @@ def analyze_overlaping(net_type : str):
 
         nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
 
-        print(nodes_gt_overlaping)
-        print(nodes_rc_overlaping)
+        
 
         
 
         match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
 
         
-        whiting_gt = pickle.load(open(f'output/{net_type}/within_GT_network{i}.pkl', 'rb'))
-        whithing_rc = pickle.load(open(f'output/{net_type}/within_RC_network{i}.pkl', 'rb'))
+        #whiting_gt = pickle.load(open(f'output/{net_type}/within_GT_network{i}.pkl', 'rb'))
+        #whithing_rc = pickle.load(open(f'output/{net_type}/within_RC_network{i}.pkl', 'rb'))
 
         pc_gt = pickle.load(open(f'dataset/{net_type}/network{i}/network{i}_GT_PC.pkl', 'rb'))
         pc_rc = pickle.load(open(f'output/{net_type}/network{i}_RC_PC.pkl', 'rb'))
 
-        nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_overlaping.keys()}
-        nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_rc_overlaping.keys()}
+        #nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_overlaping.keys()}
+        #nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_rc_overlaping.keys()}
         
         nodes_id = list(range(1000))
 
-        nodes_whiting_gt_inf = {key: whiting_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
-        nodes_whiting_rc_inf = {key: whithing_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        #nodes_whiting_gt_inf = {key: whiting_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        #nodes_whiting_rc_inf = {key: whithing_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
         
         
 
@@ -2368,41 +2368,68 @@ def analyze_overlaping(net_type : str):
         
         
 
-        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_overlaping.keys()}
-        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys()}
+        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_overlaping.keys() if key not in match}
+        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key not in match}
 
-        nodes_pc_gt_inf = {key: pc_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
-        nodes_pc_rc_inf = {key: pc_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        nodes_pc_gt_match = {key: pc_gt[key] for key in nodes_gt_overlaping.keys() if key in match}
+        nodes_pc_rc_match = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key in match}
+
+        #nodes_pc_gt_inf = {key: pc_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        #nodes_pc_rc_inf = {key: pc_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
         
-        print(len(set(nodes_pc_rc_inf.keys())))
-        
+               
        
-        # Create a line plot of the first dictionary values
-        plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^') # type: ignore
+        # Create a dot plot of the GT overlaping nodes but without match with RC values
+        plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^', c= 'orange') # type: ignore
 
-        # Create a line plot of the second dictionary values
-        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC') # type: ignore
+        # Create a dot plot of the RC overlaping nodes but without match with GT values
+        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC', marker='s', c='blue') # type: ignore
+
+        # Create a dot plot of the GT overlaping nodes with only match with RC values
+        plt.scatter(nodes_pc_gt_match.keys(), nodes_pc_gt_match.values(), label='GT Match', marker='^', c= 'red') # type: ignore
+
+        # Create a dot plot of the RC overlaping nodes with only match with GT values
+        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='RC Match', marker='s', c='red') # type: ignore
 
         #for node in match:
         #    plt.axvline(x=node, ymin=nodes_pc_rc[node] , ymax=nodes_pc_gt[node], color='r')
 
         # Set the plot title and axis labels
         plt.title('GT vs RC - PC in overlaping nodes')
-        plt.xlabel('Keys')
-        plt.ylabel('Values')
+        plt.xlabel('Nodes')
+        plt.ylabel('PC Values')
+
+        
+
+        gt_mean_values = list(nodes_pc_gt.values())
+        rc_mean_values = list(nodes_pc_rc.values())
+        gt_mean_values.extend(list(nodes_pc_gt_match.values()))
+        rc_mean_values.extend(list(nodes_pc_rc_match.values()))
+
+        gt_mean = np.mean(gt_mean_values) # type: ignore
+        rc_mean = np.mean(rc_mean_values) # type: ignore
+        
+        plt.axhline(y=gt_mean, color='b', linestyle='--', label='GT Mean') # type: ignore
+        plt.axhline(y=rc_mean, color='orange', label='RC Mean') # type: ignore
 
         # Add a legend to the plot
         plt.legend()
 
-        gt_mean = np.mean(list(nodes_pc_gt.values())) # type: ignore
-        rc_mean = np.mean(list(nodes_pc_rc.values())) # type: ignore
-        
-        plt.axhline(y=gt_mean, color='b', linestyle='--')
-        plt.axhline(y=rc_mean, color='orange')
-
         # Show the plot
-        plt.show()
+        #plt.show()
 
+        if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
+            with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
+                f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
+
+        with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
+            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+
+        if not os.path.exists(f'output/{net_type}/img'):
+            os.makedirs(f'output/{net_type}/img')
+        
+        #plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
+        plt.close()
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
     from collections import Counter
@@ -2513,6 +2540,8 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
 
     folder_path = f'output/stability/{folder_version}'
     
+    max_iter = 1000 if folder_version == 'NetType_1.6' else 100
+
     folder_list = os.listdir(folder_path)
     for net in folder_list:
         
@@ -2627,11 +2656,10 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    increse_greedy_files('NetsType_1.6')
-    #analyze_overlaping('NetsType_1.4')
     
-    # datas = evaluate_overlaping('NetsType_1.4')
-
+    analyze_overlaping('NetsType_1.4')
+    
+    
     #stability(4, 10, 'NetsType_1.6')
 
     #run_RC_sequences(1, 'NetsType_1.4', 100)
