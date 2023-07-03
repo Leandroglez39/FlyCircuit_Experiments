@@ -2316,11 +2316,7 @@ def analyze_overlaping(net_type : str):
         
         nodes_gt_overlaping = dict(sorted(nodes_gt_overlaping.items(), key=lambda x: x[0]))
 
-        nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
-
-        
-
-        
+        nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0])) 
 
         match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
 
@@ -2418,17 +2414,17 @@ def analyze_overlaping(net_type : str):
         # Show the plot
         #plt.show()
 
-        if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
-            with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
-                f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
+        # if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
+        #     with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
+        #         f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
 
-        with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
-            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+        # with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
+        #     f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
 
         if not os.path.exists(f'output/{net_type}/img'):
             os.makedirs(f'output/{net_type}/img')
         
-        #plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
+        plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
         plt.close()
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
@@ -2657,7 +2653,7 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
 
     
-    analyze_overlaping('NetsType_1.4')
+    analyze_overlaping('NetsType_1.6')
     
     
     #stability(4, 10, 'NetsType_1.6')
