@@ -2656,7 +2656,7 @@ def evaluate_stability(net_version: str, num_iter: int):
 
     folder_list = os.listdir(folder_path)
 
-    iter_list = [10, 100, 1000] if net_version == 'NetType_1.4' else [10, 50, 100]
+    iter_list = [10, 100, 1000] if net_version == 'NetsType_1.4' else [10, 50, 100]
     
     m = Matrix([], {},[])
     
