@@ -2662,6 +2662,8 @@ def evaluate_stability(net_version: str, num_iter: int):
     
     for folder in folder_list:
 
+        parms = []
+
         for i in range(20):
 
             all_communities = []
@@ -2674,7 +2676,16 @@ def evaluate_stability(net_version: str, num_iter: int):
             m.G = pickle.load(open(f'dataset/{net_version}/{folder}/{folder}.pkl', 'rb'))
 
 
-    
+            for iter in iter_list:
+                comunities_subset = []
+                for j in range(4):
+                    index = j * num_iter
+                    comunities_subset.extend(all_communities[index:(index + iter)])
+                     
+                
+                value = m.RoughClustering(communities=comunities_subset)
+                m.export_RC(f'stability/{net_version}/{folder}/', f'{folder}_RC_{iter}_run_{i}.txt', value)
+            
 
 
 if __name__ == '__main__':
@@ -2688,7 +2699,7 @@ if __name__ == '__main__':
     
 
   
-
+    evaluate_stability('NetsType_1.4', 1000)
         
     #stability(4, 10, 'NetsType_1.6')
 
