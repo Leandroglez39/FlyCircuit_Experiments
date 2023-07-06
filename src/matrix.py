@@ -2648,6 +2648,34 @@ def increse_greedy_files(net_version: str):
                 if not os.path.exists(file_path):
                     pickle.dump(communities, open(file_path, 'wb'))
 
+def evaluate_stability(net_version: str, num_iter: int):
+
+    algorithms_names = ['louvain', 'infomap', 'greedy', 'async_lpa']
+
+    folder_path = f'output/stability/{net_version}'
+
+    folder_list = os.listdir(folder_path)
+
+    iter_list = [10, 100, 1000] if net_version == 'NetType_1.4' else [10, 50, 100]
+    
+    m = Matrix([], {},[])
+    
+    for folder in folder_list:
+
+        for i in range(20):
+
+            all_communities = []
+
+            for algorithm in algorithms_names:
+                communities = pickle.load(open(f'{folder_path}/{folder}/{algorithm}_{num_iter}_run_{i}.pkl', 'rb'))
+                all_communities.extend(communities)
+
+            
+            m.G = pickle.load(open(f'dataset/{net_version}/{folder}/{folder}.pkl', 'rb'))
+
+
+    
+
 
 if __name__ == '__main__':
 
@@ -2656,10 +2684,12 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
+    #analyze_overlaping('NetsType_1.4')
     
-    analyze_overlaping('NetsType_1.4')
-    
-    
+
+  
+
+        
     #stability(4, 10, 'NetsType_1.6')
 
     #run_RC_sequences(1, 'NetsType_1.4', 100)

@@ -281,11 +281,11 @@ if __name__ == "__main__":
     # create Data Structure
     m = Matrix([], {},[])
     # run Algorithm simple
-    runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
+    #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    # drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
 
-    G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
+    #G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
 
     # result = nx.algorithms.community.louvain.louvain_communities(G, seed=random.randint(0, 10000), resolution=random.uniform(2,3.5)) # type: ignore
 
@@ -293,24 +293,24 @@ if __name__ == "__main__":
 
     # pickle.dump(communities, open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'wb'))
 
-    from cdlib import evaluation, NodeClustering
+    # from cdlib import evaluation, NodeClustering
 
-    communities = pickle.load(open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'rb'))
+    # communities = pickle.load(open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'rb'))
 
 
 
-    nodes= []
+    # nodes= []
 
-    with open('dataset/' + 'NetsType_1.6' + '/GT/community' + '10' + '_GT.dat', 'r') as f:
-                lines = f.readlines()        
-                for line in lines:
-                    data = line.split(' ')
-                    inter_data = [int(x) for x in data]
-                    nodes.append(inter_data)
+    # with open('dataset/' + 'NetsType_1.6' + '/GT/community' + '10' + '_GT.dat', 'r') as f:
+    #             lines = f.readlines()        
+    #             for line in lines:
+    #                 data = line.split(' ')
+    #                 inter_data = [int(x) for x in data]
+    #                 nodes.append(inter_data)
 
-    nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
-    nodeClustB = NodeClustering(communities=communities, graph=G, method_name='Louvain', method_parameters={}, overlap=True)
+    # nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    # nodeClustB = NodeClustering(communities=communities, graph=G, method_name='Louvain', method_parameters={}, overlap=True)
 
-    match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+    # match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
 
-    print(match_resoult)
+    # print(match_resoult)
