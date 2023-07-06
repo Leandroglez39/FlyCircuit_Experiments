@@ -16,6 +16,7 @@ import random
 import re
 import itertools  
 import concurrent.futures
+import asyncio
 
 
 
@@ -2662,8 +2663,7 @@ def evaluate_stability(net_version: str, num_iter: int):
     
     for folder in folder_list:
 
-        parms = []
-
+        
         for i in range(20):
 
             all_communities = []
@@ -2686,7 +2686,44 @@ def evaluate_stability(net_version: str, num_iter: int):
                 value = m.RoughClustering(communities=comunities_subset)
                 m.export_RC(f'stability/{net_version}/{folder}/', f'{folder}_RC_{iter}_run_{i}.txt', value)
             
+async def process_folder(net_version: str, num_iter: int, folder: str, algorithms_names: list[str], folder_path: str, iter_list: list[int]):
 
+    m = Matrix([], {},[])
+
+    for i in range(20):
+
+            all_communities = []
+
+            for algorithm in algorithms_names:
+                communities = pickle.load(open(f'{folder_path}/{folder}/{algorithm}_{num_iter}_run_{i}.pkl', 'rb'))
+                all_communities.extend(communities)
+
+            
+            m.G = pickle.load(open(f'dataset/{net_version}/{folder}/{folder}.pkl', 'rb'))
+
+
+            for iter in iter_list:
+                comunities_subset = []
+                for j in range(4):
+                    index = j * num_iter
+                    comunities_subset.extend(all_communities[index:(index + iter)])
+                     
+                
+                value = m.RoughClustering(communities=comunities_subset)
+                m.export_RC(f'stability/{net_version}/{folder}/', f'{folder}_RC_{iter}_run_{i}.txt', value)
+        
+async def evaluate_stability_parallel(net_version: str, num_iter: int):
+
+    algorithms_names = ['louvain', 'infomap', 'greedy', 'async_lpa']
+
+    folder_path = f'output/stability/{net_version}'
+
+    folder_list = os.listdir(folder_path)
+
+    iter_list = [10, 100, 1000] if net_version == 'NetsType_1.4' else [10, 50, 100]
+
+    with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+        await asyncio.gather(*[asyncio.to_thread(pool.starmap, (process_folder, [(net_version, num_iter, folder, algorithms_names, folder_path, iter_list)])) for folder in folder_list]) # type: ignore
 
 if __name__ == '__main__':
 
