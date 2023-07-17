@@ -275,6 +275,86 @@ def drawResultAlgorithm(folderpath, nameFile):
     plt.legend()
     plt.show()
 
+
+def drawStability(folder_version: str):
+
+    df = pd.read_csv('output/stability/NetsType_1.4/nmi_stability.csv', header=0)
+
+    nets = df['Network'].unique()
+
+    df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
+    
+    for network in df['Network'].unique():
+        network_data = df[df['Network'] == network]
+        for algorithm in network_data['Algorithm'].unique():
+            algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+            plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm)
+        plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + network)
+        plt.xlabel('Iterations')
+        plt.ylabel('NMI Accuracy')
+        plt.xticks(algorithm_data['Iterations'].unique())
+        plt.legend()
+        plt.show()
+    
+
+def drawStability2(folder_version: str):
+
+    df = pd.read_csv('output/stability/NetsType_1.4/nmi_stability.csv', header=0)
+
+    nets = df['Network'].unique()
+
+    df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
+
+    
+    df.loc[df['Iterations'] == 10, 'Iterations'] = 1
+    df.loc[df['Iterations'] == 100, 'Iterations'] = 2
+    df.loc[df['Iterations'] == 1000, 'Iterations'] = 3
+
+    print(df)
+
+    labels = ["10", "100", '1000']
+
+    
+    
+    for network in df['Network'].unique():
+        network_data = df[df['Network'] == network]
+        markers = ['o', 's', '^', 'p', '*'] # list of markers to use
+        for marker, algorithm in zip(markers, network_data['Algorithm'].unique()):
+            algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+            plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
+        plt.title(f'Run Algorithms and NMI accuracy in {network} for {folder_version}')
+        plt.xlabel('Iterations')
+        plt.ylabel('NMI Accuracy')
+        plt.yticks(np.arange(0, 1.2, 0.2))
+        plt.xticks([1,2,3], labels)
+        plt.legend()
+        plt.show()
+    
+        
+
+    # df = df[df['Network'] == 'network10']
+    # df1 = df[df['Algorithm'] == 'async_lpa']
+    # plt.scatter(df1['Iterations'], df1['NMI'], label='async_lpa', color='blue', marker='o')  # type: ignore
+    # df2 = df[df['Algorithm'] == 'RC']
+    # plt.scatter(df2['Iterations'], df2['NMI'], label='RC', color='red', marker='s') # type: ignore
+    # plt.title(f'Run Algorithms and NMI accuracy in network1 NetsType_1.4')
+    # plt.xlabel('Iterations')
+    # plt.ylabel('NMI Accuracy')
+    # plt.yticks(np.arange(0, 1.2, 0.2))
+    # plt.xticks([1,2,3], labels)
+    # #plt.legend()
+    # plt.show()
+
+    # for network in df['Network'].unique():
+    #     network_data = df[df['Network'] == network]
+    #     for algorithm in network_data['Algorithm'].unique():
+    #         algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+    #         plt.boxplot([algorithm_data[algorithm_data['Iterations'] == label]['NMI'] for label in labels], labels=labels, patch_artist=True)
+    #     plt.title(f'Run Algorithms and NMI accuracy in {network} NetsType_1.4')
+    #     plt.xlabel('Iterations')
+    #     plt.ylabel('NMI Accuracy')
+    #     #plt.legend()
+    #     plt.show()
    
 if __name__ == "__main__":
 
@@ -283,7 +363,11 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    #drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    
+    #drawStability('NetsType_1.4')
+
+    drawStability2('NetsType_1.4')
 
     #G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
 
