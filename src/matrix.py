@@ -2734,9 +2734,14 @@ if __name__ == '__main__':
 
     #analyze_overlaping('NetsType_1.4')
     
+    m.G = pickle.load(open('dataset/NetsType_1.6/network11/network11.pkl', 'rb'))
 
-  
-    evaluate_stability('NetsType_1.4', 1000)
+    runs = pickle.load(open('output/stability/NetsType_1.6/network11/infomap_100_run_6.pkl', 'rb'))
+    
+    a = nx.algorithms.community.quality.modularity(m.G, runs[0])
+
+    print(a)
+    #evaluate_stability('NetsType_1.4', 1000)
         
     #stability(4, 10, 'NetsType_1.6')
 
