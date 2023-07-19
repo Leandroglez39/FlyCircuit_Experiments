@@ -3025,8 +3025,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    analyze_overlaping('NetsType_1.6')
-    analyze_overlaping('NetsType_1.4')
+    data = pickle.load(open('output/NetsType_1.6/network1_RC_PC.pkl', 'rb'))
+
+    print(sorted(data.items(), key=lambda x: x[1], reverse=True))
 
     
 
