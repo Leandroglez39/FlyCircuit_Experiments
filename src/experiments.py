@@ -274,28 +274,7 @@ def drawResultAlgorithm(folderpath, nameFile):
     plt.ylabel('NMI Accuracy')
     plt.legend()
     plt.show()
-
-
-def drawStability(folder_version: str):
-
-    df = pd.read_csv('output/stability/NetsType_1.4/nmi_stability.csv', header=0)
-
-    nets = df['Network'].unique()
-
-    df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
-    
-    for network in df['Network'].unique():
-        network_data = df[df['Network'] == network]
-        for algorithm in network_data['Algorithm'].unique():
-            algorithm_data = network_data[network_data['Algorithm'] == algorithm]
-            plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm)
-        plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + network)
-        plt.xlabel('Iterations')
-        plt.ylabel('NMI Accuracy')
-        plt.xticks(algorithm_data['Iterations'].unique())
-        plt.legend()
-        plt.show()
-    
+  
 
 def drawStability2(folder_version: str):
 
