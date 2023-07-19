@@ -2313,7 +2313,7 @@ def analyze_overlaping(net_type : str):
 
     
 
-    for i in range(1, 12):
+    for i in range(5, 6):
 
         nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
         nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/{net_type}/network{i}_RC.txt'))
@@ -2412,21 +2412,22 @@ def analyze_overlaping(net_type : str):
         gt_mean = np.mean(gt_mean_values) # type: ignore
         rc_mean = np.mean(rc_mean_values) # type: ignore
         
-        plt.axhline(y=gt_mean, color='b', linestyle='--', label='GT Mean') # type: ignore
-        plt.axhline(y=rc_mean, color='orange', label='RC Mean') # type: ignore
+        plt.axhline(y=gt_mean, color='orange', linestyle='--', label='GT Mean') # type: ignore
+        plt.axhline(y=rc_mean, color='b', label='RC Mean') # type: ignore
 
         # Add a legend to the plot
         plt.legend()
 
         # Show the plot
-        #plt.show()
+        #plt.gcf().set_size_inches(20, 11.25)
+        plt.show()
 
-        if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
-            with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
-                f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
+        # if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
+        #     with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
+        #         f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
 
-        with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
-            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+        # with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
+        #     f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
 
         if not os.path.exists(f'output/{net_type}/img'):
             os.makedirs(f'output/{net_type}/img')
@@ -3024,7 +3025,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    #analyze_overlaping('NetsType_1.4')
+    analyze_overlaping('NetsType_1.6')
+
+    
 
     # for i in range(1,12):
 
@@ -3063,7 +3066,7 @@ if __name__ == '__main__':
     
     #apply_PC_to_GT('NetsType_1.6')
 
-    apply_PC_to_RC('NetsType_1.4')
+    #apply_PC_to_RC('NetsType_1.6')
 
 
     
