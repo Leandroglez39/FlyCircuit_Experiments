@@ -686,7 +686,7 @@ class Matrix:
             
             print('core_number added')
         
-    def participation_coefficient(self, communities: list):
+    def participation_coefficient(self, communities: list, overlaping=False):
 
         '''
         This function is for calculate the participation coefficient of a community.
@@ -707,10 +707,14 @@ class Matrix:
         start_time = datetime.datetime.now()
 
         count = 0
+
+        max_overlap = 0
         
         for node in self.G.nodes():
 
             k_i = self.G.degree(nbunch=node) # type: ignore
+
+            k_i = k_i if not overlaping else k_i * max_overlap
 
             suma = 0
             
@@ -758,7 +762,7 @@ class Matrix:
             self.G.nodes[node][measure] = dict[node]
     
 
-    def RoughClustering(self, communities: list):
+    def RoughClustering(self, communities: list, gamma: float = 0.8):
 
         '''
         This function is for calculate the rough clustering of a community list.
@@ -892,7 +896,6 @@ class Matrix:
             #print(grj1.nodes())
             T = []
 
-            gamma = 0.8
 
             for i in range(len(similarity_values_normalized)):
                 if  max_similarity_index != i and similarity_values_normalized[i] >= gamma:
@@ -1995,7 +1998,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
         
 
-def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1'):
+def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8):
 
     all_iterations = []
     
@@ -2046,7 +2049,7 @@ def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1'):
             all_iterations.extend(infomap_results) # type: ignore
             print('Infomap Algorithm finished')
 
-            value = m.RoughClustering(communities=all_iterations)
+            value = m.RoughClustering(communities=all_iterations, gamma=gamma)
 
             all_iterations = []
 
@@ -2534,7 +2537,7 @@ def stability_infomap(sequence : int, num_run : int, net_path : str):
             
             print('Infomap Algorithm finished')
 
-def run_RC_sequences(sequence : int, folder_version: str, r: int):
+def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
     
     m = Matrix([], {},[])
 
@@ -2543,6 +2546,9 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
     max_iter = 1000 if folder_version == 'NetType_1.6' else 100
 
     folder_list = os.listdir(folder_path)
+
+    folder_list = ['network1', 'network11']
+
     for net in folder_list:
         
         m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
@@ -2552,26 +2558,26 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int):
             all_communities = []
             
             greedy_communities = pickle.load(open(f'{folder_path}/{net}/greedy_{r}_run_{0}.pkl', 'rb'))
-            all_communities.extend(greedy_communities)
+            all_communities.extend(greedy_communities[:10])
 
             louvain_communities = pickle.load(open(f'{folder_path}/{net}/louvain_{r}_run_{i}.pkl', 'rb'))
             louvain_communities = [list(x) for x in louvain_communities] # type: ignore
-            all_communities.extend(louvain_communities)
+            all_communities.extend(louvain_communities[:10])
 
             async_lpa_communities = pickle.load(open(f'{folder_path}/{net}/async_lpa_{r}_run_{i}.pkl', 'rb'))
             async_lpa_communities = [list(x) for x in async_lpa_communities] # type: ignore
-            all_communities.extend(async_lpa_communities)
+            all_communities.extend(async_lpa_communities[:10])
 
             infomap_communities = pickle.load(open(f'{folder_path}/{net}/infomap_{r}_run_{i}.pkl', 'rb'))
-            all_communities.extend(infomap_communities)
+            all_communities.extend(infomap_communities[:10])
 
                     
-            value = m.RoughClustering(communities=all_communities)
+            value = m.RoughClustering(communities=all_communities, gamma=gamma)
 
             all_communities = []
 
 
-            exportpath_RC = f'{net}_RC.txt'
+            exportpath_RC = f'{net}_RC_gamma.txt'
 
             m.export_RC(f'stability/{folder_version}/{net}/', exportpath_RC, value)
 
@@ -2985,6 +2991,12 @@ def wrapper_nmi_stability(nodeClustA, nodeClustB, file: str, algorithm: str, i: 
 
     return (value.score, file, algorithm, i, index, iter)           
 
+def max_overlaping_number(communities: list) -> int :
+    '''
+        This method calculate
+    '''
+
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -2994,29 +3006,39 @@ if __name__ == '__main__':
 
     #analyze_overlaping('NetsType_1.4')
 
-    i = 8
+    # for i in range(1,12):
 
-    nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{i}_GT.dat'))
+    #     nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{i}_GT.dat'))
 
-    nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/NetsType_1.6/network{i}_RC.txt'))
-    
-    nodes_gt_overlaping = dict(sorted(nodes_gt_overlaping.items(), key=lambda x: x[0]))
+    #     nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/NetsType_1.6/network{i}_RC.txt'))
 
-    nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
+    #     nodes_gt_overlaping = dict(sorted(nodes_gt_overlaping.items(), key=lambda x: x[0]))
 
-    pc_rc = pickle.load(open(f'output/NetsType_1.6/network{i}_RC_PC.pkl', 'rb'))      
+    #     nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
 
-    match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))   
+    #     pc_rc = pickle.load(open(f'output/NetsType_1.6/network{i}_RC_PC.pkl', 'rb'))      
 
-    nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key not in match}
+    #     match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))   
 
-    print(dict((key, nodes_rc_overlaping[key]) for key in nodes_pc_rc.keys()))
+    #     nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key not in match}
+
+    #     print(dict((key, nodes_rc_overlaping[key]) for key in nodes_pc_rc.keys() if nodes_rc_overlaping[key] > 2))
+
+        #print(dict((key, nodes_rc_overlaping[key]) for key in nodes_rc_overlaping.keys() if nodes_rc_overlaping[key] > 2))
 
     #evaluate_stability('NetsType_1.4', 1000)
         
     #stability(4, 10, 'NetsType_1.6')
 
-    #run_RC_sequences(1, 'NetsType_1.4', 100)
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.6)
+
+    nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/stability/NetsType_1.6/network11/network11_RC_gamma.txt'))
+
+    nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{11}_GT.dat'))
+
+    match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
+
+    print(len(match))
     
     #apply_PC_to_GT('NetsType_1.6')
 
@@ -3050,7 +3072,7 @@ if __name__ == '__main__':
 
     #runAlgorithmSimple(m, folder_version='NetsType_1.6')
     
-    # runRoughClustering('NetsType_1.6')
+    
     # nmi_overlapping_evaluate('NetsType_1.1')
     #nmi_overlapping_evaluateTunning('NetsType_1.6')
 
