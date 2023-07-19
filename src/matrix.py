@@ -3026,7 +3026,7 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
 
     analyze_overlaping('NetsType_1.6')
-    
+    analyze_overlaping('NetsType_1.4')
 
     
     # for i in range(1,12):
