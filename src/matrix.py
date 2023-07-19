@@ -2424,7 +2424,7 @@ def analyze_overlaping(net_type : str):
 
         if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
             with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
-                f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
+                f.write(f'Net,PC_Mean_GT, PC_Mean_RC,T_Possitive,F_Possitive \n')
 
         with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
             f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
