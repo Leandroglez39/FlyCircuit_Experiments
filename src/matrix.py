@@ -744,64 +744,7 @@ class Matrix:
             data_nodes[node] = 1 - suma
 
         return data_nodes
-
-    def participation_coefficient2(self, communities: list, overlaping=False):
-
-        '''
-        This function is for calculate the participation coefficient of a community.
-
-        Parameters
-        ----------        
-        communities : list
-            A list of comunities.
-
-        Returns
-        -------
-        result : dict
-            The participation coefficient of every node.
-        '''
-
-        data_nodes = {}
-
-        start_time = datetime.datetime.now()
-
-        count = 0
-
-        for node in self.G.nodes():
-
-            k_i = self.G.degree(nbunch=node) # type: ignore
-
-            visited = np.zeros(len(self.G.nodes()), dtype=bool)
-            visited[node] = True
-
-            suma = 0
-
-            neighbors = np.array(list(nx.neighbors(self.G, node))) # type: ignore
-
-            for community in communities:
-
-                k_i_s = np.zeros(len(self.G.nodes()), dtype=bool)
-
-                for n in neighbors:
-                    count += 1
-                    if count == 10000000:
-                        print('10M operations calculated in participation coefficient')
-                        print('Time for 10M operations: ' + str(datetime.datetime.now() - start_time))
-                        count = 0
-                        start_time = datetime.datetime.now()
-
-                    if n in community:
-                        if not visited[n]:
-                            k_i_s[n] = True
-                            visited[n] = True
-
-                suma += (k_i_s.sum() / k_i) ** 2 # type: ignore
-
-            data_nodes[node] = 1 - suma
-
-        return data_nodes
-
-
+    
     def insert_measure_dict(self, measure: str, dict: dict):
 
         '''
@@ -3082,34 +3025,10 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    # data = pickle.load(open('output/NetsType_1.6/network1_RC_PC.pkl', 'rb'))
-
-    # print(sorted(data.items(), key=lambda x: x[1], reverse=True))
-
-    communities = pickle.load(open('output/stability/NetsType_1.6/network11/greedy_100_run_18.pkl', 'rb'))[0]
+    analyze_overlaping('NetsType_1.6')
     
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
 
-    m.G = pickle.load(open(f'dataset/NetsType_1.6/network11/network11.pkl', 'rb'))
-
-    data1 = m.participation_coefficient(communities, overlaping=True)
-
-    end_time = datetime.datetime.now()
-    real_time = end_time - start_time
-    print(f'Elapsed time: {real_time} for pc1')
-
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
-
-    data2 = m.participation_coefficient2(communities, overlaping=True)
-
-    end_time = datetime.datetime.now()
-    real_time = end_time - start_time
-    print(f'Elapsed time: {real_time} for pc2')
-
-    print(data1 == data2)
-    print(len(data1))
+    
     # for i in range(1,12):
 
     #     nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{i}_GT.dat'))
