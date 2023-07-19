@@ -708,7 +708,7 @@ class Matrix:
 
         count = 0
 
-        max_overlap = 0
+        max_overlap = max_overlapping_number(communities)
         
         for node in self.G.nodes():
 
@@ -2620,7 +2620,7 @@ def apply_PC_to_GT(net_version : str):
                     inter_data = [int(x) for x in data]
                     communities.append(inter_data)
 
-        dict_node = m.participation_coefficient(communities)
+        dict_node = m.participation_coefficient(communities, overlaping=True)
 
         pickle.dump(dict_node, open(f'dataset/{net_version}/{net}/{net}_GT_PC.pkl', 'wb'))
 
@@ -2635,7 +2635,7 @@ def apply_PC_to_RC(net_version: str):
         if file.endswith('_RC.txt'):
             m.G = pickle.load(open(f'dataset/{net_version}/{file[:-7]}/{file[:-7]}.pkl', 'rb'))
             communities = read_communities_from_dat(f'{folder_path}/{file}')
-            dict_node = m.participation_coefficient(communities)
+            dict_node = m.participation_coefficient(communities, overlaping=True)
             pickle.dump(dict_node, open(f'{folder_path}/{file[:-7]}_RC_PC.pkl', 'wb'))
 
 def increse_greedy_files(net_version: str):
@@ -3060,12 +3060,10 @@ if __name__ == '__main__':
 
     # print(len(match))
 
-    data = read_communities_from_dat(f'dataset/NetsType_1.6/GT/community11_GT.dat')
-
-    print(max_overlapping_number(data))
     
-    #apply_PC_to_GT('NetsType_1.6')
+    apply_PC_to_GT('NetsType_1.4')
 
+    print(pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')))
     
     #apply_PC_to_RC('NetsType_1.6')
     #PC_data = pickle.load(open('output/NetsType_1.4/network10_RC_PC.pkl', 'rb')) 
