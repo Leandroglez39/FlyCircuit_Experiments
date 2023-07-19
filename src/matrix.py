@@ -2313,7 +2313,7 @@ def analyze_overlaping(net_type : str):
 
     
 
-    for i in range(5, 6):
+    for i in range(1, 12):
 
         nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
         nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/{net_type}/network{i}_RC.txt'))
@@ -2420,19 +2420,19 @@ def analyze_overlaping(net_type : str):
 
         # Show the plot
         #plt.gcf().set_size_inches(20, 11.25)
-        plt.show()
+        #plt.show()
 
-        # if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
-        #     with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
-        #         f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
+        if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
+            with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
+                f.write(f'Net,PC_Mean_GT, PC_Mean_GT,T_Possitive,F_Possitive \n')
 
-        # with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
-        #     f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+        with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
+            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
 
         if not os.path.exists(f'output/{net_type}/img'):
             os.makedirs(f'output/{net_type}/img')
         
-        #plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
+        plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
         plt.close()
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
@@ -3026,6 +3026,7 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
 
     analyze_overlaping('NetsType_1.6')
+    analyze_overlaping('NetsType_1.4')
 
     
 
