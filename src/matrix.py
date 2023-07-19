@@ -708,13 +708,13 @@ class Matrix:
 
         count = 0
 
-        max_overlap = max_overlapping_number(communities)
+        
         
         for node in self.G.nodes():
 
             k_i = self.G.degree(nbunch=node) # type: ignore
 
-            k_i = k_i if not overlaping else k_i * max_overlap
+            visited = set()
 
             suma = 0
             
@@ -736,7 +736,9 @@ class Matrix:
                         start_time = datetime.datetime.now()
 
                     if n in subgraph.nodes():
-                        k_i_s += 1
+                        if n not in visited:
+                            k_i_s += 1
+                            visited.add(n)                        
                         continue
 
                 suma += (k_i_s / k_i) ** 2 # type: ignore
@@ -3025,9 +3027,9 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    data = pickle.load(open('output/NetsType_1.6/network1_RC_PC.pkl', 'rb'))
+    # data = pickle.load(open('output/NetsType_1.6/network1_RC_PC.pkl', 'rb'))
 
-    print(sorted(data.items(), key=lambda x: x[1], reverse=True))
+    # print(sorted(data.items(), key=lambda x: x[1], reverse=True))
 
     
 
@@ -3066,9 +3068,9 @@ if __name__ == '__main__':
     # print(len(match))
 
     
-    #apply_PC_to_GT('NetsType_1.6')
+    #apply_PC_to_GT('NetsType_1.4')
 
-    #apply_PC_to_RC('NetsType_1.6')
+    apply_PC_to_RC('NetsType_1.4')
 
 
     
