@@ -2991,10 +2991,30 @@ def wrapper_nmi_stability(nodeClustA, nodeClustB, file: str, algorithm: str, i: 
 
     return (value.score, file, algorithm, i, index, iter)           
 
-def max_overlaping_number(communities: list) -> int :
+def max_overlapping_number(communities: list) -> int:
     '''
-        This method calculate
+        This method calculates the maximum number of overlapping for a single nodes in a list of communities.
+    
+        Parameters
+        ----------
+        communities : list[list[int]]
+            The list of communities.
+        
+        Returns
+        -------
+        int
+            The maximum number of overlapping for a single node.
     '''
+    
+    dict_node = {}
+
+    for com in communities:
+        for node in com:
+            dict_node[node] = dict_node.get(node, 0) + 1
+    
+    return max(dict_node.values())
+    
+    
 
 
 if __name__ == '__main__':
@@ -3032,13 +3052,17 @@ if __name__ == '__main__':
 
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.6)
 
-    nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/stability/NetsType_1.6/network11/network11_RC_gamma.txt'))
+    # nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/stability/NetsType_1.6/network11/network11_RC_gamma.txt'))
 
-    nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{11}_GT.dat'))
+    # nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/NetsType_1.6/GT/community{11}_GT.dat'))
 
-    match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
+    # match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
 
-    print(len(match))
+    # print(len(match))
+
+    data = read_communities_from_dat(f'dataset/NetsType_1.6/GT/community11_GT.dat')
+
+    print(max_overlapping_number(data))
     
     #apply_PC_to_GT('NetsType_1.6')
 
