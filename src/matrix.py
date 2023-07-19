@@ -3061,9 +3061,11 @@ if __name__ == '__main__':
     # print(len(match))
 
     
-    apply_PC_to_GT('NetsType_1.4')
+    #apply_PC_to_GT('NetsType_1.6')
 
-    print(pickle.load(open('dataset/NetsType_1.4/network1/network1_GT_PC.pkl', 'rb')))
+    apply_PC_to_RC('NetsType_1.4')
+
+
     
     #apply_PC_to_RC('NetsType_1.6')
     #PC_data = pickle.load(open('output/NetsType_1.4/network10_RC_PC.pkl', 'rb')) 
