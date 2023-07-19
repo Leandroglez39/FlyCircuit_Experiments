@@ -299,20 +299,24 @@ def drawStability(folder_version: str):
 
 def drawStability2(folder_version: str):
 
-    df = pd.read_csv('output/stability/NetsType_1.4/nmi_stability.csv', header=0)
+    df = pd.read_csv(f'output/stability/{folder_version}/nmi_stability.csv', header=0)
 
     nets = df['Network'].unique()
 
     df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
 
-    
-    df.loc[df['Iterations'] == 10, 'Iterations'] = 1
-    df.loc[df['Iterations'] == 100, 'Iterations'] = 2
-    df.loc[df['Iterations'] == 1000, 'Iterations'] = 3
+    if folder_version == 'NetsType_1.4':
+        df.loc[df['Iterations'] == 10, 'Iterations'] = 1
+        df.loc[df['Iterations'] == 100, 'Iterations'] = 2
+        df.loc[df['Iterations'] == 1000, 'Iterations'] = 3
+        labels = ["10", "100", '1000']
+    else:
+        df.loc[df['Iterations'] == 10, 'Iterations'] = 1
+        df.loc[df['Iterations'] == 100, 'Iterations'] = 3
+        df.loc[df['Iterations'] == 50, 'Iterations'] = 2
+        labels = ["10", "50", '100']
 
-    print(df)
-
-    labels = ["10", "100", '1000']
+ 
 
     
     
@@ -321,6 +325,7 @@ def drawStability2(folder_version: str):
         markers = ['o', 's', '^', 'p', '*'] # list of markers to use
         for marker, algorithm in zip(markers, network_data['Algorithm'].unique()):
             algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+            plt.style.use('seaborn-v0_8-darkgrid')
             plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
         plt.title(f'Run Algorithms and NMI accuracy in {network} for {folder_version}')
         plt.xlabel('Iterations')
@@ -328,7 +333,8 @@ def drawStability2(folder_version: str):
         plt.yticks(np.arange(0, 1.2, 0.2))
         plt.xticks([1,2,3], labels)
         plt.legend()
-        plt.show()
+        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=450)
+        plt.clf()
     
         
 
@@ -367,7 +373,8 @@ if __name__ == "__main__":
     
     #drawStability('NetsType_1.4')
 
-    drawStability2('NetsType_1.4')
+    
+    drawStability2('NetsType_1.6')
 
     #G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
 
