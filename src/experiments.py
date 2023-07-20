@@ -267,8 +267,10 @@ def drawResultAlgorithm(folderpath, nameFile):
     
     print('df transpose done')
     for item in dfT.columns:
-        dfT[item].plot()
-    
+        dfT[item].plot(kind='line', marker='o', label=item)
+        
+           
+       
     plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
     plt.xlabel('Nets')
     plt.ylabel('NMI Accuracy')
@@ -348,12 +350,12 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    #drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
     
     #drawStability('NetsType_1.4')
 
     
-    drawStability2('NetsType_1.6')
+    #drawStability2('NetsType_1.6')
 
     #G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
 

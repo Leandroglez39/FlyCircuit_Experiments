@@ -1861,7 +1861,7 @@ def nmi_overlapping_evaluate(foldername: str) -> None:
         nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
     
         nodes = []
-        outputs = ['', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
+        outputs = ['_RC', '_Lpa', '_Louvain', '_Greedy', '_Infomap']
         
         with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
@@ -3105,13 +3105,13 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    analyze_overlaping('NetsType_1.4')
+    #analyze_overlaping('NetsType_1.4')
 
     # apply_PC_to_GT('NetsType_1.6')
     # print('Finished GT')
     # apply_PC_to_RC('NetsType_1.6')
-    analyze_overlaping('NetsType_1.6')
-
+    #analyze_overlaping('NetsType_1.6')
+    
     
     # for i in range(1,12):
 
@@ -3182,7 +3182,7 @@ if __name__ == '__main__':
     #runAlgorithmSimple(m, folder_version='NetsType_1.6')
     
     
-    # nmi_overlapping_evaluate('NetsType_1.1')
+    #nmi_overlapping_evaluate('NetsType_1.4')
     #nmi_overlapping_evaluateTunning('NetsType_1.6')
 
     #end Benchmark Region
