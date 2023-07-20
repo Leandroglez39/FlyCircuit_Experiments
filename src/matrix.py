@@ -686,7 +686,7 @@ class Matrix:
             
             print('core_number added')
         
-    def participation_coefficient(self, communities: list, overlaping=False):
+    def participation_coefficient(self, communities: list):
 
         '''
         This function is for calculate the participation coefficient of a community.
@@ -745,6 +745,86 @@ class Matrix:
 
         return data_nodes
     
+    def participation_coefficient_overlapping(self, communities: list):
+
+        '''
+        This function is for calculate the participation coefficient of a community.
+
+        Parameters
+        ----------        
+        communities : list
+            A list of comunities.
+        
+        Returns
+        -------
+        result : dict
+            The participation coefficient of every node.
+        '''
+
+        data_nodes = {}
+        
+        start_time = datetime.datetime.now()
+
+        count = 0
+
+        
+        
+        for node in self.G.nodes():
+
+            
+
+            visited = set()
+
+            suma = 0
+            
+            neighbors = list(nx.neighbors(self.G, node)) # type: ignore
+
+            k_i = self.calculate_kis(communities, neighbors)
+
+            for community in communities:                
+                                
+                k_i_s = 0
+
+                for n in neighbors:
+                    
+                    count += 1
+                    if count == 10000000:
+                        print('10M operations calculated in participation coefficient')
+                        print('Time for 10M operations: ' + str(datetime.datetime.now() - start_time))
+                        count = 0
+                        start_time = datetime.datetime.now()
+
+                    if n in community:
+                        if n not in visited:
+                            k_i_s += 1
+                            visited.add(n)                        
+                        continue
+
+                suma += (k_i_s / k_i) ** 2 # type: ignore
+
+            data_nodes[node] = 1 - suma
+
+        return data_nodes
+    
+    def calculate_kis(self, communities: list, neighbors: list) -> int:
+
+        suma = 0
+
+        for community in communities:                
+                                
+                k_i_s = 0
+
+                for n in neighbors:               
+                    
+
+                    if n in community:                        
+                        k_i_s += 1
+                        
+
+                suma += k_i_s
+
+        return suma 
+
     def insert_measure_dict(self, measure: str, dict: dict):
 
         '''
@@ -2432,7 +2512,7 @@ def analyze_overlaping(net_type : str):
         if not os.path.exists(f'output/{net_type}/img'):
             os.makedirs(f'output/{net_type}/img')
         
-        plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=500)
+        plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=550)
         plt.close()
 
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
@@ -2595,7 +2675,7 @@ def read_communities_from_dat(path : str) -> list[list[int]]:
             communities.append(inter_data)
     return communities
 
-def apply_PC_to_GT(net_version : str):
+def apply_PC_to_GT(net_version : str, overlap: bool = False):
 
     folder_path = f'dataset/{net_version}'
     
@@ -2621,11 +2701,11 @@ def apply_PC_to_GT(net_version : str):
                     inter_data = [int(x) for x in data]
                     communities.append(inter_data)
 
-        dict_node = m.participation_coefficient(communities, overlaping=True)
+        dict_node = m.participation_coefficient(communities) if overlap else m.participation_coefficient_overlapping(communities)
 
         pickle.dump(dict_node, open(f'dataset/{net_version}/{net}/{net}_GT_PC.pkl', 'wb'))
 
-def apply_PC_to_RC(net_version: str):
+def apply_PC_to_RC(net_version: str, overlap: bool = False):
     
     folder_path = f'output/{net_version}'
 
@@ -2636,7 +2716,7 @@ def apply_PC_to_RC(net_version: str):
         if file.endswith('_RC.txt'):
             m.G = pickle.load(open(f'dataset/{net_version}/{file[:-7]}/{file[:-7]}.pkl', 'rb'))
             communities = read_communities_from_dat(f'{folder_path}/{file}')
-            dict_node = m.participation_coefficient(communities, overlaping=True)
+            dict_node = m.participation_coefficient(communities) if overlap else m.participation_coefficient_overlapping(communities)
             pickle.dump(dict_node, open(f'{folder_path}/{file[:-7]}_RC_PC.pkl', 'wb'))
 
 def increse_greedy_files(net_version: str):
@@ -3025,8 +3105,12 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    analyze_overlaping('NetsType_1.6')
     analyze_overlaping('NetsType_1.4')
+
+    # apply_PC_to_GT('NetsType_1.6')
+    # print('Finished GT')
+    # apply_PC_to_RC('NetsType_1.6')
+    analyze_overlaping('NetsType_1.6')
 
     
     # for i in range(1,12):
@@ -3064,9 +3148,7 @@ if __name__ == '__main__':
     # print(len(match))
 
     
-    # apply_PC_to_GT('NetsType_1.6')
-    # print('Finished GT')
-    # apply_PC_to_RC('NetsType_1.6')
+    
 
 
     
