@@ -842,7 +842,7 @@ class Matrix:
             self.G.nodes[node][measure] = dict[node]
     
 
-    def RoughClustering(self, communities: list, gamma: float = 0.8):
+    def RoughClustering(self, communities: list, path: str, gamma: float = 0.8 ):
 
         '''
         This function is for calculate the rough clustering of a community list.
@@ -881,12 +881,14 @@ class Matrix:
         
         end_time = datetime.datetime.now()
         print(f'Ocurances updated in match array in: {end_time - start_time}')
-
+        
         b0 = len(communities) * 0.75
 
         edges_list = []
 
         print('Calculating edges')        
+
+        #np.savetxt(path, match_array/len(communities), delimiter=',', fmt='%f')
 
         # Find the indices where match_array is greater than or equal to b0
         i, j = np.where(match_array >= b0)
@@ -2129,7 +2131,8 @@ def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8)
             all_iterations.extend(infomap_results) # type: ignore
             print('Infomap Algorithm finished')
 
-            value = m.RoughClustering(communities=all_iterations, gamma=gamma)
+            print(len(all_iterations))
+            value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'dataset/{folder_version}/{net}/{net}_similarity.csv')
 
             all_iterations = []
 
@@ -3104,6 +3107,34 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
+
+
+    df = pd.read_csv('dataset/NetsType_1.4/network8/network8_adj.csv', index_col=0, header=0)
+
+    print(df)
+
+    # for net in range(1,12):
+
+    #     path = f'dataset/NetsType_1.4/network{net}/network{net}.pkl'
+
+    #     G : nx.Graph = pickle.load(open(path, 'rb'))
+
+       
+            
+    #     df =  nx.to_pandas_adjacency(G)
+    #     df = df.astype(int)
+    #     df = df.sort_index()
+    #     df = df.rename(columns=int).sort_index(axis=1)
+    #     df.to_csv(f'dataset/NetsType_1.4/network{net}/network{net}_adj.csv')
+
+    #     df = pd.read_csv(f'dataset/NetsType_1.4/network{net}/network{net}_similarity.csv', header=None)
+    #     df = df.astype(float)
+    #     print(df)
+    #     filter_df = pd.DataFrame(df[df[df.columns] >= 0.75])
+    #     filter_df = filter_df.fillna(0)    
+    #     filter_df.to_csv(f'dataset/NetsType_1.4/network{net}/network{net}_similarity_filter.csv', header=None, index=False)
+
+       
 
     #analyze_overlaping('NetsType_1.4')
 
