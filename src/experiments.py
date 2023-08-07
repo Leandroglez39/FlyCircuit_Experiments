@@ -316,13 +316,13 @@ def drawStability2(folder_version: str):
             algorithm_data = network_data[network_data['Algorithm'] == algorithm]
             plt.style.use('seaborn-v0_8-darkgrid')
             plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
-        plt.title(f'Run Algorithms and NMI accuracy in {network} for {folder_version}')
-        plt.xlabel('Iterations')
-        plt.ylabel('NMI Accuracy')
+        plt.title(f'Stability in {network}')
+        plt.xlabel('Number of runs')
+        plt.ylabel('NMI Average')
         plt.yticks(np.arange(0, 1.2, 0.2))
         plt.xticks([1,2,3], labels)
         plt.legend()
-        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=450)
+        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=550)
         plt.clf()
     
         
@@ -358,9 +358,9 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    #drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
     
-    #drawStability('NetsType_1.4')
+    drawStability2('NetsType_1.4')
 
     
     #drawStability2('NetsType_1.6')
