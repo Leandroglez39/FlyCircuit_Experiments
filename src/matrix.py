@@ -3113,9 +3113,26 @@ def max_overlapping_number(communities: list) -> int:
     
     return max(dict_node.values())
     
+def compare_cores_with_GT(foldername: str):
+
+    path_GT = f'dataset/{foldername}/GT/'
+    path_cores = f'output/stability/{foldername}/'
+
+    dict_count = {}
+
+    for i in range(1, 12):
+        GT_data = read_communities_from_dat(path_GT + f'community{i}_GT.dat')
+        cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
+
+        for com in cores_data:
+            if len(com) > 1:
+                for nodes in GT_data:
+                    for node in com:
+                        if node in nodes:
+                            dict_count[node] = dict_count.get(node, 0) + len(set(com).intersection(set(nodes))) - 1
     
-
-
+    print(len(dict_count.keys()))
+                            
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3124,7 +3141,8 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
 
 
-    runRoughClustering(m, 'NetsType_1.6', gamma=0.8, saved=True)
+    compare_cores_with_GT('NetsType_1.4')
+    
 
     # for net in range(1,12):
 
