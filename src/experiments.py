@@ -267,25 +267,97 @@ def drawResultAlgorithm(folderpath, nameFile):
     
     print('df transpose done')
     for item in dfT.columns:
-        dfT[item].plot()
-    
+        dfT[item].plot(kind='line', marker='o', label=item)
+        
+           
+       
     plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
     plt.xlabel('Nets')
     plt.ylabel('NMI Accuracy')
     plt.legend()
     plt.show()
+  
 
+def drawStability2(folder_version: str):
+
+    df = pd.read_csv(f'output/stability/{folder_version}/nmi_stability.csv', header=0)
+
+    nets = df['Network'].unique()
+
+    df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
+
+    if folder_version == 'NetsType_1.4':
+        df.loc[df['Iterations'] == 10, 'Iterations'] = 1
+        df.loc[df['Iterations'] == 100, 'Iterations'] = 2
+        df.loc[df['Iterations'] == 1000, 'Iterations'] = 3
+        labels = ["10", "100", '1000']
+    else:
+        df.loc[df['Iterations'] == 10, 'Iterations'] = 1
+        df.loc[df['Iterations'] == 100, 'Iterations'] = 3
+        df.loc[df['Iterations'] == 50, 'Iterations'] = 2
+        labels = ["10", "50", '100']
+
+ 
+
+    
+    
+    for network in df['Network'].unique():
+        network_data = df[df['Network'] == network]
+        markers = ['o', 's', '^', 'p', '*'] # list of markers to use
+        for marker, algorithm in zip(markers, network_data['Algorithm'].unique()):
+            algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+            plt.style.use('seaborn-v0_8-darkgrid')
+            plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
+        plt.title(f'Run Algorithms and NMI accuracy in {network} for {folder_version}')
+        plt.xlabel('Iterations')
+        plt.ylabel('NMI Accuracy')
+        plt.yticks(np.arange(0, 1.2, 0.2))
+        plt.xticks([1,2,3], labels)
+        plt.legend()
+        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=450)
+        plt.clf()
+    
+        
+
+    # df = df[df['Network'] == 'network10']
+    # df1 = df[df['Algorithm'] == 'async_lpa']
+    # plt.scatter(df1['Iterations'], df1['NMI'], label='async_lpa', color='blue', marker='o')  # type: ignore
+    # df2 = df[df['Algorithm'] == 'RC']
+    # plt.scatter(df2['Iterations'], df2['NMI'], label='RC', color='red', marker='s') # type: ignore
+    # plt.title(f'Run Algorithms and NMI accuracy in network1 NetsType_1.4')
+    # plt.xlabel('Iterations')
+    # plt.ylabel('NMI Accuracy')
+    # plt.yticks(np.arange(0, 1.2, 0.2))
+    # plt.xticks([1,2,3], labels)
+    # #plt.legend()
+    # plt.show()
+
+    # for network in df['Network'].unique():
+    #     network_data = df[df['Network'] == network]
+    #     for algorithm in network_data['Algorithm'].unique():
+    #         algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+    #         plt.boxplot([algorithm_data[algorithm_data['Iterations'] == label]['NMI'] for label in labels], labels=labels, patch_artist=True)
+    #     plt.title(f'Run Algorithms and NMI accuracy in {network} NetsType_1.4')
+    #     plt.xlabel('Iterations')
+    #     plt.ylabel('NMI Accuracy')
+    #     #plt.legend()
+    #     plt.show()
    
 if __name__ == "__main__":
 
     # create Data Structure
     m = Matrix([], {},[])
     # run Algorithm simple
-    runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
+    #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    # drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    
+    #drawStability('NetsType_1.4')
 
-    G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
+    
+    #drawStability2('NetsType_1.6')
+
+    #G = pickle.load(open('dataset/NetsType_1.6/network10/network10.pkl', 'rb'))
 
     # result = nx.algorithms.community.louvain.louvain_communities(G, seed=random.randint(0, 10000), resolution=random.uniform(2,3.5)) # type: ignore
 
@@ -293,24 +365,24 @@ if __name__ == "__main__":
 
     # pickle.dump(communities, open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'wb'))
 
-    from cdlib import evaluation, NodeClustering
+    # from cdlib import evaluation, NodeClustering
 
-    communities = pickle.load(open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'rb'))
+    # communities = pickle.load(open('dataset/NetsType_1.6/network10/network10_Louvain.pkl', 'rb'))
 
 
 
-    nodes= []
+    # nodes= []
 
-    with open('dataset/' + 'NetsType_1.6' + '/GT/community' + '10' + '_GT.dat', 'r') as f:
-                lines = f.readlines()        
-                for line in lines:
-                    data = line.split(' ')
-                    inter_data = [int(x) for x in data]
-                    nodes.append(inter_data)
+    # with open('dataset/' + 'NetsType_1.6' + '/GT/community' + '10' + '_GT.dat', 'r') as f:
+    #             lines = f.readlines()        
+    #             for line in lines:
+    #                 data = line.split(' ')
+    #                 inter_data = [int(x) for x in data]
+    #                 nodes.append(inter_data)
 
-    nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
-    nodeClustB = NodeClustering(communities=communities, graph=G, method_name='Louvain', method_parameters={}, overlap=True)
+    # nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    # nodeClustB = NodeClustering(communities=communities, graph=G, method_name='Louvain', method_parameters={}, overlap=True)
 
-    match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+    # match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
 
-    print(match_resoult)
+    # print(match_resoult)
