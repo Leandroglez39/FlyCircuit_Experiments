@@ -926,7 +926,7 @@ class Matrix:
             for i in range(k + 1):
                 f.write(' '.join(map(str, seeds[i].nodes())) + '\n')
             
-        return 1
+        
         # list of set of nodes that represents the  coverage of the graph . The first set is the inferior coverage and the second set is the superior coverage.
         coverage_inferior = [set() for _ in range(k + 1)]
         coverage_superior = [set() for _ in range(k + 1)]
@@ -1103,7 +1103,7 @@ class Matrix:
         '''
 
         k = 0
-        data = []
+       
         data_array = np.array([])
 
         if statistic:
