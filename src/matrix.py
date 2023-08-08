@@ -3115,8 +3115,10 @@ def max_overlapping_number(communities: list) -> int:
     
 def compare_cores_with_GT(foldername: str):
 
-    path_GT = f'dataset/{foldername}/GT/'
+    #path_GT = f'dataset/{foldername}/GT/'
+    path_GT = f'output/{foldername}/'
     path_cores = f'output/stability/{foldername}/'
+    algorithms_names = ['Louvain', 'Infomap', 'Greedy', 'Lpa']
 
    
     results = []
@@ -3124,7 +3126,7 @@ def compare_cores_with_GT(foldername: str):
     for i in range(1, 12):
         dict_count = {}
         dict_match = {}
-        GT_data = read_communities_from_dat(path_GT + f'community{i}_GT.dat')
+        GT_data = read_communities_from_dat(path_GT + f'network{i}_{algorithms_names[3]}.txt')
         cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
 
         for com in cores_data:
@@ -3143,22 +3145,12 @@ def compare_cores_with_GT(foldername: str):
         average = sum(dict_match.values()) / len(dict_match.values())
 
         results.append((f'network{i}: ', average))
-        print(len(dict_count.keys()))
+        
     
     print(results)
-                            
-if __name__ == '__main__':
 
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
-
-    m = Matrix([], {},[])
-
-    G = pickle.load(open('dataset/NetsType_1.4/network1/network1.pkl', 'rb'))
-
-
-    #compare_cores_with_GT('NetsType_1.6')
-    foldername = 'NetsType_1.6'
+def overlapping_count_in_cores(foldername = 'NetsType_1.6'):
+    
     path_GT = f'dataset/{foldername}/GT/'
     path_cores = f'output/stability/{foldername}/'
     
@@ -3174,6 +3166,19 @@ if __name__ == '__main__':
           nodes = nodes.union(set(com))
         
         print(f'Network{i}: ',len(nodes.intersection(set(data.keys()))))
+
+if __name__ == '__main__':
+
+    print(datetime.datetime.now())
+    start_time = datetime.datetime.now()
+
+    m = Matrix([], {},[])
+
+    G = pickle.load(open('dataset/NetsType_1.4/network1/network1.pkl', 'rb'))
+
+
+    compare_cores_with_GT('NetsType_1.4')
+    
 
     # for net in range(1,12):
 
