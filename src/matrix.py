@@ -3118,9 +3118,12 @@ def compare_cores_with_GT(foldername: str):
     path_GT = f'dataset/{foldername}/GT/'
     path_cores = f'output/stability/{foldername}/'
 
-    dict_count = {}
+   
+    results = []
 
     for i in range(1, 12):
+        dict_count = {}
+        dict_match = {}
         GT_data = read_communities_from_dat(path_GT + f'community{i}_GT.dat')
         cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
 
@@ -3131,7 +3134,18 @@ def compare_cores_with_GT(foldername: str):
                         if node in nodes:
                             dict_count[node] = dict_count.get(node, 0) + len(set(com).intersection(set(nodes))) - 1
     
-    print(len(dict_count.keys()))
+        for key, value in dict_count.items():
+            for nodes in cores_data:
+                if key in nodes:
+                    dict_match[key] = dict_match.get(key, 0) + value / len(nodes) * 100
+                    continue
+        
+        average = sum(dict_match.values()) / len(dict_match.values())
+
+        results.append((f'network{i}: ', average))
+        print(len(dict_count.keys()))
+    
+    print(results)
                             
 if __name__ == '__main__':
 
@@ -3140,9 +3154,26 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
+    G = pickle.load(open('dataset/NetsType_1.4/network1/network1.pkl', 'rb'))
 
-    compare_cores_with_GT('NetsType_1.4')
+
+    #compare_cores_with_GT('NetsType_1.6')
+    foldername = 'NetsType_1.6'
+    path_GT = f'dataset/{foldername}/GT/'
+    path_cores = f'output/stability/{foldername}/'
     
+    for i in range(1, 12):
+        GT_data = read_communities_from_dat(path_GT + f'community{i}_GT.dat')
+        cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
+
+        data = detect_nodes_with_overlapping(GT_data)
+
+       
+        nodes = set()
+        for com in cores_data:
+          nodes = nodes.union(set(com))
+        
+        print(f'Network{i}: ',len(nodes.intersection(set(data.keys()))))
 
     # for net in range(1,12):
 
