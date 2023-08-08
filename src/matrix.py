@@ -921,8 +921,12 @@ class Matrix:
         k = self.calculate_k(communities)
 
         print('Real k: ' + str(k + 1))
-
-
+        
+        with open(path, 'w+') as f:
+            for i in range(k + 1):
+                f.write(' '.join(map(str, seeds[i].nodes())) + '\n')
+            
+        
         # list of set of nodes that represents the  coverage of the graph . The first set is the inferior coverage and the second set is the superior coverage.
         coverage_inferior = [set() for _ in range(k + 1)]
         coverage_superior = [set() for _ in range(k + 1)]
@@ -1099,7 +1103,7 @@ class Matrix:
         '''
 
         k = 0
-        data = []
+       
         data_array = np.array([])
 
         if statistic:
@@ -2222,7 +2226,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
         
 
-def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8):
+def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8, n=0 , top=10 , saved = False):
 
     all_iterations = []
     
@@ -2236,52 +2240,63 @@ def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8)
         
             m.G = pickle.load(open(f'dataset/{folder_version}/{net}/{net}.pkl', 'rb'))
 
-            n = 0
-            top = 10
+            if not saved:
             
-            print(f'async_lpa Algorithm running ' + str(top) + f' times in {net}')
-            for _ in range(n, top):
-                result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
-                communities = [list(x) for x in result]
-                if len(communities) > 1:
-                    all_iterations.append(communities) # type: ignore
-                #print(all_iterations[-1])
-            print('async_lpa Algorithm finished')
-            
-            # Range of Resolution 3.5 - 5.5
-            print(f'Greedy Algorithm running {str(1)} times in {net}')
-            for _ in range(0, 1):
-                result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))  # type: ignore
-                result = [list(x) for x in result] # type: ignore
+                print(f'async_lpa Algorithm running ' + str(top) + f' times in {net}')
+                for _ in range(n, top):
+                    result = nx.algorithms.community.label_propagation.asyn_lpa_communities(m.G, seed=random.randint(0, 10000))
+                    communities = [list(x) for x in result]
+                    if len(communities) > 1:
+                        all_iterations.append(communities) # type: ignore
+                    #print(all_iterations[-1])
+                print('async_lpa Algorithm finished')
                 
-                for _ in range(0, int(top/1.5)):        
-                    all_iterations.append(result) 
-                #print(all_iterations[-1])
+                # Range of Resolution 3.5 - 5.5
+                print(f'Greedy Algorithm running {str(1)} times in {net}')
+                for _ in range(0, 1):
+                    result = nx.algorithms.community.greedy_modularity_communities(m.G, resolution= random.uniform(3.5, 5.5))  # type: ignore
+                    result = [list(x) for x in result] # type: ignore
+                    
+                    for _ in range(0, int(top/1.5)):        
+                        all_iterations.append(result) 
+                    #print(all_iterations[-1])
 
-            print(f'Greedy Algorithm finished')
+                print(f'Greedy Algorithm finished')
 
-            # Range of Resolution 2 - 3.5
-            print(f'Louvain Algorithm running {str(top)}  times in {net}')
-            for _ in range(n, top):
-                result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
-                #print(result)
-                all_iterations.append([list(x) for x in result]) # type: ignore
-            print('Louvain Algorithm finished')
+                # Range of Resolution 2 - 3.5
+                print(f'Louvain Algorithm running {str(top)}  times in {net}')
+                for _ in range(n, top):
+                    result = nx.algorithms.community.louvain.louvain_communities(m.G, seed=random.randint(0, 10000), resolution= random.uniform(2, 3.5)) # type: ignore
+                    #print(result)
+                    all_iterations.append([list(x) for x in result]) # type: ignore
+                print('Louvain Algorithm finished')
 
-            print(f'Infomap Algorithm loading {str(top)} times in {net}')
-            infomap_results = pickle.load(open(f'output/{folder_version}/{net}_Infomap.pkl', 'rb'))
-            all_iterations.extend(infomap_results) # type: ignore
-            print('Infomap Algorithm finished')
+                print(f'Infomap Algorithm loading {str(top)} times in {net}')
+                infomap_results = pickle.load(open(f'output/{folder_version}/{net}_Infomap.pkl', 'rb'))
+                all_iterations.extend(infomap_results) # type: ignore
+                print('Infomap Algorithm finished')
 
-            print(len(all_iterations))
-            value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'dataset/{folder_version}/{net}/{net}_similarity.csv')
+                print(len(all_iterations))
+                value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'dataset/{folder_version}/{net}/{net}_similarity.csv')
 
-            all_iterations = []
+                all_iterations = []
 
 
-            exportpath_RC = f'/{net}_RC.txt'
+                exportpath_RC = f'/{net}_RC.txt'
 
-            m.export_RC(folder_version, exportpath_RC, value)
+                m.export_RC(folder_version, exportpath_RC, value)
+
+            else:
+                file_num = 100 if folder_version == 'NetsType_1.6' else 1000
+                algorithm_names = ['async_lpa', 'greedy', 'louvain', 'infomap']
+                for algorithm in algorithm_names:
+                    all_iterations.extend(pickle.load(open(f'output/stability/{folder_version}/{net}/{algorithm}_{file_num}_run_0.pkl', 'rb'))[n:top]) # type: ignore
+                
+                value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'output/stability/{folder_version}/{net}/{net}_RC_cores.txt')
+                all_iterations = []
+              
+                
+
 
 def runRoughClustering_on_FlyCircuit(m: Matrix ,version_dataset: str,  iterations: list):
 
@@ -3240,8 +3255,59 @@ def max_overlapping_number(communities: list) -> int:
     
     return max(dict_node.values())
     
-    
+def compare_cores_with_GT(foldername: str):
 
+    #path_GT = f'dataset/{foldername}/GT/'
+    path_GT = f'output/{foldername}/'
+    path_cores = f'output/stability/{foldername}/'
+    algorithms_names = ['Louvain', 'Infomap', 'Greedy', 'Lpa']
+
+   
+    results = []
+
+    for i in range(1, 12):
+        dict_count = {}
+        dict_match = {}
+        GT_data = read_communities_from_dat(path_GT + f'network{i}_{algorithms_names[3]}.txt')
+        cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
+
+        for com in cores_data:
+            if len(com) > 1:
+                for nodes in GT_data:
+                    for node in com:
+                        if node in nodes:
+                            dict_count[node] = dict_count.get(node, 0) + len(set(com).intersection(set(nodes))) - 1
+    
+        for key, value in dict_count.items():
+            for nodes in cores_data:
+                if key in nodes:
+                    dict_match[key] = dict_match.get(key, 0) + value / len(nodes) * 100
+                    continue
+        
+        average = sum(dict_match.values()) / len(dict_match.values())
+
+        results.append((f'network{i}: ', average))
+        
+    
+    print(results)
+
+def overlapping_count_in_cores(foldername = 'NetsType_1.6'):
+    
+    path_GT = f'dataset/{foldername}/GT/'
+    path_cores = f'output/stability/{foldername}/'
+    
+    for i in range(1, 12):
+        GT_data = read_communities_from_dat(path_GT + f'community{i}_GT.dat')
+        cores_data = read_communities_from_dat(path_cores + f'network{i}/network{i}_RC_cores.txt')
+
+        data = detect_nodes_with_overlapping(GT_data)
+
+       
+        nodes = set()
+        for com in cores_data:
+          nodes = nodes.union(set(com))
+        
+        print(f'Network{i}: ',len(nodes.intersection(set(data.keys()))))
 
 if __name__ == '__main__':
 
@@ -3250,10 +3316,11 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
+    G = pickle.load(open('dataset/NetsType_1.4/network1/network1.pkl', 'rb'))
 
-    df = pd.read_csv('dataset/NetsType_1.4/network8/network8_adj.csv', index_col=0, header=0)
 
-    print(df)
+    compare_cores_with_GT('NetsType_1.4')
+    
 
     # for net in range(1,12):
 

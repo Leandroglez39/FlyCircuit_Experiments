@@ -260,22 +260,30 @@ def drawResultAlgorithm(folderpath, nameFile):
     
     print('created df done')
     print(df.columns)
+    for i in range(1, 12):
+        df = df.rename(columns={f'network{i}': float(f'{(i-1)*0.05 + 0.1}')})
+    
     print(df)
     dfT = df.transpose()
     print(dfT)
     
     
     print('df transpose done')
+    markers = ['o', 's', '^', 'p', '*']
+    index = 0
     for item in dfT.columns:
-        dfT[item].plot(kind='line', marker='o', label=item)
+        dfT[item].plot(kind='line', marker=markers[index], label=item)
+        index += 1
         
            
        
-    plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
-    plt.xlabel('Nets')
-    plt.ylabel('NMI Accuracy')
+    #plt.title('Run Algorithms and NMI accuracy' + ' Network: ' + folderpath)
+    plt.xlabel('Parameter µ in LFR Benchmark') 
+    plt.ylabel('NMI Values')
+    plt.xticks(np.arange(0.1, 0.65, step=0.05))
     plt.legend()
-    plt.show()
+    #plt.show()
+    plt.savefig(f'output/{folderpath}/' + nameFile.split('.')[0] + '.png', dpi=600)
   
 
 def drawStability2(folder_version: str):
@@ -308,13 +316,13 @@ def drawStability2(folder_version: str):
             algorithm_data = network_data[network_data['Algorithm'] == algorithm]
             plt.style.use('seaborn-v0_8-darkgrid')
             plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
-        plt.title(f'Run Algorithms and NMI accuracy in {network} for {folder_version}')
-        plt.xlabel('Iterations')
-        plt.ylabel('NMI Accuracy')
+        plt.title(f'Stability in {network}')
+        plt.xlabel('Number of runs')
+        plt.ylabel('NMI Average')
         plt.yticks(np.arange(0, 1.2, 0.2))
         plt.xticks([1,2,3], labels)
         plt.legend()
-        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=450)
+        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=550)
         plt.clf()
     
         
@@ -350,9 +358,9 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    #drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
     
-    #drawStability('NetsType_1.4')
+    drawStability2('NetsType_1.4')
 
     
     #drawStability2('NetsType_1.6')
