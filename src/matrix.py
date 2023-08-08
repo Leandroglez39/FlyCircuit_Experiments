@@ -3167,6 +3167,62 @@ def overlapping_count_in_cores(foldername = 'NetsType_1.6'):
         
         print(f'Network{i}: ',len(nodes.intersection(set(data.keys()))))
 
+def testing_k(net_version: str, num_iter: int)-> int:
+
+    algorithms_names = ['louvain', 'infomap', 'greedy', 'async_lpa']
+
+    folder_path = f'output/stability/{net_version}'
+
+    folder_list = os.listdir(folder_path)
+
+    iter_list = [10, 100, 1000] if net_version == 'NetsType_1.4' else [10, 50, 100]
+    
+    m = Matrix([], {},[])
+    
+    for folder in folder_list:
+
+        
+        
+
+        all_communities = []
+
+        for algorithm in algorithms_names:
+            communities = pickle.load(open(f'{folder_path}/{folder}/{algorithm}_{num_iter}_run_{0}.pkl', 'rb'))
+            all_communities.extend(communities)
+
+        values = np.array([])
+
+        
+        for community in communities:
+            for i in range(len(community)):
+                partition = community[i]
+                vale = np.full(len(partition), i)
+                values = np.concatenate((values, vale), axis=None)
+        
+        for iter in iter_list:
+                comunities_subset = []
+                for j in range(4):
+                    index = j * num_iter
+                    comunities_subset.extend(all_communities[index:(index + iter)])
+
+        # Create a set of unique values
+        unique_values = set(values)
+
+        # Create a dictionary to map each unique value to a binary index
+        value_map = {value: i for i, value in enumerate(unique_values)}
+
+        # Create a feature matrix using one-hot encoding
+        feature_matrix = np.zeros((len(values), len(unique_values)))
+        for i, value in enumerate(values):
+            feature_matrix[i, value_map[value]] = 1
+
+        
+
+        # Calculate the mean of the feature matrix along the rows
+        mean = np.mean(feature_matrix, axis=0)
+
+    return mean
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3174,10 +3230,11 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    G = pickle.load(open('dataset/NetsType_1.4/network1/network1.pkl', 'rb'))
+    communities = m.load_all_algorithm_communities(['louvain', 'lpa', 'greedy', 'infomap'])
 
+    print(testing_k(communities))
 
-    compare_cores_with_GT('NetsType_1.4')
+    #compare_cores_with_GT('NetsType_1.4')
     
 
     # for net in range(1,12):
