@@ -238,11 +238,24 @@ def runAlgorithmSimpleTunning(m, init, step, top, folder_version = 'NetsType_1.1
 
     print('done')
 
-def drawResultAlgorithm(folderpath, nameFile):
+def drawResultAlgorithm(folderpath, nameFile, ga = '0.8'):
 
     print('Begin!!!!!!!!!!!')
 
     dictResult = pickle.load(open('output/' + folderpath + '/' + nameFile, 'rb'))
+    dictResult[f'RC']['Algorithms/Parameters'] = f'RC_{0.8}'
+
+    gammas = [ '0.5', '0.6' , '0.7']
+
+    for gamma in gammas:
+
+        dictResult2 = pickle.load(open('output/' + 'gamma_' + gamma + '/' + folderpath + '/' + nameFile, 'rb'))
+    
+        dictResult[f'RC_{gamma}'] = dictResult2['RC']
+        dictResult[f'RC_{gamma}']['Algorithms/Parameters'] = f'RC_{gamma}'
+    
+    #dictResult['RC'] = dictResult2['RC']
+    #dictResult[f'RC_{gamma}'] = dictResult2['RC']
 
     df = pd.DataFrame()
 
@@ -259,17 +272,20 @@ def drawResultAlgorithm(folderpath, nameFile):
     df = df.set_index(nameColumns)
     
     print('created df done')
-    print(df.columns)
+    #print(df.columns)
     for i in range(1, 12):
         df = df.rename(columns={f'network{i}': float(f'{(i-1)*0.05 + 0.1}')})
     
-    print(df)
+    
+    #print(df)
     dfT = df.transpose()
-    print(dfT)
+    #print(dfT)
     
-    
+    # Sort dataframe by column names
+    dfT = dfT.reindex(sorted(dfT.columns), axis=1)
+
     print('df transpose done')
-    markers = ['o', 's', '^', 'p', '*']
+    markers = ['o', 's', '^', 'p', '*', '+', 'x', 'D']
     index = 0
     for item in dfT.columns:
         dfT[item].plot(kind='line', marker=markers[index], label=item)
@@ -283,7 +299,8 @@ def drawResultAlgorithm(folderpath, nameFile):
     plt.xticks(np.arange(0.1, 0.65, step=0.05))
     plt.legend()
     #plt.show()
-    plt.savefig(f'output/{folderpath}/' + nameFile.split('.')[0] + '.png', dpi=600)
+    
+    plt.savefig(f'output/{folderpath}/' + folderpath + '.png', dpi=700)
   
 
 def drawStability2(folder_version: str):
@@ -358,9 +375,9 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    #drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
     
-    drawStability2('NetsType_1.4')
+    #drawStability2('NetsType_1.4')
 
     
     #drawStability2('NetsType_1.6')

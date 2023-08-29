@@ -1986,9 +1986,8 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
             f.write('------------------------\n')
 
         pickle.dump(dictResult, open('output/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
-        
 
-def nmi_overlapping_evaluateTunning(foldername: str) -> None:
+def nmi_overlapping_evaluateTunning_gamma(foldername: str, gamma: str) -> None:
     '''
     Evaluate the overlapping detection methods using NMI
 
@@ -2033,11 +2032,112 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     
         nodes = []
 
-        with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+        with open('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
             f.write('network' + number + '\n')
         
         # read files result
+        filesResultAlg = os.listdir('output/gamma_' + gamma + '/' + foldername)
+
+        # remove .txt, .pkl
+        if os.path.exists('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt'):
+            filesResultAlg.remove(foldername + '_result.txt')
+
+        # sorted files
+        filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+            
+        for file_i in filesResultAlg:
+            if '.pkl' not in file_i and file == file_i.split('_')[0]:
+                with open(f'output/gamma_{gamma}/{foldername}/{file_i}', 'r') as f:
+                    lines = f.readlines()        
+                    for line in lines:
+                        line = line.strip('\n').rstrip()
+                        data = line.split(' ')
+                        inter_data = [int(x) for x in data]
+                        nodes.append(inter_data)
+
+                    # community created
+                    nodeClustB = NodeClustering(communities=nodes, graph=G, method_name=file_i, method_parameters={}, overlap=True)
+                    
+                    # evaluate GT vs community
+                    match_resoult = evaluation.overlapping_normalized_mutual_information_MGH(nodeClustA, nodeClustB)
+
+                    algName = file_i.split('_')[1].removesuffix('.txt')
+                    fileNameMod = algName
+
+                    with open('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+                        f.write(fileNameMod + ': ' + str(match_resoult.score) + '\n')
+                    
+                    
+                    if not fileNameMod in dictResult.keys():
+                        dictResult[fileNameMod] = {'Algorithms/Parameters': fileNameMod, file: match_resoult.score}
+                    else:
+                        dictResult[fileNameMod][file] = match_resoult.score
+                        
+                    nodes = []
+        with open('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+            f.write('------------------------\n')
+
+        pickle.dump(dictResult, open('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.pkl', 'wb'))
+        
+
+
+def nmi_overlapping_evaluateTunning(foldername: str, gamma: str = '') -> None:
+    '''
+    Evaluate the overlapping detection methods using NMI
+
+    Parameters
+    ----------
+    foldername: str
+        Path to folder containing  GT communities and detected communities
+
+    Returns
+    -------
+    None
+    '''
+    from cdlib import evaluation, NodeClustering
+
+    files = os.listdir('dataset/' + foldername)
+    files.remove('GT')
+    files.remove('README.txt')
+
+    files = sorted(files, key=lambda x: int("".join([i for i in x if i.isdigit()])))
+
+    dictResult = dict()
+
+    for file in files:
+        if '.pkl' in file:
+            continue
+        nodes = []
+        match = re.search(r'(network)(\d+)', file)
+        number = '0'
+        if match:
+            number = str(match.group(2))
+            with open('dataset/' + foldername + '/GT/community' + number + '_GT.dat', 'r') as f:
+                lines = f.readlines()        
+                for line in lines:
+                    data = line.split(' ')
+                    inter_data = [int(x) for x in data]
+                    nodes.append(inter_data)
+        
+        G = pickle.load(open('dataset/' + foldername + '/' + file + '/' + file + '.pkl', 'rb')) 
+    
+        # GT created
+        nodeClustA = NodeClustering(communities=nodes, graph=G, method_name='GT', method_parameters={}, overlap=True)
+    
+        nodes = []
+
+        if gamma != '':
+            with open('output/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+                f.write('network' + number + '\n')
+        else:
+            with open('output/gamma_' + gamma + '/' + foldername + '/' + foldername + '_result.txt', 'a') as f:
+                f.write('network' + number + '\n')
+
+        # read files result
         filesResultAlg = os.listdir('output/' + foldername)
+
+        if gamma != '':
+            filesResultAlg = os.listdir(f'output/gamma_{gamma}/{foldername}')
 
         # remove .txt, .pkl
         if os.path.exists('output/' + foldername + '/' + foldername + '_result.txt'):
@@ -2533,6 +2633,141 @@ def analyze_overlaping(net_type : str):
         plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=550)
         plt.close()
 
+def analyze_overlaping_gamma(net_type : str, gamma: str = '0.8'):
+
+    gt_files = os.listdir(f'dataset/{net_type}/GT/')
+    rc_files = os.listdir(f'output/gamma_{gamma}/{net_type}/')
+
+    rc_files = [file for file in rc_files if file.endswith(f'_RC_gamma_{gamma}.txt')]
+
+    gt_files.sort(key=lambda f: int(re.sub(r'\D', '', f))) 
+    rc_files.sort(key=lambda f: int(re.sub(r'\D', '', f)))
+
+    
+
+    for i in range(1, 12):
+
+        nodes_gt_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'dataset/{net_type}/GT/community{i}_GT.dat'))
+        nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/gamma_{gamma}/{net_type}/network{i}_RC_gamma_{gamma}.txt'))
+        
+        nodes_gt_overlaping = dict(sorted(nodes_gt_overlaping.items(), key=lambda x: x[0]))
+
+        nodes_rc_overlaping = dict(sorted(nodes_rc_overlaping.items(), key=lambda x: x[0]))
+
+        
+
+        
+
+        match = set(nodes_gt_overlaping.keys()).intersection(set(nodes_rc_overlaping.keys()))    
+
+        
+        #whiting_gt = pickle.load(open(f'output/{net_type}/within_GT_network{i}.pkl', 'rb'))
+        #whithing_rc = pickle.load(open(f'output/{net_type}/within_RC_network{i}.pkl', 'rb'))
+
+        pc_gt = pickle.load(open(f'dataset/{net_type}/network{i}/network{i}_GT_PC.pkl', 'rb'))
+        pc_rc = pickle.load(open(f'output/gamma_{gamma}/{net_type}/network{i}_RC_gamma_{gamma}_PC.pkl', 'rb'))
+
+        #nodes_whiting_gt = {key: whiting_gt[key] for key in nodes_gt_overlaping.keys()}
+        #nodes_whiting_rc = {key: whithing_rc[key] for key in nodes_rc_overlaping.keys()}
+        
+       
+        #nodes_whiting_gt_inf = {key: whiting_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        #nodes_whiting_rc_inf = {key: whithing_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        
+        
+
+        # # Create a line plot of the first dictionary values
+        # plt.scatter(nodes_whiting_gt_inf.keys(), nodes_whiting_gt_inf.values(), label='GT', marker='^') # type: ignore
+
+        # # Create a line plot of the second dictionary values
+        # plt.scatter(nodes_whiting_rc_inf.keys(), nodes_whiting_rc_inf.values(), label='RC') # type: ignore
+
+        # # Set the plot title and axis labels
+        # plt.title('GT vs RC - Whiting in not overlaping nodes')
+        # plt.xlabel('Keys')
+        # plt.ylabel('Values')
+
+        # # Add a legend to the plot
+        # plt.legend()
+
+      
+
+        # gt_mean = np.mean(list(nodes_whiting_gt_inf.values())) # type: ignore
+        # rc_mean = np.mean(list(nodes_whiting_rc_inf.values())) # type: ignore
+        
+        # plt.axhline(y=gt_mean, color='b', linestyle='--')
+        # plt.axhline(y=rc_mean, color='orange')
+
+        # # Show the plot
+        # plt.show()
+        
+        
+
+        nodes_pc_gt = {key: pc_gt[key] for key in nodes_gt_overlaping.keys() if key not in match}
+        nodes_pc_rc = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key not in match}
+
+        nodes_pc_gt_match = {key: pc_gt[key] for key in nodes_gt_overlaping.keys() if key in match}
+        nodes_pc_rc_match = {key: pc_rc[key] for key in nodes_rc_overlaping.keys() if key in match}
+
+        #nodes_pc_gt_inf = {key: pc_gt[key] for key in nodes_id if key not in nodes_gt_overlaping.keys()}
+        #nodes_pc_rc_inf = {key: pc_rc[key] for key in nodes_id if key not in nodes_rc_overlaping.keys()}
+        
+               
+       
+        # Create a dot plot of the GT overlaping nodes but without match with RC values
+        plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^', c= 'orange') # type: ignore
+
+        # Create a dot plot of the RC overlaping nodes but without match with GT values
+        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC', marker='s', c='blue') # type: ignore
+
+        # Create a dot plot of the GT overlaping nodes with only match with RC values
+        plt.scatter(nodes_pc_gt_match.keys(), nodes_pc_gt_match.values(), label='GT Match', marker='^', c= 'red') # type: ignore
+
+        # Create a dot plot of the RC overlaping nodes with only match with GT values
+        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='RC Match', marker='s', c='red') # type: ignore
+
+        #for node in match:
+        #    plt.axvline(x=node, ymin=nodes_pc_rc[node] , ymax=nodes_pc_gt[node], color='r')
+
+        # Set the plot title and axis labels
+        plt.title('GT vs RC - PC in overlaping nodes')
+        plt.xlabel('Nodes')
+        plt.ylabel('PC Values')
+
+        
+
+        gt_mean_values = list(nodes_pc_gt.values())
+        rc_mean_values = list(nodes_pc_rc.values())
+        gt_mean_values.extend(list(nodes_pc_gt_match.values()))
+        rc_mean_values.extend(list(nodes_pc_rc_match.values()))
+
+        gt_mean = np.mean(gt_mean_values) # type: ignore
+        rc_mean = np.mean(rc_mean_values) # type: ignore
+        
+        plt.axhline(y=gt_mean, color='orange', linestyle='--', label='GT Mean') # type: ignore
+        plt.axhline(y=rc_mean, color='b', label='RC Mean') # type: ignore
+
+        # Add a legend to the plot
+        plt.legend()
+
+        # Show the plot
+        #plt.gcf().set_size_inches(20, 11.25)
+        #plt.show()
+
+        if not os.path.exists(f'output/gamma_{gamma}/{net_type}/PC_Overlaping_score_gamma_{gamma}.csv'):
+            with open(f'output/gamma_{gamma}/{net_type}/PC_Overlaping_score_gamma_{gamma}.csv', 'a+') as f:
+                f.write(f'Net,PC_Mean_GT, PC_Mean_RC,T_Possitive,F_Possitive \n')
+
+        with open(f'output/gamma_{gamma}/{net_type}/PC_Overlaping_score_gamma_{gamma}.csv', 'a+') as f:            
+            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+
+        if not os.path.exists(f'output/gamma_{gamma}/{net_type}/img'):
+            os.makedirs(f'output/gamma_{gamma}/{net_type}/img')
+        
+        plt.savefig(f'output/gamma_{gamma}/{net_type}/img/PC_network{i}_gamma_{gamma}.png', dpi=550)
+        plt.close()
+
+
 def detect_nodes_with_overlapping(node_list: list[list[int]]) -> dict[int, int]:
     from collections import Counter
     nodes_with_overlapping = {}
@@ -2675,10 +2910,14 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
 
             all_communities = []
 
+            directory = f'gamma_{gamma}/{folder_version}/'
+
+            if not os.path.exists(f'output/{directory}'):
+                os.makedirs(f'output/{directory}')        
 
             exportpath_RC = f'{net}_RC_gamma_{gamma}.txt'
 
-            m.export_RC(f'stability/{folder_version}/{net}/', exportpath_RC, value)
+            m.export_RC(f'{directory}/', exportpath_RC, value)
 
 def read_communities_from_dat(path : str) -> list[list[int]]:
     
@@ -2736,6 +2975,20 @@ def apply_PC_to_RC(net_version: str, overlap: bool = False):
             communities = read_communities_from_dat(f'{folder_path}/{file}')
             dict_node = m.participation_coefficient(communities) if overlap else m.participation_coefficient_overlapping(communities)
             pickle.dump(dict_node, open(f'{folder_path}/{file[:-7]}_RC_PC.pkl', 'wb'))
+
+def apply_PC_to_RC_gamma(net_version: str, overlap: bool = False, gamma: str = '0.8'):
+    
+    folder_path = f'output/gamma_{gamma}/{net_version}'
+
+    files_list = os.listdir(folder_path)
+    m = Matrix([], {},[])
+
+    for file in files_list:
+        if file.endswith(f'_RC_gamma_{gamma}.txt'):
+            m.G = pickle.load(open(f'dataset/{net_version}/{file[:-17]}/{file[:-17]}.pkl', 'rb'))
+            communities = read_communities_from_dat(f'{folder_path}/{file}')
+            dict_node = m.participation_coefficient(communities) if not overlap else m.participation_coefficient_overlapping(communities)
+            pickle.dump(dict_node, open(f'{folder_path}/{file[:-4]}_PC.pkl', 'wb'))
 
 def increse_greedy_files(net_version: str):
 
@@ -3235,10 +3488,16 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
+    
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
+    #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
+
+    #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
+    
     #compare_cores_with_GT('NetsType_1.4')
     
+    analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
 
     # for net in range(1,12):
 
