@@ -2676,7 +2676,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
             all_communities = []
 
 
-            exportpath_RC = f'{net}_RC_gamma.txt'
+            exportpath_RC = f'{net}_RC_gamma_{gamma}.txt'
 
             m.export_RC(f'stability/{folder_version}/{net}/', exportpath_RC, value)
 
