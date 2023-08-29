@@ -922,9 +922,9 @@ class Matrix:
 
         print('Real k: ' + str(k + 1))
         
-        with open(path, 'w+') as f:
-            for i in range(k + 1):
-                f.write(' '.join(map(str, seeds[i].nodes())) + '\n')
+        # with open(path, 'w+') as f:
+        #     for i in range(k + 1):
+        #         f.write(' '.join(map(str, seeds[i].nodes())) + '\n')
             
         
         # list of set of nodes that represents the  coverage of the graph . The first set is the inferior coverage and the second set is the superior coverage.
@@ -2646,7 +2646,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
 
     folder_list = os.listdir(folder_path)
 
-    folder_list = ['network1', 'network11']
+    folder_list = ['network1', 'network11', 'network2', 'network3', 'network4', 'network5', 'network6', 'network7', 'network8', 'network9', 'network10']
 
     for net in folder_list:
         
@@ -2671,7 +2671,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
             all_communities.extend(infomap_communities[:10])
 
                     
-            value = m.RoughClustering(communities=all_communities, gamma=gamma)
+            value = m.RoughClustering(communities=all_communities, gamma=gamma, path='temp')
 
             all_communities = []
 
@@ -3223,6 +3223,11 @@ def testing_k(net_version: str, num_iter: int)-> int:
 
     return mean
 
+def gamma_analyse(gamma: int, folderdame: str = 'NetsType_1.4'):
+    pass
+
+
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3230,9 +3235,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    communities = m.load_all_algorithm_communities(['louvain', 'lpa', 'greedy', 'infomap'])
-
-    print(testing_k(communities))
+    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
 
     #compare_cores_with_GT('NetsType_1.4')
     
@@ -3292,7 +3295,7 @@ if __name__ == '__main__':
         
     #stability(4, 10, 'NetsType_1.6')
 
-    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.6)
+    
 
     # nodes_rc_overlaping = detect_nodes_with_overlapping(read_communities_from_dat(f'output/stability/NetsType_1.6/network11/network11_RC_gamma.txt'))
 
