@@ -3479,7 +3479,76 @@ def testing_k(net_version: str, num_iter: int)-> int:
 def gamma_analyse(gamma: int, folderdame: str = 'NetsType_1.4'):
     pass
 
+def construct_gephi_graph(folderversion: str):
 
+    '''
+        This method constructs a gephi graph from a networkx graph with properties
+          of the nodes.
+    
+        Parameters
+        ----------
+        folderversion : str
+            The version of the network.
+        
+        
+        Output
+        ------
+        gephi graph
+            The gephi graph file.
+    '''
+    for i in range(1, 12):
+
+        netnumber = str(i)
+
+        path = f'dataset/{folderversion}/network{netnumber}/network{netnumber}.pkl'
+
+        G : nx.Graph = pickle.load(open(path, 'rb'))
+
+        gt_communities = read_communities_from_dat(f'dataset/{folderversion}/GT/community{netnumber}_GT.dat')
+
+        # Add properties to the nodes of the graph with the communities from GT
+        for i in range(len(gt_communities)):
+            for node in gt_communities[i]:
+                G.nodes[node]['gt_community'] = i
+
+        rc_communities = read_communities_from_dat(f'output/gamma_0.5/{folderversion}/network{netnumber}_RC_gamma_0.5.txt')
+
+        # Add properties to the nodes of the graph with the communities from RC
+        for i in range(len(rc_communities)):
+            for node in rc_communities[i]:
+                G.nodes[node]['rc_community'] = i
+        
+        core_nodes = read_communities_from_dat(f'output/stability/{folderversion}/network{netnumber}/network{netnumber}_RC_cores.txt')
+
+        # Add properties to the nodes of the graph with the bool if is a core node
+
+        # Convert list of list of elements to a set with all elements
+        core_nodes = set([item for sublist in core_nodes for item in sublist])
+
+        for node in G.nodes:
+            if node in core_nodes:
+                G.nodes[node]['core'] = True
+            else:
+                G.nodes[node]['core'] = False
+        
+        # Add properties to the nodes of the graph with the overlapping clasification
+
+        overlapping_nodes_gt = detect_nodes_with_overlapping(gt_communities)
+
+        for node, count in overlapping_nodes_gt.items():
+            G.nodes[node]['overlapping_GT'] = count
+
+        overlapping_nodes_rc = detect_nodes_with_overlapping(rc_communities)
+
+        for node, count in overlapping_nodes_rc.items():
+            if node in overlapping_nodes_gt.keys():
+                G.nodes[node]['overlapping_RC_T'] = count
+            else:
+                G.nodes[node]['overlapping_RC_F'] = count
+        
+        # Export the graph to a gephi file in GML format
+
+        nx.write_gml(G, f'dataset/{folderversion}/network{netnumber}/network{netnumber}_gamma_0.5.gml')
 
 if __name__ == '__main__':
 
@@ -3487,6 +3556,8 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
+
+    construct_gephi_graph('NetsType_1.6')
 
     
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
@@ -3497,7 +3568,7 @@ if __name__ == '__main__':
     
     #compare_cores_with_GT('NetsType_1.4')
     
-    analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
+    #analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
 
     # for net in range(1,12):
 
