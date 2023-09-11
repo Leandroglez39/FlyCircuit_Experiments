@@ -3629,9 +3629,9 @@ if __name__ == '__main__':
 
     list_weighted.sort(key=lambda x: x[1], reverse=True)
 
-    list_degree = list_degree[:9700]
+    list_degree = list_degree[:7200]
 
-    list_weighted = list_weighted[:9700]
+    list_weighted = list_weighted[:7200]
 
     
 
@@ -3680,10 +3680,10 @@ if __name__ == '__main__':
     plt.title('Influential nodes')
     plt.legend()
     plt.yticks([0,1,2,3])
-    plt.xticks(np.arange(0, 11000, step=1000))
+    plt.xticks(np.arange(0, 8000, step=1000))
     plt.tick_params(axis='y', labelleft=False)    
-    plt.show()
-    
+    #plt.show()
+    plt.savefig('influential_nodes2.png', dpi=700)
     
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
