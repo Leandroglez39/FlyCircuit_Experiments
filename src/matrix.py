@@ -3506,17 +3506,36 @@ def construct_gephi_graph(folderversion: str):
 
         gt_communities = read_communities_from_dat(f'dataset/{folderversion}/GT/community{netnumber}_GT.dat')
 
+
+        dict_node = {}
+
         # Add properties to the nodes of the graph with the communities from GT
         for i in range(len(gt_communities)):
             for node in gt_communities[i]:
-                G.nodes[node]['gt_community'] = i
+                if node in dict_node.keys():
+                    dict_node[node] += 1
+                    value = dict_node[node]
+                    G.nodes[node][f'gt_community_{value}'] = i
+                    
+                else:
+                    G.nodes[node]['gt_community_1'] = i
+                    dict_node[node] = 1
+                
+        dict_node = {}
 
         rc_communities = read_communities_from_dat(f'output/gamma_0.5/{folderversion}/network{netnumber}_RC_gamma_0.5.txt')
 
         # Add properties to the nodes of the graph with the communities from RC
         for i in range(len(rc_communities)):
             for node in rc_communities[i]:
-                G.nodes[node]['rc_community'] = i
+                if node in dict_node.keys():
+                    dict_node[node] += 1
+                    value = dict_node[node]
+                    G.nodes[node][f'rc_community_{value}'] = i
+                    
+                else:
+                    G.nodes[node]['rc_community_1'] = i
+                    dict_node[node] = 1
         
         core_nodes = read_communities_from_dat(f'output/stability/{folderversion}/network{netnumber}/network{netnumber}_RC_cores.txt')
 
