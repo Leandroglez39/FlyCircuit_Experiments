@@ -3569,6 +3569,40 @@ def construct_gephi_graph(folderversion: str):
 
         nx.write_gml(G, f'dataset/{folderversion}/network{netnumber}/network{netnumber}_gamma_0.5.gml')
 
+def save_distribution():
+
+    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
+    # Obtiene el histograma de los grados de los nodos
+    grados = dict(G.degree(weight='weight'))
+
+    grados = dict(sorted(grados.items(), key=lambda x: x[1], reverse=True))
+    #Change the style of plt
+    plt.style.use('seaborn-v0_8')
+    # Grafica los grados de los nodos
+    plt.plot(range(len(grados)), list(grados.values()), 'bo', markersize=1)
+    plt.axvline(x=4000, color='darkred', linestyle='--', label='20%')
+    plt.axvline(x=7200, color='darkgreen', linestyle='--', label='36%')
+
+    plt.text(4000, 4800, '4000', rotation=270, va='baseline', color='darkred')
+    plt.text(7200, 3800, '7200', rotation=270, va='baseline', color='darkgreen')
+
+    plt.fill_between(range(7200), list(grados.values())[:7200], color='black', alpha=0.4, edgecolor='black', linewidth=0.5, hatch='//', label='80%')
+    plt.fill_between(range(4000), list(grados.values())[:4000], color='black', alpha=0.4, edgecolor='black', linewidth=0.5, hatch=u'\\', label='64%')
+
+    
+
+    # Configura los ejes
+    plt.xlabel('Node')
+    plt.ylabel('Wieght')
+    plt.title('Weight Distribution')
+    plt.legend()
+ 
+    
+
+    # Muestra la gráfica
+    #plt.show()
+    plt.savefig('weight_distribution.png', dpi=700)
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3576,8 +3610,80 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    construct_gephi_graph('NetsType_1.6')
+    #construct_gephi_graph('NetsType_1.6')
 
+    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
+
+    dict_degree = dict(G.degree()) # type: ignore
+
+    dict_weighted = dict(G.degree(weight='weight')) # type: ignore
+
+    list_degree = list(dict_degree.items())
+    
+
+    
+
+    list_weighted = list(dict_weighted.items())
+
+    list_degree.sort(key=lambda x: x[1], reverse=True)
+
+    list_weighted.sort(key=lambda x: x[1], reverse=True)
+
+    list_degree = list_degree[:9700]
+
+    list_weighted = list_weighted[:9700]
+
+    
+
+    overlap = list(set([x[0] for x in list_degree]).intersection(set([x[0] for x in list_weighted])))
+   
+    list_degree_clean = list(set([x[0] for x in list_degree]) - set(overlap))
+
+    list_weighted_clean = list(set([x[0] for x in list_weighted]) - set(overlap))
+
+       
+    data1 = [x for x in range(len(list_degree)) if list_degree[x][0] in overlap]
+    data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] in overlap]
+
+    plt.scatter(data1, [1 for _ in data1], color='red', marker='s', label='Degree Match' )
+    plt.scatter(data2, [2 for _ in data2], color='red', marker='*', label='Weight Match' )
+
+    data1 = [x for x in range(len(list_degree)) if list_degree[x][0] not in overlap]
+    data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] not in overlap]
+
+    plt.scatter(data1, [1 for _ in data1], color='blue', marker='s', label='Degree' )
+    plt.scatter(data2, [2 for _ in data2], color='purple', marker='*', label='Weight' )
+
+
+
+    # for i in range(len(list_degree)):
+    #     if list_degree[i][0] in overlap:
+    #         plt.scatter(i, 1, color='red', marker='s', label='Degree Match' )
+    #     else:
+    #         plt.scatter(i, 1, color='blue', marker='s', label='Degree' ) 
+    
+    # for i in range(len(list_weighted)):
+    #     if list_weighted[i][0] in overlap:
+    #         plt.scatter(i, 2, color='red', marker='*', label='Weighted Match' )
+    #     else:
+    #         plt.scatter(i, 2, color='purple', marker='*', label='Weighted' )
+
+    # # Plot the degree values in a scatter plot
+    # plt.scatter([x for x in range(len(overlap))], [1 for _ in overlap], color='red', marker='s', label='Degree Match' )
+    # plt.scatter([x for x in range(len(overlap))], [2 for _ in overlap], color='red', marker='*', label='Weighted Match' )
+
+    # plt.scatter([x for x in range(len(list_degree))], [1 for _ in list_degree], color='blue', marker='s', label='Degree')
+    # plt.scatter([x for x in range(len(list_weighted))], [2 for _ in list_weighted], color='purple', marker='*', label='Weighted')
+
+
+    plt.xlabel('Nodes')    
+    plt.title('Influential nodes')
+    plt.legend()
+    plt.yticks([0,1,2,3])
+    plt.xticks(np.arange(0, 11000, step=1000))
+    plt.tick_params(axis='y', labelleft=False)    
+    plt.show()
+    
     
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
