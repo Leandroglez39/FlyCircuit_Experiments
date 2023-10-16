@@ -31,8 +31,9 @@ graph [
     degree9 407
     total_weight10 5391
     degree10 995
+    total_weight0 0
     total_out_weight 811557
-    weight_coeff 0.14
+    weight_coeff 0.136
   ]
   node [
     id 1
@@ -65,8 +66,9 @@ graph [
     degree9 11538
     total_weight10 328
     degree10 66
-    total_out_weight 1281098
-    weight_coeff 0.15
+    total_weight1 0
+    total_out_weight 1416492
+    weight_coeff 0.169
   ]
   node [
     id 2
@@ -99,8 +101,9 @@ graph [
     degree9 513
     total_weight10 1625
     degree10 317
-    total_out_weight 374039
-    weight_coeff 0.08
+    total_weight2 0
+    total_out_weight 707793
+    weight_coeff 0.146
   ]
   node [
     id 3
@@ -133,8 +136,9 @@ graph [
     degree9 306
     total_weight10 2
     degree10 2
-    total_out_weight 179642
-    weight_coeff 0.01
+    total_weight3 0
+    total_out_weight 521448
+    weight_coeff 0.034
   ]
   node [
     id 4
@@ -167,8 +171,9 @@ graph [
     degree9 561
     total_weight10 4950
     degree10 1090
-    total_out_weight 118273
-    weight_coeff 0.02
+    total_weight4 0
+    total_out_weight 1106710
+    weight_coeff 0.158
   ]
   node [
     id 5
@@ -201,8 +206,9 @@ graph [
     degree9 79
     total_weight10 195
     degree10 67
-    total_out_weight 241388
-    weight_coeff 0.03
+    total_weight5 0
+    total_out_weight 445262
+    weight_coeff 0.059
   ]
   node [
     id 6
@@ -235,8 +241,9 @@ graph [
     degree9 579
     total_weight10 271
     degree10 79
-    total_out_weight 7233
-    weight_coeff 0.0
+    total_weight6 0
+    total_out_weight 252100
+    weight_coeff 0.045
   ]
   node [
     id 7
@@ -269,8 +276,9 @@ graph [
     degree9 84
     total_weight10 5
     degree10 2
-    total_out_weight 642
-    weight_coeff 0.0
+    total_weight7 0
+    total_out_weight 571106
+    weight_coeff 0.587
   ]
   node [
     id 8
@@ -303,8 +311,9 @@ graph [
     degree9 0
     total_weight10 316
     degree10 92
-    total_out_weight 316
-    weight_coeff 0.0
+    total_weight8 0
+    total_out_weight 9439
+    weight_coeff 0.112
   ]
   node [
     id 9
@@ -337,8 +346,9 @@ graph [
     degree8 1
     total_weight10 17
     degree10 6
-    total_out_weight 17
-    weight_coeff 0.0
+    total_weight9 0
+    total_out_weight 119007
+    weight_coeff 0.612
   ]
   node [
     id 10
@@ -371,8 +381,9 @@ graph [
     degree8 18
     total_weight9 0
     degree9 0
-    total_out_weight 0
-    weight_coeff 0.0
+    total_weight10 0
+    total_out_weight 12960
+    weight_coeff 0.166
   ]
   edge [
     source 0

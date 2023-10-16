@@ -3772,11 +3772,14 @@ if __name__ == '__main__':
 
     
     for i in range(len(rc_communities)):
-        total_out_weight = sum(NewG.nodes[i][f'total_weight{x}'] for x in range(i+1, 11))
+        NewG.nodes[i][f'total_weight{i}'] = 0
+
+    for i in range(len(rc_communities)):
+        total_out_weight = sum([NewG.nodes[i][f'total_weight{x}'] for x in range(11)])
         NewG.nodes[i]['total_out_weight'] = total_out_weight
 
     for i in range(len(rc_communities)):
-        NewG.nodes[i]['weight_coeff'] =  round(NewG.nodes[i]['total_out_weight'] / NewG.nodes[i]['total_weight'], 2) if NewG.nodes[i]['total_out_weight'] > 0 else 0.00
+        NewG.nodes[i]['weight_coeff'] =  round(NewG.nodes[i]['total_out_weight'] / NewG.nodes[i]['total_weight'], 3) if NewG.nodes[i]['total_weight'] > 0 else 0.000
 
 
 
