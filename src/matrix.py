@@ -2919,7 +2919,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
 
             m.export_RC(f'{directory}/', exportpath_RC, value)
 
-def read_communities_from_dat(path : str) -> list[list[int]]:
+def read_communities_from_dat(path : str, is_number = True) -> list[list[int]]:
     
     communities = []
     with open(path, 'r') as f:
@@ -2928,8 +2928,11 @@ def read_communities_from_dat(path : str) -> list[list[int]]:
             data = line.split(' ')
             if data[-1] == '\n':
                 data.remove('\n')
-            inter_data = [int(x) for x in data]
-            communities.append(inter_data)
+            if is_number:
+                inter_data = [int(x) for x in data]
+                communities.append(inter_data)
+            else:
+                communities.append(data)
     return communities
 
 def apply_PC_to_GT(net_version : str, overlap: bool = False):
@@ -3706,10 +3709,80 @@ if __name__ == '__main__':
 
     #construct_gephi_graph('NetsType_1.6')
 
-    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
+    G = pickle.load(open('dataset/attributed_graph-1.4.fly', 'rb'))
+    
+    m.G = G
+
+
+    rc_communities = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
+
+    rc_communities.sort(key=lambda x: len(x), reverse=True)
+
+    # #data = m.participation_coefficient_overlapping(rc_communities)
+
+    # #pickle.dump(data, open('output/FlyCircuit/FlyCircuit_1.4_RC_PC.pkl', 'wb'))
+
+    degrees = dict(G.degree())
+    weights = dict(G.degree(weight='weight'))
+    pcs = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_PC.pkl', 'rb'))
+    
     
 
-    rc_communities = read_communities_from_dat('output/NetsType_1.6/network1_RC_gamma.txt')
+
+    NewG = nx.DiGraph()
+
+    for i in  range(len(rc_communities)):
+        com = rc_communities[i]
+        avg_degree = statistics.mean(dict(filter(lambda item: item[0] in com, degrees.items())).values())
+        avg_weight = statistics.mean(dict(filter(lambda item: item[0] in com, weights.items())).values())
+        avg_pc = statistics.mean(dict(filter(lambda item: item[0] in com, pcs.items())).values())        
+        label = f'{i}'
+        total_out_degree = sum(x[1] for x in list(G.out_degree(com)))
+        total_in_degree = sum(x[1] for x in list(G.in_degree(com)))
+        total_weight = sum(x[1] for x in list(G.degree(com, weight='weight')))
+        NewG.add_node(i, size=len(com), avg_degree=avg_degree, avg_weight=avg_weight, avg_pc=avg_pc, Label=label, total_out_degree=total_out_degree, total_weight=total_weight, total_in_degree=total_in_degree)
+
+
+    for i in range(len(rc_communities)):
+
+        comA = set(rc_communities[i])
+        for j in range(i + 1, len(rc_communities)):
+            comB = set(rc_communities[j])
+            data1 = [(u,v) for u in comA for v in G.neighbors(u) if v in comB]
+            data2 = [(u,v) for u in comB for v in G.neighbors(u) if v in comA]
+
+            sum1 = sum([G.get_edge_data(*edge)['weight'] for edge in data1])
+            sum2 = sum([G.get_edge_data(*edge)['weight'] for edge in data2])
+
+            if len(data1) > 0:
+                NewG.add_edge(i, j, weight=round((sum1 / len(data1)), 2), label=f'{sum1 / len(data1):.2f}')
+                NewG.nodes[i][f'total_weight{j}'] = sum1
+                NewG.nodes[i][f'degree{j}'] = len(data1)
+            else:            
+                NewG.nodes[i][f'total_weight{j}'] = 0
+                NewG.nodes[i][f'degree{j}'] = 0
+
+            if len(data2) > 0:
+                NewG.add_edge(j, i, weight=round((sum2 / len(data2)), 2), label=f'{sum2 / len(data2):.2f}')
+                NewG.nodes[j][f'total_weight{i}'] = sum2
+                NewG.nodes[j][f'degree{i}'] = len(data2)
+            else:
+                NewG.nodes[j][f'total_weight{i}'] = 0
+                NewG.nodes[j][f'degree{i}'] = 0
+
+    
+    for i in range(len(rc_communities)):
+        total_out_weight = sum(NewG.nodes[i][f'total_weight{x}'] for x in range(i+1, 11))
+        NewG.nodes[i]['total_out_weight'] = total_out_weight
+
+    for i in range(len(rc_communities)):
+        NewG.nodes[i]['weight_coeff'] =  round(NewG.nodes[i]['total_out_weight'] / NewG.nodes[i]['total_weight'], 2) if NewG.nodes[i]['total_out_weight'] > 0 else 0.00
+
+
+
+
+    nx.write_gml(NewG, 'output/FlyCircuit/FlyCircuit_1.4_RC.gml')
+        
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
     #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
