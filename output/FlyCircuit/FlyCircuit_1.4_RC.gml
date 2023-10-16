@@ -390,629 +390,839 @@ graph [
     target 1
     weight 5.65
     label "5.65"
+    degree 25494
+    total_weight 143932
   ]
   edge [
     source 0
     target 2
     weight 6.34
     label "6.34"
+    degree 31795
+    total_weight 201518
   ]
   edge [
     source 0
     target 3
     weight 4.19
     label "4.19"
+    degree 15309
+    total_weight 64206
   ]
   edge [
     source 0
     target 4
     weight 6.31
     label "6.31"
+    degree 51276
+    total_weight 323782
   ]
   edge [
     source 0
     target 5
     weight 5.63
     label "5.63"
+    degree 5956
+    total_weight 33506
   ]
   edge [
     source 0
     target 6
     weight 7.0
     label "7.00"
+    degree 780
+    total_weight 5462
   ]
   edge [
     source 0
     target 7
     weight 5.84
     label "5.84"
+    degree 5182
+    total_weight 30255
   ]
   edge [
     source 0
     target 8
     weight 4.14
     label "4.14"
+    degree 176
+    total_weight 729
   ]
   edge [
     source 0
     target 9
     weight 6.82
     label "6.82"
+    degree 407
+    total_weight 2776
   ]
   edge [
     source 0
     target 10
     weight 5.42
     label "5.42"
+    degree 995
+    total_weight 5391
   ]
   edge [
     source 1
     target 0
     weight 5.41
     label "5.41"
+    degree 25009
+    total_weight 135394
   ]
   edge [
     source 1
     target 2
     weight 5.74
     label "5.74"
+    degree 22904
+    total_weight 131583
   ]
   edge [
     source 1
     target 3
     weight 4.55
     label "4.55"
+    degree 68810
+    total_weight 313187
   ]
   edge [
     source 1
     target 4
     weight 5.43
     label "5.43"
+    degree 27930
+    total_weight 151529
   ]
   edge [
     source 1
     target 5
     weight 8.01
     label "8.01"
+    degree 41460
+    total_weight 332027
   ]
   edge [
     source 1
     target 6
     weight 6.39
     label "6.39"
+    degree 35443
+    total_weight 226380
   ]
   edge [
     source 1
     target 7
     weight 5.0
     label "5.00"
+    degree 12648
+    total_weight 63201
   ]
   edge [
     source 1
     target 8
     weight 7.68
     label "7.68"
+    degree 333
+    total_weight 2559
   ]
   edge [
     source 1
     target 9
     weight 5.23
     label "5.23"
+    degree 11538
+    total_weight 60304
   ]
   edge [
     source 1
     target 10
     weight 4.97
     label "4.97"
+    degree 66
+    total_weight 328
   ]
   edge [
     source 2
     target 0
     weight 6.01
     label "6.01"
+    degree 37356
+    total_weight 224655
   ]
   edge [
     source 2
     target 1
     weight 5.87
     label "5.87"
+    degree 18576
+    total_weight 109099
   ]
   edge [
     source 2
     target 3
     weight 3.64
     label "3.64"
+    degree 7257
+    total_weight 26439
   ]
   edge [
     source 2
     target 4
     weight 6.44
     label "6.44"
+    degree 45620
+    total_weight 293630
   ]
   edge [
     source 2
     target 5
     weight 2.97
     label "2.97"
+    degree 185
+    total_weight 549
   ]
   edge [
     source 2
     target 6
     weight 5.78
     label "5.78"
+    degree 3138
+    total_weight 18152
   ]
   edge [
     source 2
     target 7
     weight 5.24
     label "5.24"
+    degree 3304
+    total_weight 17317
   ]
   edge [
     source 2
     target 8
     weight 5.4
     label "5.40"
+    degree 2644
+    total_weight 14280
   ]
   edge [
     source 2
     target 9
     weight 3.99
     label "3.99"
+    degree 513
+    total_weight 2047
   ]
   edge [
     source 2
     target 10
     weight 5.13
     label "5.13"
+    degree 317
+    total_weight 1625
   ]
   edge [
     source 3
     target 0
     weight 3.84
     label "3.84"
+    degree 8205
+    total_weight 31484
   ]
   edge [
     source 3
     target 1
     weight 4.54
     label "4.54"
+    degree 62644
+    total_weight 284649
   ]
   edge [
     source 3
     target 2
     weight 4.66
     label "4.66"
+    degree 5505
+    total_weight 25673
   ]
   edge [
     source 3
     target 4
     weight 5.06
     label "5.06"
+    degree 23076
+    total_weight 116869
   ]
   edge [
     source 3
     target 5
     weight 4.45
     label "4.45"
+    degree 2210
+    total_weight 9833
   ]
   edge [
     source 3
     target 6
     weight 3.92
     label "3.92"
+    degree 1572
+    total_weight 6166
   ]
   edge [
     source 3
     target 7
     weight 4.85
     label "4.85"
+    degree 9199
+    total_weight 44654
   ]
   edge [
     source 3
     target 8
     weight 2.67
     label "2.67"
+    degree 81
+    total_weight 216
   ]
   edge [
     source 3
     target 9
     weight 6.22
     label "6.22"
+    degree 306
+    total_weight 1902
   ]
   edge [
     source 3
     target 10
     weight 1.0
     label "1.00"
+    degree 2
+    total_weight 2
   ]
   edge [
     source 4
     target 0
     weight 5.47
     label "5.47"
+    degree 50168
+    total_weight 274403
   ]
   edge [
     source 4
     target 1
     weight 5.66
     label "5.66"
+    degree 24084
+    total_weight 136305
   ]
   edge [
     source 4
     target 2
     weight 5.36
     label "5.36"
+    degree 39898
+    total_weight 213831
   ]
   edge [
     source 4
     target 3
     weight 6.3
     label "6.30"
+    degree 57767
+    total_weight 363898
   ]
   edge [
     source 4
     target 5
     weight 5.39
     label "5.39"
+    degree 4418
+    total_weight 23814
   ]
   edge [
     source 4
     target 6
     weight 5.38
     label "5.38"
+    degree 5622
+    total_weight 30266
   ]
   edge [
     source 4
     target 7
     weight 6.15
     label "6.15"
+    degree 9155
+    total_weight 56264
   ]
   edge [
     source 4
     target 8
     weight 4.05
     label "4.05"
+    degree 149
+    total_weight 604
   ]
   edge [
     source 4
     target 9
     weight 4.23
     label "4.23"
+    degree 561
+    total_weight 2375
   ]
   edge [
     source 4
     target 10
     weight 4.54
     label "4.54"
+    degree 1090
+    total_weight 4950
   ]
   edge [
     source 5
     target 0
     weight 5.9
     label "5.90"
+    degree 2476
+    total_weight 14605
   ]
   edge [
     source 5
     target 1
     weight 20.63
     label "20.63"
+    degree 7867
+    total_weight 162261
   ]
   edge [
     source 5
     target 2
     weight 5.33
     label "5.33"
+    degree 381
+    total_weight 2030
   ]
   edge [
     source 5
     target 3
     weight 3.62
     label "3.62"
+    degree 4075
+    total_weight 14738
   ]
   edge [
     source 5
     target 4
     weight 5.13
     label "5.13"
+    degree 1998
+    total_weight 10240
   ]
   edge [
     source 5
     target 6
     weight 10.92
     label "10.92"
+    degree 21629
+    total_weight 236231
   ]
   edge [
     source 5
     target 7
     weight 3.68
     label "3.68"
+    degree 1209
+    total_weight 4448
   ]
   edge [
     source 5
     target 8
     weight 3.19
     label "3.19"
+    degree 16
+    total_weight 51
   ]
   edge [
     source 5
     target 9
     weight 5.86
     label "5.86"
+    degree 79
+    total_weight 463
   ]
   edge [
     source 5
     target 10
     weight 2.91
     label "2.91"
+    degree 67
+    total_weight 195
   ]
   edge [
     source 6
     target 0
     weight 4.58
     label "4.58"
+    degree 440
+    total_weight 2017
   ]
   edge [
     source 6
     target 1
     weight 5.75
     label "5.75"
+    degree 7184
+    total_weight 41327
   ]
   edge [
     source 6
     target 2
     weight 7.22
     label "7.22"
+    degree 1395
+    total_weight 10066
   ]
   edge [
     source 6
     target 3
     weight 5.12
     label "5.12"
+    degree 3906
+    total_weight 19996
   ]
   edge [
     source 6
     target 4
     weight 11.44
     label "11.44"
+    degree 3840
+    total_weight 43947
   ]
   edge [
     source 6
     target 5
     weight 7.21
     label "7.21"
+    degree 17689
+    total_weight 127514
   ]
   edge [
     source 6
     target 7
     weight 3.46
     label "3.46"
+    degree 871
+    total_weight 3011
   ]
   edge [
     source 6
     target 8
     weight 2.48
     label "2.48"
+    degree 54
+    total_weight 134
   ]
   edge [
     source 6
     target 9
     weight 6.59
     label "6.59"
+    degree 579
+    total_weight 3817
   ]
   edge [
     source 6
     target 10
     weight 3.43
     label "3.43"
+    degree 79
+    total_weight 271
   ]
   edge [
     source 7
     target 0
     weight 6.25
     label "6.25"
+    degree 7471
+    total_weight 46687
   ]
   edge [
     source 7
     target 1
     weight 4.47
     label "4.47"
+    degree 8202
+    total_weight 36664
   ]
   edge [
     source 7
     target 2
     weight 8.34
     label "8.34"
+    degree 6416
+    total_weight 53482
   ]
   edge [
     source 7
     target 3
     weight 5.74
     label "5.74"
+    degree 56815
+    total_weight 325912
   ]
   edge [
     source 7
     target 4
     weight 6.76
     label "6.76"
+    degree 14593
+    total_weight 98680
   ]
   edge [
     source 7
     target 5
     weight 4.58
     label "4.58"
+    degree 1107
+    total_weight 5075
   ]
   edge [
     source 7
     target 6
     weight 3.76
     label "3.76"
+    degree 1054
+    total_weight 3964
   ]
   edge [
     source 7
     target 8
     weight 2.17
     label "2.17"
+    degree 48
+    total_weight 104
   ]
   edge [
     source 7
     target 9
     weight 6.35
     label "6.35"
+    degree 84
+    total_weight 533
   ]
   edge [
     source 7
     target 10
     weight 2.5
     label "2.50"
+    degree 2
+    total_weight 5
   ]
   edge [
     source 8
     target 0
     weight 2.74
     label "2.74"
+    degree 133
+    total_weight 364
   ]
   edge [
     source 8
     target 1
     weight 6.4
     label "6.40"
+    degree 120
+    total_weight 768
   ]
   edge [
     source 8
     target 2
     weight 6.83
     label "6.83"
+    degree 1037
+    total_weight 7087
   ]
   edge [
     source 8
     target 3
     weight 1.2
     label "1.20"
+    degree 5
+    total_weight 6
   ]
   edge [
     source 8
     target 4
     weight 3.54
     label "3.54"
+    degree 245
+    total_weight 867
   ]
   edge [
     source 8
     target 6
     weight 2.0
     label "2.00"
+    degree 14
+    total_weight 28
   ]
   edge [
     source 8
     target 7
     weight 1.5
     label "1.50"
+    degree 2
+    total_weight 3
   ]
   edge [
     source 8
     target 10
     weight 3.43
     label "3.43"
+    degree 92
+    total_weight 316
   ]
   edge [
     source 9
     target 0
     weight 4.1
     label "4.10"
+    degree 155
+    total_weight 635
   ]
   edge [
     source 9
     target 1
     weight 6.44
     label "6.44"
+    degree 1457
+    total_weight 9382
   ]
   edge [
     source 9
     target 2
     weight 6.01
     label "6.01"
+    degree 178
+    total_weight 1069
   ]
   edge [
     source 9
     target 3
     weight 3.39
     label "3.39"
+    degree 321
+    total_weight 1088
   ]
   edge [
     source 9
     target 4
     weight 5.19
     label "5.19"
+    degree 613
+    total_weight 3180
   ]
   edge [
     source 9
     target 5
     weight 5.76
     label "5.76"
+    degree 1341
+    total_weight 7729
   ]
   edge [
     source 9
     target 6
     weight 11.4
     label "11.40"
+    degree 8353
+    total_weight 95223
   ]
   edge [
     source 9
     target 7
     weight 5.05
     label "5.05"
+    degree 135
+    total_weight 682
   ]
   edge [
     source 9
     target 8
     weight 2.0
     label "2.00"
+    degree 1
+    total_weight 2
   ]
   edge [
     source 9
     target 10
     weight 2.83
     label "2.83"
+    degree 6
+    total_weight 17
   ]
   edge [
     source 10
     target 0
     weight 6.08
     label "6.08"
+    degree 172
+    total_weight 1045
   ]
   edge [
     source 10
     target 1
     weight 4.02
     label "4.02"
+    degree 44
+    total_weight 177
   ]
   edge [
     source 10
     target 2
     weight 7.42
     label "7.42"
+    degree 114
+    total_weight 846
   ]
   edge [
     source 10
     target 4
     weight 10.93
     label "10.93"
+    degree 987
+    total_weight 10784
   ]
   edge [
     source 10
     target 5
     weight 3.09
     label "3.09"
+    degree 11
+    total_weight 34
   ]
   edge [
     source 10
     target 6
     weight 3.0
     label "3.00"
+    degree 6
+    total_weight 18
   ]
   edge [
     source 10
     target 8
     weight 3.11
     label "3.11"
+    degree 18
+    total_weight 56
   ]
 ]

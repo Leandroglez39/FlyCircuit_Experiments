@@ -3755,7 +3755,7 @@ if __name__ == '__main__':
             sum2 = sum([G.get_edge_data(*edge)['weight'] for edge in data2])
 
             if len(data1) > 0:
-                NewG.add_edge(i, j, weight=round((sum1 / len(data1)), 2), label=f'{sum1 / len(data1):.2f}')
+                NewG.add_edge(i, j, weight=round((sum1 / len(data1)), 2), label=f'{sum1 / len(data1):.2f}', degree= len(data1), total_weight=sum1)
                 NewG.nodes[i][f'total_weight{j}'] = sum1
                 NewG.nodes[i][f'degree{j}'] = len(data1)
             else:            
@@ -3763,7 +3763,7 @@ if __name__ == '__main__':
                 NewG.nodes[i][f'degree{j}'] = 0
 
             if len(data2) > 0:
-                NewG.add_edge(j, i, weight=round((sum2 / len(data2)), 2), label=f'{sum2 / len(data2):.2f}')
+                NewG.add_edge(j, i, weight=round((sum2 / len(data2)), 2), label=f'{sum2 / len(data2):.2f}', degree= len(data2), total_weight=sum2)
                 NewG.nodes[j][f'total_weight{i}'] = sum2
                 NewG.nodes[j][f'degree{i}'] = len(data2)
             else:
