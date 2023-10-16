@@ -3603,10 +3603,7 @@ def save_distribution():
     #plt.show()
     plt.savefig('weight_distribution.png', dpi=700)
 
-if __name__ == '__main__':
-
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
+def influential_nodes_image():
 
     m = Matrix([], {},[])
 
@@ -3629,14 +3626,14 @@ if __name__ == '__main__':
 
     list_weighted.sort(key=lambda x: x[1], reverse=True)
 
-    list_degree = list_degree[:7200]
+    list_degree = list_degree[:1000]
 
-    list_weighted = list_weighted[:7200]
+    list_weighted = list_weighted[:1000]
 
     
 
     overlap = list(set([x[0] for x in list_degree]).intersection(set([x[0] for x in list_weighted])))
-   
+    
     list_degree_clean = list(set([x[0] for x in list_degree]) - set(overlap))
 
     list_weighted_clean = list(set([x[0] for x in list_weighted]) - set(overlap))
@@ -3645,14 +3642,29 @@ if __name__ == '__main__':
     data1 = [x for x in range(len(list_degree)) if list_degree[x][0] in overlap]
     data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] in overlap]
 
-    plt.scatter(data1, [1 for _ in data1], color='red', marker='s', label='Degree Match' )
-    plt.scatter(data2, [2 for _ in data2], color='red', marker='*', label='Weight Match' )
+    
+
+
+    for i in range(len(data1)):        
+        plt.plot([data1[i], data1[i]], [1.5, 3], color='red', linewidth=0.15)
+    plt.plot([data1[0], data1[0]], [1.5, 3], color='red', linewidth=0.15, label='Match' )
+    for i in range(len(data2)):        
+        plt.plot([data2[i], data2[i]], [0, 1.5], color='red', linewidth=0.15)
+
+    # plt.scatter(data1, [1 for _ in data1], color='red', marker='s', label='Degree Match' )
+    # plt.scatter(data2, [2 for _ in data2], color='red', marker='*', label='Weight Match' )
 
     data1 = [x for x in range(len(list_degree)) if list_degree[x][0] not in overlap]
     data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] not in overlap]
 
-    plt.scatter(data1, [1 for _ in data1], color='blue', marker='s', label='Degree' )
-    plt.scatter(data2, [2 for _ in data2], color='purple', marker='*', label='Weight' )
+    for i in range(len(data1)):        
+        plt.plot([data1[i], data1[i]], [1.5, 3], color='blue', linewidth=0.15)
+    plt.plot([data1[i], data1[i]], [1.5, 3], color='blue', linewidth=0.15, label='Different')
+    for i in range(len(data2)):
+        plt.plot([data2[i], data2[i]], [0, 1.5], color='blue', linewidth=0.15)
+
+    # plt.scatter(data1, [1 for _ in data1], color='blue', marker='s', label='Degree' )
+    # plt.scatter(data2, [2 for _ in data2], color='purple', marker='*', label='Weight' )
 
 
 
@@ -3680,11 +3692,24 @@ if __name__ == '__main__':
     plt.title('Influential nodes')
     plt.legend()
     plt.yticks([0,1,2,3])
-    plt.xticks(np.arange(0, 8000, step=1000))
+    plt.xticks(np.arange(0, 1000, step=100))
     plt.tick_params(axis='y', labelleft=False)    
     #plt.show()
-    plt.savefig('influential_nodes2.png', dpi=700)
+    plt.savefig('influential_nodes5.png', dpi=700)
+
+if __name__ == '__main__':
+
+    print(datetime.datetime.now())
+    start_time = datetime.datetime.now()
+
+    m = Matrix([], {},[])
+
+    #construct_gephi_graph('NetsType_1.6')
+
+    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
     
+
+    rc_communities = read_communities_from_dat('output/NetsType_1.6/network1_RC_gamma.txt')
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
     #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
