@@ -32,7 +32,11 @@ graph [
     total_weight10 5391
     degree10 995
     total_weight0 0
+    degree0 0
     total_out_weight 811557
+    total_out_degree_com 137370
+    total_in_weight 731289
+    total_in_degree_com 131585
     weight_coeff 0.136
   ]
   node [
@@ -67,7 +71,11 @@ graph [
     total_weight10 328
     degree10 66
     total_weight1 0
+    degree1 0
     total_out_weight 1416492
+    total_out_degree_com 246141
+    total_in_weight 924564
+    total_in_degree_com 155672
     weight_coeff 0.169
   ]
   node [
@@ -102,7 +110,11 @@ graph [
     total_weight10 1625
     degree10 317
     total_weight2 0
+    degree2 0
     total_out_weight 707793
+    total_out_degree_com 118910
+    total_in_weight 647185
+    total_in_degree_com 109623
     weight_coeff 0.146
   ]
   node [
@@ -137,7 +149,11 @@ graph [
     total_weight10 2
     degree10 2
     total_weight3 0
+    degree3 0
     total_out_weight 521448
+    total_out_degree_com 112800
+    total_in_weight 1129470
+    total_in_degree_com 214265
     weight_coeff 0.034
   ]
   node [
@@ -172,7 +188,11 @@ graph [
     total_weight10 4950
     degree10 1090
     total_weight4 0
+    degree4 0
     total_out_weight 1106710
+    total_out_degree_com 192912
+    total_in_weight 1053508
+    total_in_degree_com 170178
     weight_coeff 0.158
   ]
   node [
@@ -207,7 +227,11 @@ graph [
     total_weight10 195
     degree10 67
     total_weight5 0
+    degree5 0
     total_out_weight 445262
+    total_out_degree_com 39797
+    total_in_weight 540081
+    total_in_degree_com 74377
     weight_coeff 0.059
   ]
   node [
@@ -242,7 +266,11 @@ graph [
     total_weight10 271
     degree10 79
     total_weight6 0
+    degree6 0
     total_out_weight 252100
+    total_out_degree_com 36037
+    total_in_weight 621890
+    total_in_degree_com 77611
     weight_coeff 0.045
   ]
   node [
@@ -277,7 +305,11 @@ graph [
     total_weight10 5
     degree10 2
     total_weight7 0
+    degree7 0
     total_out_weight 571106
+    total_out_degree_com 95792
+    total_in_weight 219835
+    total_in_degree_com 41705
     weight_coeff 0.587
   ]
   node [
@@ -312,7 +344,11 @@ graph [
     total_weight10 316
     degree10 92
     total_weight8 0
+    degree8 0
     total_out_weight 9439
+    total_out_degree_com 1648
+    total_in_weight 18735
+    total_in_degree_com 3520
     weight_coeff 0.112
   ]
   node [
@@ -347,7 +383,11 @@ graph [
     total_weight10 17
     degree10 6
     total_weight9 0
+    degree9 0
     total_out_weight 119007
+    total_out_degree_com 12560
+    total_in_weight 74217
+    total_in_degree_com 14067
     weight_coeff 0.612
   ]
   node [
@@ -382,7 +422,11 @@ graph [
     total_weight9 0
     degree9 0
     total_weight10 0
+    degree10 0
     total_out_weight 12960
+    total_out_degree_com 1352
+    total_in_weight 13100
+    total_in_degree_com 2716
     weight_coeff 0.166
   ]
   edge [
@@ -392,6 +436,7 @@ graph [
     label "5.65"
     degree 25494
     total_weight 143932
+    Selected "T"
   ]
   edge [
     source 0
@@ -400,6 +445,7 @@ graph [
     label "6.34"
     degree 31795
     total_weight 201518
+    Selected "T"
   ]
   edge [
     source 0
@@ -408,6 +454,7 @@ graph [
     label "4.19"
     degree 15309
     total_weight 64206
+    Selected "F"
   ]
   edge [
     source 0
@@ -416,6 +463,7 @@ graph [
     label "6.31"
     degree 51276
     total_weight 323782
+    Selected "F"
   ]
   edge [
     source 0
@@ -424,6 +472,7 @@ graph [
     label "5.63"
     degree 5956
     total_weight 33506
+    Selected "F"
   ]
   edge [
     source 0
@@ -432,6 +481,7 @@ graph [
     label "7.00"
     degree 780
     total_weight 5462
+    Selected "F"
   ]
   edge [
     source 0
@@ -440,6 +490,7 @@ graph [
     label "5.84"
     degree 5182
     total_weight 30255
+    Selected "F"
   ]
   edge [
     source 0
@@ -448,6 +499,7 @@ graph [
     label "4.14"
     degree 176
     total_weight 729
+    Selected "F"
   ]
   edge [
     source 0
@@ -456,6 +508,7 @@ graph [
     label "6.82"
     degree 407
     total_weight 2776
+    Selected "F"
   ]
   edge [
     source 0
@@ -464,6 +517,7 @@ graph [
     label "5.42"
     degree 995
     total_weight 5391
+    Selected "F"
   ]
   edge [
     source 1
@@ -472,6 +526,7 @@ graph [
     label "5.41"
     degree 25009
     total_weight 135394
+    Selected "T"
   ]
   edge [
     source 1
@@ -480,6 +535,7 @@ graph [
     label "5.74"
     degree 22904
     total_weight 131583
+    Selected "T"
   ]
   edge [
     source 1
@@ -488,6 +544,7 @@ graph [
     label "4.55"
     degree 68810
     total_weight 313187
+    Selected "T"
   ]
   edge [
     source 1
@@ -496,6 +553,7 @@ graph [
     label "5.43"
     degree 27930
     total_weight 151529
+    Selected "F"
   ]
   edge [
     source 1
@@ -504,6 +562,7 @@ graph [
     label "8.01"
     degree 41460
     total_weight 332027
+    Selected "T"
   ]
   edge [
     source 1
@@ -512,6 +571,7 @@ graph [
     label "6.39"
     degree 35443
     total_weight 226380
+    Selected "T"
   ]
   edge [
     source 1
@@ -520,6 +580,7 @@ graph [
     label "5.00"
     degree 12648
     total_weight 63201
+    Selected "F"
   ]
   edge [
     source 1
@@ -528,6 +589,7 @@ graph [
     label "7.68"
     degree 333
     total_weight 2559
+    Selected "T"
   ]
   edge [
     source 1
@@ -536,6 +598,7 @@ graph [
     label "5.23"
     degree 11538
     total_weight 60304
+    Selected "F"
   ]
   edge [
     source 1
@@ -544,6 +607,7 @@ graph [
     label "4.97"
     degree 66
     total_weight 328
+    Selected "F"
   ]
   edge [
     source 2
@@ -552,6 +616,7 @@ graph [
     label "6.01"
     degree 37356
     total_weight 224655
+    Selected "T"
   ]
   edge [
     source 2
@@ -560,6 +625,7 @@ graph [
     label "5.87"
     degree 18576
     total_weight 109099
+    Selected "T"
   ]
   edge [
     source 2
@@ -568,6 +634,7 @@ graph [
     label "3.64"
     degree 7257
     total_weight 26439
+    Selected "F"
   ]
   edge [
     source 2
@@ -576,6 +643,7 @@ graph [
     label "6.44"
     degree 45620
     total_weight 293630
+    Selected "T"
   ]
   edge [
     source 2
@@ -584,6 +652,7 @@ graph [
     label "2.97"
     degree 185
     total_weight 549
+    Selected "F"
   ]
   edge [
     source 2
@@ -592,6 +661,7 @@ graph [
     label "5.78"
     degree 3138
     total_weight 18152
+    Selected "T"
   ]
   edge [
     source 2
@@ -600,6 +670,7 @@ graph [
     label "5.24"
     degree 3304
     total_weight 17317
+    Selected "F"
   ]
   edge [
     source 2
@@ -608,6 +679,7 @@ graph [
     label "5.40"
     degree 2644
     total_weight 14280
+    Selected "T"
   ]
   edge [
     source 2
@@ -616,6 +688,7 @@ graph [
     label "3.99"
     degree 513
     total_weight 2047
+    Selected "F"
   ]
   edge [
     source 2
@@ -624,6 +697,7 @@ graph [
     label "5.13"
     degree 317
     total_weight 1625
+    Selected "T"
   ]
   edge [
     source 3
@@ -632,6 +706,7 @@ graph [
     label "3.84"
     degree 8205
     total_weight 31484
+    Selected "F"
   ]
   edge [
     source 3
@@ -640,6 +715,7 @@ graph [
     label "4.54"
     degree 62644
     total_weight 284649
+    Selected "F"
   ]
   edge [
     source 3
@@ -648,6 +724,7 @@ graph [
     label "4.66"
     degree 5505
     total_weight 25673
+    Selected "F"
   ]
   edge [
     source 3
@@ -656,6 +733,7 @@ graph [
     label "5.06"
     degree 23076
     total_weight 116869
+    Selected "F"
   ]
   edge [
     source 3
@@ -664,6 +742,7 @@ graph [
     label "4.45"
     degree 2210
     total_weight 9833
+    Selected "F"
   ]
   edge [
     source 3
@@ -672,6 +751,7 @@ graph [
     label "3.92"
     degree 1572
     total_weight 6166
+    Selected "F"
   ]
   edge [
     source 3
@@ -680,6 +760,7 @@ graph [
     label "4.85"
     degree 9199
     total_weight 44654
+    Selected "F"
   ]
   edge [
     source 3
@@ -688,6 +769,7 @@ graph [
     label "2.67"
     degree 81
     total_weight 216
+    Selected "F"
   ]
   edge [
     source 3
@@ -696,6 +778,7 @@ graph [
     label "6.22"
     degree 306
     total_weight 1902
+    Selected "T"
   ]
   edge [
     source 3
@@ -704,6 +787,7 @@ graph [
     label "1.00"
     degree 2
     total_weight 2
+    Selected "F"
   ]
   edge [
     source 4
@@ -712,6 +796,7 @@ graph [
     label "5.47"
     degree 50168
     total_weight 274403
+    Selected "F"
   ]
   edge [
     source 4
@@ -720,6 +805,7 @@ graph [
     label "5.66"
     degree 24084
     total_weight 136305
+    Selected "F"
   ]
   edge [
     source 4
@@ -728,6 +814,7 @@ graph [
     label "5.36"
     degree 39898
     total_weight 213831
+    Selected "F"
   ]
   edge [
     source 4
@@ -736,6 +823,7 @@ graph [
     label "6.30"
     degree 57767
     total_weight 363898
+    Selected "T"
   ]
   edge [
     source 4
@@ -744,6 +832,7 @@ graph [
     label "5.39"
     degree 4418
     total_weight 23814
+    Selected "F"
   ]
   edge [
     source 4
@@ -752,6 +841,7 @@ graph [
     label "5.38"
     degree 5622
     total_weight 30266
+    Selected "F"
   ]
   edge [
     source 4
@@ -760,6 +850,7 @@ graph [
     label "6.15"
     degree 9155
     total_weight 56264
+    Selected "F"
   ]
   edge [
     source 4
@@ -768,6 +859,7 @@ graph [
     label "4.05"
     degree 149
     total_weight 604
+    Selected "F"
   ]
   edge [
     source 4
@@ -776,6 +868,7 @@ graph [
     label "4.23"
     degree 561
     total_weight 2375
+    Selected "F"
   ]
   edge [
     source 4
@@ -784,6 +877,7 @@ graph [
     label "4.54"
     degree 1090
     total_weight 4950
+    Selected "F"
   ]
   edge [
     source 5
@@ -792,6 +886,7 @@ graph [
     label "5.90"
     degree 2476
     total_weight 14605
+    Selected "F"
   ]
   edge [
     source 5
@@ -800,6 +895,7 @@ graph [
     label "20.63"
     degree 7867
     total_weight 162261
+    Selected "T"
   ]
   edge [
     source 5
@@ -808,6 +904,7 @@ graph [
     label "5.33"
     degree 381
     total_weight 2030
+    Selected "F"
   ]
   edge [
     source 5
@@ -816,6 +913,7 @@ graph [
     label "3.62"
     degree 4075
     total_weight 14738
+    Selected "F"
   ]
   edge [
     source 5
@@ -824,6 +922,7 @@ graph [
     label "5.13"
     degree 1998
     total_weight 10240
+    Selected "F"
   ]
   edge [
     source 5
@@ -832,6 +931,7 @@ graph [
     label "10.92"
     degree 21629
     total_weight 236231
+    Selected "T"
   ]
   edge [
     source 5
@@ -840,6 +940,7 @@ graph [
     label "3.68"
     degree 1209
     total_weight 4448
+    Selected "F"
   ]
   edge [
     source 5
@@ -848,6 +949,7 @@ graph [
     label "3.19"
     degree 16
     total_weight 51
+    Selected "F"
   ]
   edge [
     source 5
@@ -856,6 +958,7 @@ graph [
     label "5.86"
     degree 79
     total_weight 463
+    Selected "F"
   ]
   edge [
     source 5
@@ -864,6 +967,7 @@ graph [
     label "2.91"
     degree 67
     total_weight 195
+    Selected "F"
   ]
   edge [
     source 6
@@ -872,6 +976,7 @@ graph [
     label "4.58"
     degree 440
     total_weight 2017
+    Selected "F"
   ]
   edge [
     source 6
@@ -880,6 +985,7 @@ graph [
     label "5.75"
     degree 7184
     total_weight 41327
+    Selected "F"
   ]
   edge [
     source 6
@@ -888,6 +994,7 @@ graph [
     label "7.22"
     degree 1395
     total_weight 10066
+    Selected "T"
   ]
   edge [
     source 6
@@ -896,6 +1003,7 @@ graph [
     label "5.12"
     degree 3906
     total_weight 19996
+    Selected "F"
   ]
   edge [
     source 6
@@ -904,6 +1012,7 @@ graph [
     label "11.44"
     degree 3840
     total_weight 43947
+    Selected "T"
   ]
   edge [
     source 6
@@ -912,6 +1021,7 @@ graph [
     label "7.21"
     degree 17689
     total_weight 127514
+    Selected "F"
   ]
   edge [
     source 6
@@ -920,6 +1030,7 @@ graph [
     label "3.46"
     degree 871
     total_weight 3011
+    Selected "F"
   ]
   edge [
     source 6
@@ -928,6 +1039,7 @@ graph [
     label "2.48"
     degree 54
     total_weight 134
+    Selected "F"
   ]
   edge [
     source 6
@@ -936,6 +1048,7 @@ graph [
     label "6.59"
     degree 579
     total_weight 3817
+    Selected "T"
   ]
   edge [
     source 6
@@ -944,6 +1057,7 @@ graph [
     label "3.43"
     degree 79
     total_weight 271
+    Selected "F"
   ]
   edge [
     source 7
@@ -952,6 +1066,7 @@ graph [
     label "6.25"
     degree 7471
     total_weight 46687
+    Selected "F"
   ]
   edge [
     source 7
@@ -960,6 +1075,7 @@ graph [
     label "4.47"
     degree 8202
     total_weight 36664
+    Selected "F"
   ]
   edge [
     source 7
@@ -968,6 +1084,7 @@ graph [
     label "8.34"
     degree 6416
     total_weight 53482
+    Selected "T"
   ]
   edge [
     source 7
@@ -976,6 +1093,7 @@ graph [
     label "5.74"
     degree 56815
     total_weight 325912
+    Selected "F"
   ]
   edge [
     source 7
@@ -984,6 +1102,7 @@ graph [
     label "6.76"
     degree 14593
     total_weight 98680
+    Selected "F"
   ]
   edge [
     source 7
@@ -992,6 +1111,7 @@ graph [
     label "4.58"
     degree 1107
     total_weight 5075
+    Selected "F"
   ]
   edge [
     source 7
@@ -1000,6 +1120,7 @@ graph [
     label "3.76"
     degree 1054
     total_weight 3964
+    Selected "F"
   ]
   edge [
     source 7
@@ -1008,6 +1129,7 @@ graph [
     label "2.17"
     degree 48
     total_weight 104
+    Selected "F"
   ]
   edge [
     source 7
@@ -1016,6 +1138,7 @@ graph [
     label "6.35"
     degree 84
     total_weight 533
+    Selected "F"
   ]
   edge [
     source 7
@@ -1024,6 +1147,7 @@ graph [
     label "2.50"
     degree 2
     total_weight 5
+    Selected "F"
   ]
   edge [
     source 8
@@ -1032,6 +1156,7 @@ graph [
     label "2.74"
     degree 133
     total_weight 364
+    Selected "F"
   ]
   edge [
     source 8
@@ -1040,6 +1165,7 @@ graph [
     label "6.40"
     degree 120
     total_weight 768
+    Selected "F"
   ]
   edge [
     source 8
@@ -1048,6 +1174,7 @@ graph [
     label "6.83"
     degree 1037
     total_weight 7087
+    Selected "F"
   ]
   edge [
     source 8
@@ -1056,6 +1183,7 @@ graph [
     label "1.20"
     degree 5
     total_weight 6
+    Selected "F"
   ]
   edge [
     source 8
@@ -1064,6 +1192,7 @@ graph [
     label "3.54"
     degree 245
     total_weight 867
+    Selected "F"
   ]
   edge [
     source 8
@@ -1072,6 +1201,7 @@ graph [
     label "2.00"
     degree 14
     total_weight 28
+    Selected "F"
   ]
   edge [
     source 8
@@ -1080,6 +1210,7 @@ graph [
     label "1.50"
     degree 2
     total_weight 3
+    Selected "F"
   ]
   edge [
     source 8
@@ -1088,6 +1219,7 @@ graph [
     label "3.43"
     degree 92
     total_weight 316
+    Selected "F"
   ]
   edge [
     source 9
@@ -1096,6 +1228,7 @@ graph [
     label "4.10"
     degree 155
     total_weight 635
+    Selected "F"
   ]
   edge [
     source 9
@@ -1104,6 +1237,7 @@ graph [
     label "6.44"
     degree 1457
     total_weight 9382
+    Selected "F"
   ]
   edge [
     source 9
@@ -1112,6 +1246,7 @@ graph [
     label "6.01"
     degree 178
     total_weight 1069
+    Selected "T"
   ]
   edge [
     source 9
@@ -1120,6 +1255,7 @@ graph [
     label "3.39"
     degree 321
     total_weight 1088
+    Selected "F"
   ]
   edge [
     source 9
@@ -1128,6 +1264,7 @@ graph [
     label "5.19"
     degree 613
     total_weight 3180
+    Selected "F"
   ]
   edge [
     source 9
@@ -1136,6 +1273,7 @@ graph [
     label "5.76"
     degree 1341
     total_weight 7729
+    Selected "F"
   ]
   edge [
     source 9
@@ -1144,6 +1282,7 @@ graph [
     label "11.40"
     degree 8353
     total_weight 95223
+    Selected "F"
   ]
   edge [
     source 9
@@ -1152,6 +1291,7 @@ graph [
     label "5.05"
     degree 135
     total_weight 682
+    Selected "F"
   ]
   edge [
     source 9
@@ -1160,6 +1300,7 @@ graph [
     label "2.00"
     degree 1
     total_weight 2
+    Selected "F"
   ]
   edge [
     source 9
@@ -1168,6 +1309,7 @@ graph [
     label "2.83"
     degree 6
     total_weight 17
+    Selected "F"
   ]
   edge [
     source 10
@@ -1176,6 +1318,7 @@ graph [
     label "6.08"
     degree 172
     total_weight 1045
+    Selected "F"
   ]
   edge [
     source 10
@@ -1184,6 +1327,7 @@ graph [
     label "4.02"
     degree 44
     total_weight 177
+    Selected "F"
   ]
   edge [
     source 10
@@ -1192,6 +1336,7 @@ graph [
     label "7.42"
     degree 114
     total_weight 846
+    Selected "T"
   ]
   edge [
     source 10
@@ -1200,6 +1345,7 @@ graph [
     label "10.93"
     degree 987
     total_weight 10784
+    Selected "T"
   ]
   edge [
     source 10
@@ -1208,6 +1354,7 @@ graph [
     label "3.09"
     degree 11
     total_weight 34
+    Selected "F"
   ]
   edge [
     source 10
@@ -1216,6 +1363,7 @@ graph [
     label "3.00"
     degree 6
     total_weight 18
+    Selected "F"
   ]
   edge [
     source 10
@@ -1224,5 +1372,6 @@ graph [
     label "3.11"
     degree 18
     total_weight 56
+    Selected "F"
   ]
 ]

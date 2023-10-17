@@ -3709,6 +3709,13 @@ if __name__ == '__main__':
 
     #construct_gephi_graph('NetsType_1.6')
 
+    # Leer el archivo csv
+    df = pd.read_csv('output/FlyCircuit/edgescsv.csv')
+
+    
+
+
+    
     G = pickle.load(open('dataset/attributed_graph-1.4.fly', 'rb'))
     
     m.G = G
@@ -3773,15 +3780,31 @@ if __name__ == '__main__':
     
     for i in range(len(rc_communities)):
         NewG.nodes[i][f'total_weight{i}'] = 0
+        NewG.nodes[i][f'degree{i}'] = 0
 
     for i in range(len(rc_communities)):
         total_out_weight = sum([NewG.nodes[i][f'total_weight{x}'] for x in range(11)])
         NewG.nodes[i]['total_out_weight'] = total_out_weight
+    
+    for i in range(len(rc_communities)):
+        total_out_degree_com = sum([NewG.nodes[i][f'degree{x}'] for x in range(11)])
+        NewG.nodes[i]['total_out_degree_com'] = total_out_degree_com
+
+    for i in range(len(rc_communities)):
+        total_in_weight = sum([NewG.nodes[x][f'total_weight{i}'] for x in range(11)])
+        NewG.nodes[i]['total_in_weight'] = total_in_weight
+    
+    for i in range(len(rc_communities)):
+        total_in_degree_com = sum([NewG.nodes[x][f'degree{i}'] for x in range(11)])
+        NewG.nodes[i]['total_in_degree_com'] = total_in_degree_com
 
     for i in range(len(rc_communities)):
         NewG.nodes[i]['weight_coeff'] =  round(NewG.nodes[i]['total_out_weight'] / NewG.nodes[i]['total_weight'], 3) if NewG.nodes[i]['total_weight'] > 0 else 0.000
 
-
+    
+    # Agregar las aristas al grafo con el atributo 'Selected'
+    for index, row in df.iterrows():
+        NewG.add_edge(row['Source'], row['Target'], Selected=row['Selected'])
 
 
     nx.write_gml(NewG, 'output/FlyCircuit/FlyCircuit_1.4_RC.gml')
