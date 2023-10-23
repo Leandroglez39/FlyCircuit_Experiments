@@ -31,7 +31,7 @@
               stroke="#5b5c70" stroke-width="2.5645978" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_1 id_8"
               d="M -639.088257,179.591064 A 910.742965,910.742965 0,0 1,-124.058693,-460.677490"
-              stroke="#5b5c70" stroke-width="3.656056" stroke-opacity="1.0"/>
+              stroke="#5b5c70" stroke-width="6.656056" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_2 id_0"
               d="M -170.080536,-64.395935 A 732.748537,732.748537 0,0 1,-693.240479,-112.225647"
               stroke="#5b5c70" stroke-width="2.2430828" stroke-opacity="1.0"/>
@@ -58,16 +58,16 @@
               stroke="#5b5c70" stroke-width="2.4884493" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_5 id_1"
               d="M -273.727722,789.995117 A 547.362344,547.362344 0,0 1,-530.234619,629.734802"
-              stroke="#5b5c70" stroke-width="14.612943" stroke-opacity="1.0"/>
+              stroke="#5b5c70" stroke-width="25.612943" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_5 id_6"
               d="M -174.001541,699.739075 A 468.527966,468.527966 0,0 1,-40.767262,390.623047"
-              stroke="#5b5c70" stroke-width="6.3973927" stroke-opacity="1.0"/>
+              stroke="#5b5c70" stroke-width="13.3973927" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_6 id_2"
               d="M 10.806679,215.869568 A 373.673386,373.673386 0,0 1,-35.462044,66.620338"
               stroke="#5b5c70" stroke-width="3.2668538" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_6 id_4"
               d="M 125.274010,203.684006 A 469.840934,469.840934 0,0 1,364.180298,12.246628"
-              stroke="#5b5c70" stroke-width="6.8373604" stroke-opacity="1.0"/>
+              stroke="#5b5c70" stroke-width="11.8373604" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_6 id_9"
               d="M 176.333969,254.197876 A 599.714179,599.714179 0,0 1,701.677185,301.461487"
               stroke="#5b5c70" stroke-width="2.733816" stroke-opacity="1.0"/>
@@ -82,7 +82,7 @@
               stroke="#5b5c70" stroke-width="3.436072" stroke-opacity="1.0"/>
         <path stroke-linecap="round" fill="none" class="id_10 id_4"
               d="M 678.282104,-347.300964 A 368.234849,368.234849 0,0 1,651.931091,-157.747086"
-              stroke="#5b5c70" stroke-width="6.4058537" stroke-opacity="1.0"/>
+              stroke="#5b5c70" stroke-width="9.4058537" stroke-opacity="1.0"/>
     </g>
 <g id="arrows">
       <polyline fill="#5b5c70" fill-opacity="1.0" class="id_0 id_1"
@@ -166,123 +166,114 @@
                   class="id_0" cy="-233.38182" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="16.124626"/>
       <text x="-868.8574" y="-313.38182" font-size="27" fill="white" font-family="CMU">
-            <tspan x="-938.8574" dy="0.3em" text-anchor="left" font-size="62">C
-            <tspan baseline-shift="sub" x="-899" y="-309" font-size="25">0</tspan></tspan>
+            <tspan x="-880" dy="0.3em" text-anchor="middle" font-size="59">1</tspan>
 
-            <tspan x="-938.8574" dy="2.22em">n: 4521</tspan>
-            <tspan x="-938.8574" dy="1.2em">avg_d: 223.15</tspan>
-            <tspan x="-938.8574" dy="1.2em">avg_w: 1318.13</tspan>
-            <tspan x="-938.8574" dy="1.2em">avg_pc: 0.13</tspan>
+            <tspan x="-938.8574" dy="2.22em">|N|: 4521</tspan>
+            <tspan x="-938.8574" dy="1.2em">D̅: 223.15</tspan>
+            <tspan x="-938.8574" dy="1.2em">W̅: 1318.13</tspan>
+            
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="181.66972" cx="-658.9543"
                   class="id_1" cy="376.0563" stroke="#3f404e" stroke-opacity="1.0"
                   stroke-width="15.920414"/>
       <text x="-658.9543" y="306" font-size="27" fill="white" font-family="CMU">
-            <tspan x="-728.9543" dy="0.3em" text-anchor="left" font-size="62">C
-            <tspan baseline-shift="sub" x="-689" y="310" font-size="25">1</tspan></tspan>
-            <tspan x="-728.9543" dy="2.22em">n: 4409</tspan>
-            <tspan x="-728.9543" dy="1.2em">avg_d: 319.30</tspan>
-            <tspan x="-728.9543" dy="1.2em">avg_w: 1904.97</tspan>
-            <tspan x="-728.9543" dy="1.2em">avg_pc: 0.29</tspan>
+            <tspan x="-658.9543" dy="0.3em" text-anchor="middle" font-size="59">2</tspan>
+            <tspan x="-728.9543" dy="2.22em">|N|: 4409</tspan>
+            <tspan x="-728.9543" dy="1.2em">D̅: 319.30</tspan>
+            <tspan x="-728.9543" dy="1.2em">W̅: 1904.97</tspan>
+           
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="175.8024" cx="5.457926"
                   class="id_2" cy="-139.90402" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="15.4062395"/>
       <text x="5.457926" y="-239" font-size="27" fill="white">
-            <tspan x="-64.542076" dy="0.3em" text-anchor="left" font-size="62">C
-            <tspan baseline-shift="sub" x="-25" y="-235" font-size="25">2</tspan></tspan>
-            <tspan x="-64.542076" dy="2.22em">n: 4127</tspan>
-            <tspan x="-64.542076" dy="1.2em">avg_d: 201.60</tspan>
-            <tspan x="-64.542076" dy="1.2em">avg_w: 1174.90</tspan>
-            <tspan x="-64.542076" dy="1.2em">avg_pc: 0.25</tspan>
+            <tspan x="0.0" dy="0.3em" text-anchor="middle" font-size="59">3</tspan>
+            <tspan x="-64.542076" dy="2.22em">|N|: 4127</tspan>
+            <tspan x="-64.542076" dy="1.2em">D̅: 201.60</tspan>
+            <tspan x="-64.542076" dy="1.2em">W̅: 1174.90</tspan>
+            
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="161.19652" cx="285.90955"
                   class="id_3" cy="690.7559" stroke="#3f404e" stroke-opacity="1.0"
                   stroke-width="14.126269"/>
       <text x="285.90955" y="600.7559" font-size="27" fill="white">
-            <tspan x="215.90955" dy="0.3em" text-anchor="left" font-size="62">C
-            <tspan baseline-shift="sub" x="255" y="604" font-size="25">3</tspan></tspan>
-            <tspan x="215.90955" dy="2.22em">n: 3425</tspan>
-            <tspan x="215.90955" dy="1.2em">avg_d: 630.49</tspan>
-            <tspan x="215.90955" dy="1.2em">avg_w: 4491.74</tspan>
-            <tspan x="215.90955" dy="1.2em">avg_pc: 0.15</tspan>
+            <tspan x="275.90955" dy="0.3em" text-anchor="left" font-size="59">4</tspan>
+            <tspan x="215.90955" dy="2.22em">|N|: 3425</tspan>
+            <tspan x="215.90955" dy="1.2em">D̅: 630.49</tspan>
+            <tspan x="215.90955" dy="1.2em">W̅: 4491.74</tspan>
+           
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="129.77933" cx="543.9374"
                   class="id_4" cy="-14.740379" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="11.37306"/>
-      <text x="543.9374" y="-90" font-size="25" fill="white">
-            <tspan x="473.9374" dy="0.3em" text-anchor="left" font-size="62">C
-            <tspan baseline-shift="sub" x="513" y="-90" font-size="25">4</tspan></tspan>
-            <tspan x="473.9374" dy="2.22em">n: 1915</tspan>
-            <tspan x="473.9374" dy="1.2em">avg_d: 487.32</tspan>
-            <tspan x="473.9374" dy="1.2em">avg_w: 3662.45</tspan>
-            <tspan x="473.9374" dy="1.2em">avg_pc: 0.44</tspan>
+      <text x="543.9374" y="-90" font-size="27" fill="white">
+            <tspan x="533.9374" dy="0.3em" text-anchor="middle" font-size="59">5</tspan>
+            <tspan x="473.9374" dy="2.22em">|N|: 1915</tspan>
+            <tspan x="473.9374" dy="1.2em">D̅: 487.32</tspan>
+            <tspan x="473.9374" dy="1.2em">W̅: 3662.45</tspan>
+           
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="101.25418" cx="-165.40408"
                   class="id_5" cy="809.4617" stroke="#3f404e" stroke-opacity="1.0"
                   stroke-width="8.873292"/>
-      <text x="-165.40408" y="765.4617" font-size="22" fill="white">
-            <tspan x="-165.40408" dy="0.0em" text-anchor="middle" font-size="62">C
-            <tspan baseline-shift="sub" x="-145" y="749" font-size="22">5</tspan></tspan>
-            <tspan x="-221" dy="1.92em">n: 544</tspan>
-            <tspan x="-221" dy="1.2em">avg_d: 617.18</tspan>
-            <tspan x="-221" dy="1.2em">avg_w: 13832.1</tspan>
-            <tspan x="-221" dy="1.2em">avg_pc: 0.31</tspan>
+      <text x="-165.40408" y="765.4617" font-size="27" fill="white">
+            <tspan x="-165.40408" dy="0.0em" text-anchor="middle" font-size="59">6</tspan>
+            <tspan x="-221" dy="1.32em">|N|: 544</tspan>
+            <tspan x="-221" dy="1.2em">D̅: 617.18</tspan>
+            <tspan x="-221" dy="1.2em">W̅: 13832.1</tspan>
+         
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="100.900475" cx="77.922844"
                   class="id_6" cy="302.61" stroke="#3f404e" stroke-opacity="1.0"
                   stroke-width="8.842296"/>
-      <text x="497" y="252.61" font-size="23" fill="white">
-            <tspan x="77" dy="0.0em" text-anchor="middle" font-size="52">C
-            <tspan baseline-shift="sub" x="97" y="236" font-size="21">6</tspan></tspan>
-            <tspan x="20" dy="1.92em">n: 527</tspan>
-            <tspan x="20" dy="1.2em">avg_d: 589.81</tspan>
-            <tspan x="20" dy="1.2em">avg_w: 10629.3</tspan>
-            <tspan x="20" dy="1.2em">avg_pc: 0.35</tspan>
+      <text x="497" y="252.61" font-size="27" fill="white">
+            <tspan x="77" dy="0.0em" text-anchor="middle" font-size="59">7</tspan>
+            <tspan x="20" dy="1.42em">|N|: 527</tspan>
+            <tspan x="20" dy="1.4em">D̅: 589.81</tspan>
+            <tspan x="20" dy="1.2em">W̅: 10629.3</tspan>
+            
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="94.92912" cx="303.11078"
                   class="id_7" cy="-646.6677" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="8.319003"/>
-      <text x="303.11078" y="-696.6677" font-size="23" fill="white">
-            <tspan x="303.11078" dy="0.0em" text-anchor="middle" font-size="52">C
-            <tspan baseline-shift="sub" x="323" y="-699" font-size="21">7</tspan></tspan>
-            <tspan x="243.11078" dy="1.12em">n: 240</tspan>
-            <tspan x="243.11078" dy="1.2em">avg_d: 650.83</tspan>
-            <tspan x="243.11078" dy="1.2em">avg_w: 4052.87</tspan>
-            <tspan x="243.11078" dy="1.2em">avg_pc: 0.63</tspan>
+      <text x="303.11078" y="-696.6677" font-size="27" fill="white">
+            <tspan x="303.11078" dy="0.0em" text-anchor="middle" font-size="59">8</tspan>
+            <tspan x="243.11078" dy="1.52em">|N|: 240</tspan>
+            <tspan x="243.11078" dy="1.4em">D̅: 650.83</tspan>
+            <tspan x="243.11078" dy="1.2em">W̅: 4052.87</tspan>
+            
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="91.93305" cx="-10.101586"
                   class="id_8" cy="-503.3766" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="8.056446"/>
-      <text x="-10.101586" y="-544.3766" font-size="23" fill="white">
-            <tspan x="-10.101586" dy="0.0em" text-anchor="middle" font-size="52">C
-            <tspan baseline-shift="sub" x="10" y="-557" font-size="21">8</tspan></tspan>
-            <tspan x="-70.101586" dy="1.42em">n: 96</tspan>
-            <tspan x="-70.101586" dy="1em">avg_d: 129.68</tspan>
-            <tspan x="-70.101586" dy="1.2em">avg_w: 881.41</tspan>
-            <tspan x="-70.101586" dy="1.2em">avg_pc: 0.41</tspan>
+      <text x="-10.101586" y="-544.3766" font-size="27" fill="white" font-family="Arial" >
+            <tspan x="-10.101586" dy="0.0em" text-anchor="middle" font-size="59">9</tspan>
+            <tspan x="-70.101586" dy="1.52em">|N|: 96</tspan>
+            <tspan x="-70.101586" dy="1.4em">D̅: 129.68</tspan>
+            <tspan x="-70.101586" dy="1.2em">W̅: 881.41</tspan>
+               
+           
+          
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="91.454506" cx="794.3514"
                   class="id_9" cy="370.7009" stroke="#3f404e" stroke-opacity="1.0"
                   stroke-width="8.014509"/>
-      <text x="794.3514" y="331.7009" font-size="23" fill="white">
-            <tspan x="794.3514" dy="0.0em" text-anchor="middle" font-size="52">C
-            <tspan baseline-shift="sub" x="814" y="320" font-size="21">9</tspan></tspan>
-            <tspan x="734.3514" dy="1.42em">n: 73</tspan>
-            <tspan x="734.3514" dy="1em">avg_d: 367.41</tspan>
-            <tspan x="734.3514" dy="1.2em">avg_w: 2663.3</tspan>
-            <tspan x="734.3514" dy="1.2em">avg_pc: 0.33</tspan>
+      <text x="794.3514" y="331.7009" font-size="27" fill="white">
+            <tspan x="794.3514" dy="0.0em" text-anchor="middle" font-size="59">10</tspan>
+            <tspan x="734.3514" dy="1.22em">|N|: 73</tspan>
+            <tspan x="734.3514" dy="1.4em">D̅: 367.41</tspan>
+            <tspan x="734.3514" dy="1.2em">W̅: 2663.3</tspan>
+        
       </text>
       <circle fill-opacity="1.0" fill="#5b5c70" r="91.08" cx="652.87164"
                   class="id_10" cy="-442.98434" stroke="#3f404e"
                   stroke-opacity="1.0" stroke-width="7.9816895"/>
-      <text x="662" y="-492.98434" font-size="21" fill="white">
-            <tspan x="623" dy="0.3em" text-anchor="left" font-size="52">C
-            <tspan baseline-shift="sub" x="658" y="-496" font-size="21">10</tspan></tspan>
-            <tspan x="594.87164" dy="1.82em">n: 55</tspan>
-            <tspan x="594.87164" dy="1.2em">avg_d: 125.1</tspan>
-            <tspan x="594.87164" dy="1.2em">avg_w: 1719.8</tspan>
-            <tspan x="594.87164" dy="1.2em">avg_pc: 0.58</tspan>
+      <text x="662" y="-492.98434" font-size="27" fill="white">
+            <tspan x="623" dy="0.3em" text-anchor="left" font-size="59">11</tspan>
+            <tspan x="594.87164" dy="1.32em">|N|: 55</tspan>
+            <tspan x="594.87164" dy="1.2em">D̅: 125.1</tspan>
+            <tspan x="594.87164" dy="1.2em">W̅: 1719.8</tspan>
+           
       </text>
 </g>
 </svg>
