@@ -303,13 +303,15 @@ def drawResultAlgorithm(folderpath, nameFile, ga = '0.8'):
     plt.savefig(f'output/{folderpath}/' + folderpath + '.png', dpi=700)
   
 
-def drawStability2(folder_version: str):
+def drawStability2(folder_version: str, skip_plot: bool = False) -> None:
 
     df = pd.read_csv(f'output/stability/{folder_version}/nmi_stability.csv', header=0)
 
     nets = df['Network'].unique()
 
     df = df.groupby(['Network', 'Algorithm', 'Iterations']).mean().reset_index()
+
+    df.to_csv(f'output/stability/{folder_version}/nmi_stability_mean.csv', index=False)
 
     if folder_version == 'NetsType_1.4':
         df.loc[df['Iterations'] == 10, 'Iterations'] = 1
@@ -324,23 +326,23 @@ def drawStability2(folder_version: str):
 
  
 
+    if not skip_plot:
     
-    
-    for network in df['Network'].unique():
-        network_data = df[df['Network'] == network]
-        markers = ['o', 's', '^', 'p', '*'] # list of markers to use
-        for marker, algorithm in zip(markers, network_data['Algorithm'].unique()):
-            algorithm_data = network_data[network_data['Algorithm'] == algorithm]
-            plt.style.use('seaborn-v0_8-darkgrid')
-            plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
-        plt.title(f'Stability in {network}')
-        plt.xlabel('Number of runs')
-        plt.ylabel('NMI Average')
-        plt.yticks(np.arange(0, 1.2, 0.2))
-        plt.xticks([1,2,3], labels)
-        plt.legend()
-        plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=550)
-        plt.clf()
+        for network in df['Network'].unique():
+            network_data = df[df['Network'] == network]
+            markers = ['o', 's', '^', 'p', '*'] # list of markers to use
+            for marker, algorithm in zip(markers, network_data['Algorithm'].unique()):
+                algorithm_data = network_data[network_data['Algorithm'] == algorithm]
+                plt.style.use('seaborn-v0_8-darkgrid')
+                plt.plot(algorithm_data['Iterations'], algorithm_data['NMI'], label=algorithm, marker=marker, linestyle='dotted', markersize=10)
+            plt.title(f'Stability in {network}')
+            plt.xlabel('Number of runs')
+            plt.ylabel('NMI Average')
+            plt.yticks(np.arange(0, 1.2, 0.2))
+            plt.xticks([1,2,3], labels)
+            plt.legend()
+            plt.savefig(f'output/stability/{folder_version}/nmi_img/{network}.png', dpi=550)
+            plt.clf()
     
         
 
@@ -375,9 +377,9 @@ if __name__ == "__main__":
     # run Algorithm simple
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
-    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    #drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
     
-    #drawStability2('NetsType_1.4')
+    drawStability2('NetsType_1.6', skip_plot=True)
 
     
     #drawStability2('NetsType_1.6')
