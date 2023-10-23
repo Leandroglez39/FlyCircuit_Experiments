@@ -3061,7 +3061,7 @@ def run_RC_sequences(sequence : int, folder_version: str, r: int, gamma=0.8):
 
             m.export_RC(f'{directory}/', exportpath_RC, value)
 
-def read_communities_from_dat(path : str) -> list[list[int]]:
+def read_communities_from_dat(path : str, is_number = True) -> list[list[int]]:
     
     communities = []
     with open(path, 'r') as f:
@@ -3070,8 +3070,11 @@ def read_communities_from_dat(path : str) -> list[list[int]]:
             data = line.split(' ')
             if data[-1] == '\n':
                 data.remove('\n')
-            inter_data = [int(x) for x in data]
-            communities.append(inter_data)
+            if is_number:
+                inter_data = [int(x) for x in data]
+                communities.append(inter_data)
+            else:
+                communities.append(data)
     return communities
 
 def apply_PC_to_GT(net_version : str, overlap: bool = False):
@@ -3621,7 +3624,223 @@ def testing_k(net_version: str, num_iter: int)-> int:
 def gamma_analyse(gamma: int, folderdame: str = 'NetsType_1.4'):
     pass
 
+def construct_gephi_graph(folderversion: str):
 
+    '''
+        This method constructs a gephi graph from a networkx graph with properties
+          of the nodes.
+    
+        Parameters
+        ----------
+        folderversion : str
+            The version of the network.
+        
+        
+        Output
+        ------
+        gephi graph
+            The gephi graph file.
+    '''
+    for i in range(1, 12):
+
+        netnumber = str(i)
+
+        path = f'dataset/{folderversion}/network{netnumber}/network{netnumber}.pkl'
+
+        G : nx.Graph = pickle.load(open(path, 'rb'))
+
+        gt_communities = read_communities_from_dat(f'dataset/{folderversion}/GT/community{netnumber}_GT.dat')
+
+
+        dict_node = {}
+
+        # Add properties to the nodes of the graph with the communities from GT
+        for i in range(len(gt_communities)):
+            for node in gt_communities[i]:
+                if node in dict_node.keys():
+                    dict_node[node] += 1
+                    value = dict_node[node]
+                    G.nodes[node][f'gt_community_{value}'] = i
+                    
+                else:
+                    G.nodes[node]['gt_community_1'] = i
+                    dict_node[node] = 1
+                
+        dict_node = {}
+
+        rc_communities = read_communities_from_dat(f'output/gamma_0.5/{folderversion}/network{netnumber}_RC_gamma_0.5.txt')
+
+        # Add properties to the nodes of the graph with the communities from RC
+        for i in range(len(rc_communities)):
+            for node in rc_communities[i]:
+                if node in dict_node.keys():
+                    dict_node[node] += 1
+                    value = dict_node[node]
+                    G.nodes[node][f'rc_community_{value}'] = i
+                    
+                else:
+                    G.nodes[node]['rc_community_1'] = i
+                    dict_node[node] = 1
+        
+        core_nodes = read_communities_from_dat(f'output/stability/{folderversion}/network{netnumber}/network{netnumber}_RC_cores.txt')
+
+        # Add properties to the nodes of the graph with the bool if is a core node
+
+        # Convert list of list of elements to a set with all elements
+        core_nodes = set([item for sublist in core_nodes for item in sublist])
+
+        for node in G.nodes:
+            if node in core_nodes:
+                G.nodes[node]['core'] = True
+            else:
+                G.nodes[node]['core'] = False
+        
+        # Add properties to the nodes of the graph with the overlapping clasification
+
+        overlapping_nodes_gt = detect_nodes_with_overlapping(gt_communities)
+
+        for node, count in overlapping_nodes_gt.items():
+            G.nodes[node]['overlapping_GT'] = count
+
+        overlapping_nodes_rc = detect_nodes_with_overlapping(rc_communities)
+
+        for node, count in overlapping_nodes_rc.items():
+            if node in overlapping_nodes_gt.keys():
+                G.nodes[node]['overlapping_RC_T'] = count
+            else:
+                G.nodes[node]['overlapping_RC_F'] = count
+        
+        # Export the graph to a gephi file in GML format
+
+        nx.write_gml(G, f'dataset/{folderversion}/network{netnumber}/network{netnumber}_gamma_0.5.gml')
+
+def save_distribution():
+
+    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
+    # Obtiene el histograma de los grados de los nodos
+    grados = dict(G.degree(weight='weight'))
+
+    grados = dict(sorted(grados.items(), key=lambda x: x[1], reverse=True))
+    #Change the style of plt
+    plt.style.use('seaborn-v0_8')
+    # Grafica los grados de los nodos
+    plt.plot(range(len(grados)), list(grados.values()), 'bo', markersize=1)
+    plt.axvline(x=4000, color='darkred', linestyle='--', label='20%')
+    plt.axvline(x=7200, color='darkgreen', linestyle='--', label='36%')
+
+    plt.text(4000, 4800, '4000', rotation=270, va='baseline', color='darkred')
+    plt.text(7200, 3800, '7200', rotation=270, va='baseline', color='darkgreen')
+
+    plt.fill_between(range(7200), list(grados.values())[:7200], color='black', alpha=0.4, edgecolor='black', linewidth=0.5, hatch='//', label='80%')
+    plt.fill_between(range(4000), list(grados.values())[:4000], color='black', alpha=0.4, edgecolor='black', linewidth=0.5, hatch=u'\\', label='64%')
+
+    
+
+    # Configura los ejes
+    plt.xlabel('Node')
+    plt.ylabel('Wieght')
+    plt.title('Weight Distribution')
+    plt.legend()
+ 
+    
+
+    # Muestra la gráfica
+    #plt.show()
+    plt.savefig('weight_distribution.png', dpi=700)
+
+def influential_nodes_image():
+
+    m = Matrix([], {},[])
+
+    #construct_gephi_graph('NetsType_1.6')
+
+    G = pickle.load(open('dataset/attributed_graph.pkl', 'rb'))
+
+    dict_degree = dict(G.degree()) # type: ignore
+
+    dict_weighted = dict(G.degree(weight='weight')) # type: ignore
+
+    list_degree = list(dict_degree.items())
+    
+
+    
+
+    list_weighted = list(dict_weighted.items())
+
+    list_degree.sort(key=lambda x: x[1], reverse=True)
+
+    list_weighted.sort(key=lambda x: x[1], reverse=True)
+
+    list_degree = list_degree[:1000]
+
+    list_weighted = list_weighted[:1000]
+
+    
+
+    overlap = list(set([x[0] for x in list_degree]).intersection(set([x[0] for x in list_weighted])))
+    
+    list_degree_clean = list(set([x[0] for x in list_degree]) - set(overlap))
+
+    list_weighted_clean = list(set([x[0] for x in list_weighted]) - set(overlap))
+
+       
+    data1 = [x for x in range(len(list_degree)) if list_degree[x][0] in overlap]
+    data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] in overlap]
+
+    
+
+
+    for i in range(len(data1)):        
+        plt.plot([data1[i], data1[i]], [1.5, 3], color='red', linewidth=0.15)
+    plt.plot([data1[0], data1[0]], [1.5, 3], color='red', linewidth=0.15, label='Match' )
+    for i in range(len(data2)):        
+        plt.plot([data2[i], data2[i]], [0, 1.5], color='red', linewidth=0.15)
+
+    # plt.scatter(data1, [1 for _ in data1], color='red', marker='s', label='Degree Match' )
+    # plt.scatter(data2, [2 for _ in data2], color='red', marker='*', label='Weight Match' )
+
+    data1 = [x for x in range(len(list_degree)) if list_degree[x][0] not in overlap]
+    data2 = [x for x in range(len(list_weighted)) if list_weighted[x][0] not in overlap]
+
+    for i in range(len(data1)):        
+        plt.plot([data1[i], data1[i]], [1.5, 3], color='blue', linewidth=0.15)
+    plt.plot([data1[i], data1[i]], [1.5, 3], color='blue', linewidth=0.15, label='Different')
+    for i in range(len(data2)):
+        plt.plot([data2[i], data2[i]], [0, 1.5], color='blue', linewidth=0.15)
+
+    # plt.scatter(data1, [1 for _ in data1], color='blue', marker='s', label='Degree' )
+    # plt.scatter(data2, [2 for _ in data2], color='purple', marker='*', label='Weight' )
+
+
+
+    # for i in range(len(list_degree)):
+    #     if list_degree[i][0] in overlap:
+    #         plt.scatter(i, 1, color='red', marker='s', label='Degree Match' )
+    #     else:
+    #         plt.scatter(i, 1, color='blue', marker='s', label='Degree' ) 
+    
+    # for i in range(len(list_weighted)):
+    #     if list_weighted[i][0] in overlap:
+    #         plt.scatter(i, 2, color='red', marker='*', label='Weighted Match' )
+    #     else:
+    #         plt.scatter(i, 2, color='purple', marker='*', label='Weighted' )
+
+    # # Plot the degree values in a scatter plot
+    # plt.scatter([x for x in range(len(overlap))], [1 for _ in overlap], color='red', marker='s', label='Degree Match' )
+    # plt.scatter([x for x in range(len(overlap))], [2 for _ in overlap], color='red', marker='*', label='Weighted Match' )
+
+    # plt.scatter([x for x in range(len(list_degree))], [1 for _ in list_degree], color='blue', marker='s', label='Degree')
+    # plt.scatter([x for x in range(len(list_weighted))], [2 for _ in list_weighted], color='purple', marker='*', label='Weighted')
+
+
+    plt.xlabel('Nodes')    
+    plt.title('Influential nodes')
+    plt.legend()
+    plt.yticks([0,1,2,3])
+    plt.xticks(np.arange(0, 1000, step=100))
+    plt.tick_params(axis='y', labelleft=False)    
+    #plt.show()
+    plt.savefig('influential_nodes5.png', dpi=700)
 
 if __name__ == '__main__':
 
@@ -3630,7 +3849,108 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
+    #construct_gephi_graph('NetsType_1.6')
+
+    # Leer el archivo csv
+    df = pd.read_csv('output/FlyCircuit/edgescsv.csv')
+
     
+
+
+    
+    G = pickle.load(open('dataset/attributed_graph-1.4.fly', 'rb'))
+    
+    m.G = G
+
+
+    rc_communities = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
+
+    rc_communities.sort(key=lambda x: len(x), reverse=True)
+
+    # #data = m.participation_coefficient_overlapping(rc_communities)
+
+    # #pickle.dump(data, open('output/FlyCircuit/FlyCircuit_1.4_RC_PC.pkl', 'wb'))
+
+    degrees = dict(G.degree())
+    weights = dict(G.degree(weight='weight'))
+    pcs = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_PC.pkl', 'rb'))
+    
+    
+
+
+    NewG = nx.DiGraph()
+
+    for i in  range(len(rc_communities)):
+        com = rc_communities[i]
+        avg_degree = statistics.mean(dict(filter(lambda item: item[0] in com, degrees.items())).values())
+        avg_weight = statistics.mean(dict(filter(lambda item: item[0] in com, weights.items())).values())
+        avg_pc = statistics.mean(dict(filter(lambda item: item[0] in com, pcs.items())).values())        
+        label = f'{i}'
+        total_out_degree = sum(x[1] for x in list(G.out_degree(com)))
+        total_in_degree = sum(x[1] for x in list(G.in_degree(com)))
+        total_weight = sum(x[1] for x in list(G.degree(com, weight='weight')))
+        NewG.add_node(i, size=len(com), avg_degree=avg_degree, avg_weight=avg_weight, avg_pc=avg_pc, Label=label, total_out_degree=total_out_degree, total_weight=total_weight, total_in_degree=total_in_degree)
+
+
+    for i in range(len(rc_communities)):
+
+        comA = set(rc_communities[i])
+        for j in range(i + 1, len(rc_communities)):
+            comB = set(rc_communities[j])
+            data1 = [(u,v) for u in comA for v in G.neighbors(u) if v in comB]
+            data2 = [(u,v) for u in comB for v in G.neighbors(u) if v in comA]
+
+            sum1 = sum([G.get_edge_data(*edge)['weight'] for edge in data1])
+            sum2 = sum([G.get_edge_data(*edge)['weight'] for edge in data2])
+
+            if len(data1) > 0:
+                NewG.add_edge(i, j, weight=round((sum1 / len(data1)), 2), label=f'{sum1 / len(data1):.2f}', degree= len(data1), total_weight=sum1)
+                NewG.nodes[i][f'total_weight{j}'] = sum1
+                NewG.nodes[i][f'degree{j}'] = len(data1)
+            else:            
+                NewG.nodes[i][f'total_weight{j}'] = 0
+                NewG.nodes[i][f'degree{j}'] = 0
+
+            if len(data2) > 0:
+                NewG.add_edge(j, i, weight=round((sum2 / len(data2)), 2), label=f'{sum2 / len(data2):.2f}', degree= len(data2), total_weight=sum2)
+                NewG.nodes[j][f'total_weight{i}'] = sum2
+                NewG.nodes[j][f'degree{i}'] = len(data2)
+            else:
+                NewG.nodes[j][f'total_weight{i}'] = 0
+                NewG.nodes[j][f'degree{i}'] = 0
+
+    
+    for i in range(len(rc_communities)):
+        NewG.nodes[i][f'total_weight{i}'] = 0
+        NewG.nodes[i][f'degree{i}'] = 0
+
+    for i in range(len(rc_communities)):
+        total_out_weight = sum([NewG.nodes[i][f'total_weight{x}'] for x in range(11)])
+        NewG.nodes[i]['total_out_weight'] = total_out_weight
+    
+    for i in range(len(rc_communities)):
+        total_out_degree_com = sum([NewG.nodes[i][f'degree{x}'] for x in range(11)])
+        NewG.nodes[i]['total_out_degree_com'] = total_out_degree_com
+
+    for i in range(len(rc_communities)):
+        total_in_weight = sum([NewG.nodes[x][f'total_weight{i}'] for x in range(11)])
+        NewG.nodes[i]['total_in_weight'] = total_in_weight
+    
+    for i in range(len(rc_communities)):
+        total_in_degree_com = sum([NewG.nodes[x][f'degree{i}'] for x in range(11)])
+        NewG.nodes[i]['total_in_degree_com'] = total_in_degree_com
+
+    for i in range(len(rc_communities)):
+        NewG.nodes[i]['weight_coeff'] =  round(NewG.nodes[i]['total_out_weight'] / NewG.nodes[i]['total_weight'], 3) if NewG.nodes[i]['total_weight'] > 0 else 0.000
+
+    
+    # Agregar las aristas al grafo con el atributo 'Selected'
+    for index, row in df.iterrows():
+        NewG.add_edge(row['Source'], row['Target'], Selected=row['Selected'])
+
+
+    nx.write_gml(NewG, 'output/FlyCircuit/FlyCircuit_1.4_RC.gml')
+        
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
     #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
@@ -3639,7 +3959,7 @@ if __name__ == '__main__':
     
     #compare_cores_with_GT('NetsType_1.4')
     
-    analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
+    #analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
 
     # for net in range(1,12):
 

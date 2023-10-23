@@ -4,7 +4,6 @@ venvlinux/
 envCDLib
 envNX
 .vscode/
-*.png
 *.fly
 output/edgesMeasure.csv
 testing.py
