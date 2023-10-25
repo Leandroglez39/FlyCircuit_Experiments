@@ -3700,15 +3700,7 @@ def influential_nodes_image():
     #plt.show()
     plt.savefig('influential_nodes5.png', dpi=700)
 
-if __name__ == '__main__':
-
-    print(datetime.datetime.now())
-    start_time = datetime.datetime.now()
-
-    m = Matrix([], {},[])
-
-    #construct_gephi_graph('NetsType_1.6')
-
+def construc_simplified_gephi_graph(m: Matrix):
     # Leer el archivo csv
     df = pd.read_csv('output/FlyCircuit/edgescsv.csv')
 
@@ -3808,6 +3800,77 @@ if __name__ == '__main__':
 
 
     nx.write_gml(NewG, 'output/FlyCircuit/FlyCircuit_1.4_RC.gml')
+
+def export_pc_overlaping_nodes_gt(net_version: str, gamma: str = ''):
+
+    nets_info = {f'network{i}': {} for i in range(1, 12)}
+
+    
+
+    for i in range(1, 12):
+
+        gt_communities = read_communities_from_dat(f'dataset/{net_version}/GT/community{i}_GT.dat')
+
+        overlapping_nodes_gt = detect_nodes_with_overlapping(gt_communities)
+
+        pc_values = pickle.load(open(f'dataset/{net_version}/network{i}/network{i}_GT_PC.pkl', 'rb'))
+
+        overlapping_nodes_gt = {key: pc_values[key] for key in overlapping_nodes_gt.keys()}
+       
+        pc_values_mean = statistics.mean(overlapping_nodes_gt.values())
+
+        nets_info[f'network{i}']['GT_PC'] = pc_values_mean
+        
+        if gamma != '':
+
+            rc_communities = read_communities_from_dat(f'output/{gamma}/{net_version}/network{i}_RC_{gamma}.txt')
+
+            overlapping_nodes_rc = detect_nodes_with_overlapping(rc_communities)
+                    
+            pc_values = pickle.load(open(f'output/{gamma}/{net_version}/network{i}_RC_{gamma}_PC.pkl', 'rb'))
+
+            overlapping_nodes_rc = {key: pc_values[key] for key in overlapping_nodes_rc.keys()}
+            
+            pc_values_mean = statistics.mean(overlapping_nodes_rc.values())
+
+            nets_info[f'network{i}']['RC_PC'] = pc_values_mean
+
+        else:
+            rc_communities = read_communities_from_dat(f'output/{net_version}/network{i}_RC.txt')
+
+            overlapping_nodes_rc = detect_nodes_with_overlapping(rc_communities)
+                    
+            pc_values = pickle.load(open(f'output/{net_version}/network{i}_RC_PC.pkl', 'rb'))
+
+            overlapping_nodes_rc = {key: pc_values[key] for key in overlapping_nodes_rc.keys()}
+            
+            pc_values_mean = statistics.mean(overlapping_nodes_rc.values())
+
+            nets_info[f'network{i}']['RC_PC'] = pc_values_mean
+
+        nets_info[f'network{i}']['T_Positive'] = len(set(overlapping_nodes_gt.keys()).intersection(set(overlapping_nodes_rc.keys())))
+        nets_info[f'network{i}']['F_Positive'] = len(set(overlapping_nodes_rc.keys()).difference(set(overlapping_nodes_gt.keys())))
+
+    # Create a DataFrame from the dictionary
+    df = pd.DataFrame.from_dict(nets_info, orient='index')
+
+    print(df)
+
+    if gamma != '':
+        df.to_csv(f'output/{gamma}/{net_version}/PC_overlapping_nodes_scores_{gamma}.csv')
+    else:
+        df.to_csv(f'output/{net_version}/PC_overlapping_nodes_scores.csv')
+
+
+if __name__ == '__main__':
+
+    print(datetime.datetime.now())
+    start_time = datetime.datetime.now()
+
+    m = Matrix([], {},[])
+
+    export_pc_overlaping_nodes_gt('NetsType_1.4', gamma='gamma_0.7')    
+    
         
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
