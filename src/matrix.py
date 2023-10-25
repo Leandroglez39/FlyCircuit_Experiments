@@ -3881,6 +3881,16 @@ def export_k_values(net_version: str):
 
     df.to_csv(f'output/{net_version}/k_values.csv')
 
+def calculate_nmi_mean_and_std_from_dataframe(net_version: str):
+
+    df = pd.read_csv(f'output/stability/{net_version}/nmi_stability.csv')
+
+    # Agrupa por 'Network', 'Algorithm' e 'Iterations' y calcula la media y la desviación estándar de 'NMI'
+    result = df.groupby(['Network', 'Algorithm', 'Iterations'])['NMI'].agg(['mean', 'std'])
+
+    print(result.head())
+
+    result.to_csv(f'output/stability/{net_version}/nmi_stability_mean_std.csv')
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3888,7 +3898,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    export_k_values('NetsType_1.6')
+    calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
     
         
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
