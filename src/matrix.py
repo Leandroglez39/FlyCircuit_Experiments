@@ -3861,6 +3861,25 @@ def export_pc_overlaping_nodes_gt(net_version: str, gamma: str = ''):
     else:
         df.to_csv(f'output/{net_version}/PC_overlapping_nodes_scores.csv')
 
+def export_k_values(net_version: str):
+
+    nets_info = {f'network{i}': {} for i in range(1, 12)}
+
+    for i in range(1, 12):
+
+        gt_communities = read_communities_from_dat(f'dataset/{net_version}/GT/community{i}_GT.dat')
+
+        rc_communities = read_communities_from_dat(f'output/{net_version}/network{i}_RC.txt')
+
+        nets_info[f'network{i}']['GT_k'] = len(gt_communities)
+
+        nets_info[f'network{i}']['RC_k'] = len(rc_communities)
+        
+    df = pd.DataFrame.from_dict(nets_info, orient='index')
+
+    print(df)
+
+    df.to_csv(f'output/{net_version}/k_values.csv')
 
 if __name__ == '__main__':
 
@@ -3869,7 +3888,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
 
-    export_pc_overlaping_nodes_gt('NetsType_1.4', gamma='gamma_0.7')    
+    export_k_values('NetsType_1.6')
     
         
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
