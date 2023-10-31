@@ -1147,6 +1147,29 @@ class Matrix:
             
             return int(count / len(communities))
     
+
+    def calculate_k_porcentual(self, communities: list, porcent = 0.91 ) -> int:
+
+        data_array = np.array([])
+
+        for community in communities:
+            for i in range(len(community)):
+                partition = community[i]
+                vale = np.full(len(partition), i)
+                data_array = np.concatenate((data_array, vale), axis=None)
+        
+
+        data_array = data_array + 1
+
+        #sort data_array
+        data_array.sort()
+        
+        #calculate the index where the acumulate sum is the 95% of the total sum
+        index = np.argmax(np.cumsum(data_array) > porcent * np.sum(data_array))
+
+        return data_array[index]
+
+
     def merge_communities_dict(self, general_dict: dict, dict_new: dict):
     
         '''
@@ -3897,8 +3920,54 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
 
     m = Matrix([], {},[])
+    
+    
+    for i in range(1,12):
+    
 
-    calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
+        communities = []
+
+        
+        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/async_lpa_100_run_0.pkl', 'rb'))[:10])
+        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/greedy_10_run_0.pkl', 'rb'))[:10])
+        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/infomap_100_run_0.pkl', 'rb'))[:10])
+        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/louvain_100_run_0.pkl', 'rb'))[:10])
+
+
+        data_array = np.array([])
+
+        
+
+        for community in communities:
+            for i in range(len(community)):
+                partition = community[i]
+                vale = np.full(len(partition), i)
+                data_array = np.concatenate((data_array, vale), axis=None)
+        
+
+        #sort data_array
+        data_array.sort()
+        
+        #calculate the index where the acumulate sum is the 95% of the total sum
+        index = np.argmax(np.cumsum(data_array) > 0.91 * np.sum(data_array))
+
+        print(data_array[index])
+
+    # Convert to log base 2
+    #data_array = np.log2(data_array + 2)
+
+     # create histogram
+    # plt.hist(data_array)
+
+    # # add labels and title
+    # plt.xlabel('Community')
+    # plt.ylabel('Frequency')
+    # plt.title('Community Frequency Histogram')
+
+    # # display plot
+    # plt.show()
+    
+    #calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
     
         
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
