@@ -3929,7 +3929,7 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    
+    ''' *************************************************************************************** '''
     # runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
 
     # print('RC Finished')
@@ -3939,20 +3939,21 @@ if __name__ == '__main__':
     # print('NMI Finished')
  
 
-    apply_PC_to_RC('NetsType_1.6')
+    #apply_PC_to_RC('NetsType_1.6')
 
-    print('PC Finished')
+    #print('PC Finished')
 
-    analyze_overlaping('NetsType_1.6')
+    #analyze_overlaping('NetsType_1.6')
 
-    print('Analyze Finished')
+    #print('Analyze Finished')
 
-    compare_cores_with_GT('NetsType_1.6')
+    #compare_cores_with_GT('NetsType_1.6')
 
-    print('Compare Finished')
+    #print('Compare Finished')
 
-    export_k_values('NetsType_1.6')
-
+    #export_k_values('NetsType_1.6')
+    
+    ''' *************************************************************************************** '''
     # Convert to log base 2
     #data_array = np.log2(data_array + 2)
 
