@@ -2067,6 +2067,8 @@ def nmi_overlapping_evaluateTunning_gamma(foldername: str, gamma: str) -> None:
         # read files result
         filesResultAlg = os.listdir('output/gamma_' + gamma + '/' + foldername)
 
+        filesResultAlg = [x for x in filesResultAlg if x.endswith('.txt')]
+
         # remove .txt, .pkl
         if os.path.exists('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt'):
             filesResultAlg.remove(foldername + '_result.txt')
@@ -3971,13 +3973,21 @@ if __name__ == '__main__':
     #calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
     
         
-    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.6)
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.6)
 
-    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
 
-    #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.5')
 
-    #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.6')
+
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.7')
+
+    apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.5')
+
+    apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.6')
+
+    apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.7')
     
     
     
