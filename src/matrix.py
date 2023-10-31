@@ -2614,19 +2614,19 @@ def analyze_overlaping(net_type : str):
         plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^', c= 'orange') # type: ignore
 
         # Create a dot plot of the RC overlaping nodes but without match with GT values
-        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC', marker='s', c='blue') # type: ignore
+        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='CRC', marker='s', c='blue') # type: ignore
 
         # Create a dot plot of the GT overlaping nodes with only match with RC values
         plt.scatter(nodes_pc_gt_match.keys(), nodes_pc_gt_match.values(), label='GT Match', marker='^', c= 'red') # type: ignore
 
         # Create a dot plot of the RC overlaping nodes with only match with GT values
-        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='RC Match', marker='s', c='red') # type: ignore
+        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='CRC Match', marker='s', c='red') # type: ignore
 
         #for node in match:
         #    plt.axvline(x=node, ymin=nodes_pc_rc[node] , ymax=nodes_pc_gt[node], color='r')
 
         # Set the plot title and axis labels
-        plt.title('GT vs RC - PC in overlaping nodes')
+        plt.title('GT vs CRC - PC in overlaping nodes')
         plt.xlabel('Nodes')
         plt.ylabel('PC Values')
 
@@ -2641,7 +2641,7 @@ def analyze_overlaping(net_type : str):
         rc_mean = np.mean(rc_mean_values) # type: ignore
         
         plt.axhline(y=gt_mean, color='orange', linestyle='--', label='GT Mean') # type: ignore
-        plt.axhline(y=rc_mean, color='b', label='RC Mean') # type: ignore
+        plt.axhline(y=rc_mean, color='b', label='CRC Mean') # type: ignore
 
         # Add a legend to the plot
         plt.legend()
@@ -2650,17 +2650,17 @@ def analyze_overlaping(net_type : str):
         #plt.gcf().set_size_inches(20, 11.25)
         #plt.show()
 
-        if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
-            with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
-                f.write(f'Net,PC_Mean_GT, PC_Mean_RC,T_Possitive,F_Possitive \n')
+        # if not os.path.exists(f'output/{net_type}/PC_Overlaping_score.csv'):
+        #     with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:
+        #         f.write(f'Net,PC_Mean_GT, PC_Mean_RC,T_Possitive,F_Possitive \n')
 
-        with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
-            f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
+        # with open(f'output/{net_type}/PC_Overlaping_score.csv', 'a+') as f:            
+        #     f.write(f'Network{i},{gt_mean},{rc_mean},{len(match)},{len(nodes_pc_rc.keys())} \n')
 
-        if not os.path.exists(f'output/{net_type}/img'):
-            os.makedirs(f'output/{net_type}/img')
+        # if not os.path.exists(f'output/{net_type}/img'):
+        #     os.makedirs(f'output/{net_type}/img')
         
-        #plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=550)
+        plt.savefig(f'output/{net_type}/img/PC_network{i}_simple.png', dpi=550)
         plt.close()
 
 def analyze_overlaping_gamma(net_type : str, gamma: str = '0.8'):
@@ -3943,7 +3943,7 @@ if __name__ == '__main__':
 
     #print('PC Finished')
 
-    #analyze_overlaping('NetsType_1.6')
+    analyze_overlaping('NetsType_1.6')
 
     #print('Analyze Finished')
 
@@ -3952,7 +3952,7 @@ if __name__ == '__main__':
     #print('Compare Finished')
 
     #export_k_values('NetsType_1.6')
-    
+
     ''' *************************************************************************************** '''
     # Convert to log base 2
     #data_array = np.log2(data_array + 2)
