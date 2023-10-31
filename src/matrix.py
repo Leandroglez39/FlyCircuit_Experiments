@@ -918,7 +918,10 @@ class Matrix:
         seeds.sort(key=len, reverse=True)
 
         print('Calculating k')
-        k = self.calculate_k(communities)
+        #k = self.calculate_k(communities)
+        k = self.calculate_k_porcentual(communities, porcent=0.91)
+
+        k = int(k)
 
         print('Real k: ' + str(k + 1))
         
@@ -2273,8 +2276,9 @@ def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8,
                 for algorithm in algorithm_names:
                     all_iterations.extend(pickle.load(open(f'output/stability/{folder_version}/{net}/{algorithm}_{file_num}_run_0.pkl', 'rb'))[n:top]) # type: ignore
                 
-                value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'output/stability/{folder_version}/{net}/{net}_RC_cores.txt')
+                value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'output/{folder_version}/k_update/{net}_RC.txt')
                 all_iterations = []
+                m.export_RC(f'{folder_version}/k_update', f'/{net}_RC.txt', value)
               
                 
 
@@ -3922,36 +3926,10 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
     
     
-    for i in range(1,12):
-    
-
-        communities = []
-
-        
-        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/async_lpa_100_run_0.pkl', 'rb'))[:10])
-        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/greedy_10_run_0.pkl', 'rb'))[:10])
-        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/infomap_100_run_0.pkl', 'rb'))[:10])
-        communities.extend(pickle.load(open(f'output/stability/NetsType_1.6/network{i}/louvain_100_run_0.pkl', 'rb'))[:10])
-
-
-        data_array = np.array([])
+    runRoughClustering(m=m, folder_version='NetsType_1.4', gamma=0.8, n=0, top=10, saved=True)
 
         
 
-        for community in communities:
-            for i in range(len(community)):
-                partition = community[i]
-                vale = np.full(len(partition), i)
-                data_array = np.concatenate((data_array, vale), axis=None)
-        
-
-        #sort data_array
-        data_array.sort()
-        
-        #calculate the index where the acumulate sum is the 95% of the total sum
-        index = np.argmax(np.cumsum(data_array) > 0.91 * np.sum(data_array))
-
-        print(data_array[index])
 
     # Convert to log base 2
     #data_array = np.log2(data_array + 2)
