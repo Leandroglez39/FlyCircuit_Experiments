@@ -1152,7 +1152,7 @@ class Matrix:
     
 
     def calculate_k_porcentual(self, communities: list, porcent = 0.91 ) -> int:
-
+        
         data_array = np.array([])
 
         for community in communities:
@@ -1936,7 +1936,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
     files = os.listdir('dataset/' + foldername)
     files.remove('GT')
     files.remove('README.txt')
-
+    
     files = sorted(files, key=lambda x: int("".join([i for i in x if i.isdigit()])))
 
     dictResult = dict()
@@ -1969,6 +1969,8 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         # read files result
         filesResultAlg = os.listdir('output/' + foldername)
 
+        filesResultAlg = [x for x in filesResultAlg if x.endswith('.txt')]
+
         # remove .txt, .pkl
         if os.path.exists('output/' + foldername + '/' + foldername + '_result.txt'):
             filesResultAlg.remove(foldername + '_result.txt')
@@ -1976,6 +1978,7 @@ def nmi_overlapping_evaluateTunning(foldername: str) -> None:
         # if os.path.exists('output/' + foldername + '/' + foldername + '_result.pkl'):
         #     filesResultAlg.remove(foldername + '_result.pkl')
 
+        
         # sorted files
         filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
             
@@ -2107,7 +2110,7 @@ def nmi_overlapping_evaluateTunning_gamma(foldername: str, gamma: str) -> None:
         
 
 
-def nmi_overlapping_evaluateTunning(foldername: str, gamma: str = '') -> None:
+def nmi_overlapping_evaluateTunning_(foldername: str, gamma: str = '') -> None:
     '''
     Evaluate the overlapping detection methods using NMI
 
@@ -2657,7 +2660,7 @@ def analyze_overlaping(net_type : str):
         if not os.path.exists(f'output/{net_type}/img'):
             os.makedirs(f'output/{net_type}/img')
         
-        plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=550)
+        #plt.savefig(f'output/{net_type}/img/PC_network{i}.png', dpi=550)
         plt.close()
 
 def analyze_overlaping_gamma(net_type : str, gamma: str = '0.8'):
@@ -3918,6 +3921,7 @@ def calculate_nmi_mean_and_std_from_dataframe(net_version: str):
     print(result.head())
 
     result.to_csv(f'output/stability/{net_version}/nmi_stability_mean_std.csv')
+
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3926,10 +3930,28 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
     
     
-    runRoughClustering(m=m, folder_version='NetsType_1.4', gamma=0.8, n=0, top=10, saved=True)
+    # runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
 
-        
+    # print('RC Finished')
 
+    # nmi_overlapping_evaluateTunning(foldername='NetsType_1.6')   
+
+    # print('NMI Finished')
+ 
+
+    apply_PC_to_RC('NetsType_1.6')
+
+    print('PC Finished')
+
+    analyze_overlaping('NetsType_1.6')
+
+    print('Analyze Finished')
+
+    compare_cores_with_GT('NetsType_1.6')
+
+    print('Compare Finished')
+
+    export_k_values('NetsType_1.6')
 
     # Convert to log base 2
     #data_array = np.log2(data_array + 2)
@@ -3954,7 +3976,7 @@ if __name__ == '__main__':
 
     #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
     
-    #compare_cores_with_GT('NetsType_1.4')
+    
     
     #analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
 
