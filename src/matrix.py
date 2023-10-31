@@ -2278,7 +2278,7 @@ def runRoughClustering(m : Matrix, folder_version = 'NetsType_1.1', gamma = 0.8,
                 
                 value = m.RoughClustering(communities=all_iterations, gamma=gamma, path=f'output/{folder_version}/k_update/{net}_RC.txt')
                 all_iterations = []
-                m.export_RC(f'{folder_version}/k_update', f'/{net}_RC.txt', value)
+                m.export_RC(f'{folder_version}/', f'/{net}_RC.txt', value)
               
                 
 
