@@ -3947,7 +3947,7 @@ if __name__ == '__main__':
 
     #print('Analyze Finished')
 
-    compare_cores_with_GT('NetsType_1.4')
+    #compare_cores_with_GT('NetsType_1.4')
 
     #print('Compare Finished')
 
@@ -3971,7 +3971,9 @@ if __name__ == '__main__':
     #calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
     
         
-    #run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.5)
+    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.6)
+
+    run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
 
     #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
 
