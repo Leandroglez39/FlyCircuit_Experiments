@@ -379,7 +379,7 @@ if __name__ == "__main__":
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
     
-    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
+    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
     
     #drawStability2('NetsType_1.6', skip_plot=True)
 
