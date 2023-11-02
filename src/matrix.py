@@ -2067,11 +2067,12 @@ def nmi_overlapping_evaluateTunning_gamma(foldername: str, gamma: str) -> None:
         # read files result
         filesResultAlg = os.listdir('output/gamma_' + gamma + '/' + foldername)
 
-        filesResultAlg = [x for x in filesResultAlg if x.endswith('.txt')]
+        filesResultAlg = [x for x in filesResultAlg if x.endswith('.txt') and 'RC' in x]
 
         # remove .txt, .pkl
         if os.path.exists('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt'):
-            filesResultAlg.remove(foldername + '_result.txt')
+            if 'output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt' in filesResultAlg:
+                filesResultAlg.remove('output/gamma_'+ gamma + '/' + foldername + '/' + foldername + '_result.txt')
 
         # sorted files
         filesResultAlg = sorted(filesResultAlg, key=lambda x: int("".join([i for i in x if i.isdigit()])))
@@ -3932,7 +3933,7 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
     
     ''' *************************************************************************************** '''
-    # runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
+    #runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
 
     # print('RC Finished')
 
@@ -3945,7 +3946,7 @@ if __name__ == '__main__':
 
     #print('PC Finished')
 
-    analyze_overlaping('NetsType_1.4')
+    #analyze_overlaping('NetsType_1.4')
 
     #print('Analyze Finished')
 
@@ -3972,26 +3973,29 @@ if __name__ == '__main__':
     
     #calculate_nmi_mean_and_std_from_dataframe('NetsType_1.6')
     
-        
-    #run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.6)
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.5)
 
-    #run_RC_sequences(sequence=1, folder_version='NetsType_1.4', r=1000, gamma=0.7)
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.6)
 
-    # nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.5')
+    #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.7)
 
-    # nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.6')
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
 
-    # nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.4', gamma='0.7')
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.6')
 
-    # apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.5')
+    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.7')
 
-    # apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.6')
+    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
 
-    # apply_PC_to_RC_gamma('NetsType_1.4', overlap=True, gamma='0.7')
+    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.6')
+
+    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.7')
     
-    
-    
-    #analyze_overlaping_gamma('NetsType_1.4', gamma='0.7')
+    analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
+
+    analyze_overlaping_gamma('NetsType_1.6', gamma='0.6')
+
+    analyze_overlaping_gamma('NetsType_1.6', gamma='0.7')
 
     # for net in range(1,12):
 
