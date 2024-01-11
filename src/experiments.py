@@ -244,7 +244,7 @@ def drawResultAlgorithm(folderpath, nameFile, ga = '0.8'):
 
     dictResult = pickle.load(open('output/' + folderpath + '/' + nameFile, 'rb'))
     
-    dictResult[f'RC']['Algorithms/Parameters'] = f'CRC_{0.8}'
+    dictResult[f'RC']['Algorithms/Parameters'] = f'RC_CCD_{0.8}'
 
     gammas = [ '0.5', '0.6' , '0.7']
 
@@ -252,11 +252,11 @@ def drawResultAlgorithm(folderpath, nameFile, ga = '0.8'):
 
         dictResult2 = pickle.load(open('output/' + 'gamma_' + gamma + '/' + folderpath + '/' + nameFile, 'rb'))
     
-        dictResult[f'CRC_{gamma}'] = dictResult2['RC']
-        dictResult[f'CRC_{gamma}']['Algorithms/Parameters'] = f'CRC_{gamma}'
+        dictResult[f'RC_CCD_{gamma}'] = dictResult2['RC']
+        dictResult[f'RC_CCD_{gamma}']['Algorithms/Parameters'] = f'RC_CCD_{gamma}'
     
-    #dictResult['CRC'] = dictResult2['RC']
-    #dictResult[f'CRC_{gamma}'] = dictResult2['RC']
+    # dictResult['CRC'] = dictResult2['RC']
+    # dictResult[f'CRC_{gamma}'] = dictResult2['RC']
 
     df = pd.DataFrame()
 
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     #runAlgorithmSimpleTunning(m, 5.5, 0.5, 10.0, 'NetsType_1.1_Tunning')
     # draw result
     
-    drawResultAlgorithm('NetsType_1.6', 'NetsType_1.6_result.pkl')
+    drawResultAlgorithm('NetsType_1.4', 'NetsType_1.4_result.pkl')
     
     #drawStability2('NetsType_1.6', skip_plot=True)
 

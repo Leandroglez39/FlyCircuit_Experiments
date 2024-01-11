@@ -2751,19 +2751,19 @@ def analyze_overlaping_gamma(net_type : str, gamma: str = '0.8'):
         plt.scatter(nodes_pc_gt.keys(), nodes_pc_gt.values(), label='GT', marker='^', c= 'orange') # type: ignore
 
         # Create a dot plot of the RC overlaping nodes but without match with GT values
-        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='CRC', marker='s', c='blue') # type: ignore
+        plt.scatter(nodes_pc_rc.keys(), nodes_pc_rc.values(), label='RC_CCD', marker='s', c='blue') # type: ignore
 
         # Create a dot plot of the GT overlaping nodes with only match with RC values
         plt.scatter(nodes_pc_gt_match.keys(), nodes_pc_gt_match.values(), label='GT Match', marker='^', c= 'red') # type: ignore
 
         # Create a dot plot of the RC overlaping nodes with only match with GT values
-        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='CRC Match', marker='s', c='red') # type: ignore
+        plt.scatter(nodes_pc_rc_match.keys(), nodes_pc_rc_match.values(), label='RC_CCD Match', marker='s', c='red') # type: ignore
 
         #for node in match:
         #    plt.axvline(x=node, ymin=nodes_pc_rc[node] , ymax=nodes_pc_gt[node], color='r')
 
         # Set the plot title and axis labels
-        plt.title('GT vs CRC - PC in overlaping nodes')
+        plt.title('GT vs RC_CCD - PC in overlaping nodes')
         plt.xlabel('Nodes')
         plt.ylabel('PC Values')
 
@@ -2778,7 +2778,7 @@ def analyze_overlaping_gamma(net_type : str, gamma: str = '0.8'):
         rc_mean = np.mean(rc_mean_values) # type: ignore
         
         plt.axhline(y=gt_mean, color='orange', linestyle='--', label='GT Mean') # type: ignore
-        plt.axhline(y=rc_mean, color='b', label='CRC Mean') # type: ignore
+        plt.axhline(y=rc_mean, color='b', label='RC_CCD Mean') # type: ignore
 
         # Add a legend to the plot
         plt.legend()
@@ -3979,23 +3979,25 @@ if __name__ == '__main__':
 
     #run_RC_sequences(sequence=1, folder_version='NetsType_1.6', r=100, gamma=0.7)
 
-    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
+    #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.5')
 
-    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.6')
+    #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.6')
 
-    nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.7')
+    #nmi_overlapping_evaluateTunning_gamma(foldername='NetsType_1.6', gamma='0.7')
 
-    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
+    #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.5')
 
-    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.6')
+    #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.6')
 
-    apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.7')
+    #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.7')
     
-    analyze_overlaping_gamma('NetsType_1.6', gamma='0.5')
+    analyze_overlaping_gamma('NetsType_1.4', gamma='0.5')
 
-    analyze_overlaping_gamma('NetsType_1.6', gamma='0.6')
+    analyze_overlaping_gamma('NetsType_1.4', gamma='0.6')
 
-    analyze_overlaping_gamma('NetsType_1.6', gamma='0.7')
+    analyze_overlaping_gamma('NetsType_1.4', gamma='0.7')
+    
+    
 
     # for net in range(1,12):
 
