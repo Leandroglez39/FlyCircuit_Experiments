@@ -3932,6 +3932,23 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
+    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    
+    #nx.write_adjlist(m.G, 'dataset/adjlist.txt')
+    
+    G = nx.read_adjlist('dataset/adjlist.txt')
+    
+    com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
+    
+    from cdlib import evaluation, NodeClustering
+    
+    com = [com[0]]
+    com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
+    
+    mod = evaluation.internal_edge_density(G, com)
+    
+    print(mod)
+    
     ''' *************************************************************************************** '''
     #runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
 
@@ -3991,11 +4008,11 @@ if __name__ == '__main__':
 
     #apply_PC_to_RC_gamma('NetsType_1.6', overlap=True, gamma='0.7')
     
-    analyze_overlaping_gamma('NetsType_1.4', gamma='0.5')
+    #analyze_overlaping_gamma('NetsType_1.4', gamma='0.5')
 
-    analyze_overlaping_gamma('NetsType_1.4', gamma='0.6')
+    #analyze_overlaping_gamma('NetsType_1.4', gamma='0.6')
 
-    analyze_overlaping_gamma('NetsType_1.4', gamma='0.7')
+    #analyze_overlaping_gamma('NetsType_1.4', gamma='0.7')
     
     
 
