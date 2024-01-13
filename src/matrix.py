@@ -3947,6 +3947,10 @@ if __name__ == '__main__':
     
     mod = evaluation.internal_edge_density(G, com)
     
+    cond = evaluation.conductance(G, com)
+    
+    cond = evaluation.cut_ratio(G, com)
+    
     print(mod)
     
     ''' *************************************************************************************** '''
