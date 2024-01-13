@@ -893,6 +893,10 @@ class Matrix:
         # Find the indices where match_array is greater than or equal to b0
         i, j = np.where(match_array >= b0)
 
+        
+        #TODO: AÑADIR EL NUEVO CRITERIO
+        
+        
         # Use those indices to create the edges_list
         edges_list = [(nodes[i[k]], nodes[j[k]]) for k in range(len(i))]
 
@@ -4010,6 +4014,16 @@ if __name__ == '__main__':
     m = Matrix([], {},[])
     
     m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    
+    #TODO
+    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
+
+    #runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
+    #TODO
+    
+    
+    
+    
     
     #nx.write_adjlist(m.G, 'dataset/adjlist.txt')
     
