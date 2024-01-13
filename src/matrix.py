@@ -3950,8 +3950,34 @@ def influent_internal_density(G: nx.DiGraph, communities: list[list[int]]) -> di
         
     pickle.dump(out_dict, open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_internal_density.pkl', 'wb'))
         
-    
+def influent_conductance(G: nx.DiGraph, communities: list[list[int]]) -> dict[str, float]:
+    """
+    Calculates the influent conductance for each node in the given communities.
 
+    Parameters:
+        G (nx.DiGraph): The directed graph.
+        communities (list[list[int]]): The list of communities, where each community is represented as a list of node IDs.
+
+    Returns:
+        dict[str, float]: A dictionary where the keys are node IDs and the values are the influent conductance for each node. The values is
+        calculate as the number of outgoing edges to the anpther communities divided by the number of ingoing edges.
+
+    """
+    
+    out_dict = {}
+    
+    for com in tqdm(communities):       
+        subgraph = G.subgraph(com)
+        for v in subgraph.nodes:
+            if subgraph.degree(v) == 0:
+                out_dict[v] = 1
+            else:
+                out_dict[v] = abs((G.degree(v) - subgraph.degree(v) )) / subgraph.degree(v)            
+                    
+            
+    pickle.dump(out_dict, open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'wb'))
+      
+    
 if __name__ == '__main__':
 
     print(datetime.datetime.now())
@@ -3967,16 +3993,16 @@ if __name__ == '__main__':
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
-    influent_internal_density(G, com)
+    influent_conductance(G, com)
     
-    # from cdlib import evaluation, NodeClustering
+    from cdlib import evaluation, NodeClustering
     
     # com = [com[0]]
     # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
     
     # mod = evaluation.internal_edge_density(G, com)
     
-    # cond = evaluation.conductance(G, com)
+    #cond = evaluation.conductance(G, com)
     
     # cond = evaluation.cut_ratio(G, com)
     
