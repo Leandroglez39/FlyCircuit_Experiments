@@ -17,7 +17,7 @@ import re
 import itertools  
 import concurrent.futures
 import asyncio
-
+from tqdm import tqdm
 
 
 @dataclass
@@ -3926,8 +3926,7 @@ def calculate_nmi_mean_and_std_from_dataframe(net_version: str):
     result.to_csv(f'output/stability/{net_version}/nmi_stability_mean_std.csv')
     
 
-import networkx as nx
-import pickle
+
 
 def influent_internal_density(G: nx.DiGraph, communities: list[list[int]]) -> dict[str, float]:
     """
@@ -3944,7 +3943,7 @@ def influent_internal_density(G: nx.DiGraph, communities: list[list[int]]) -> di
     
     out_dict = {}
     
-    for com in communities:
+    for com in tqdm(communities):
         subgraph = G.subgraph(com)
         for v in subgraph.nodes:
             out_dict[v] = subgraph.degree(v) / ((len(com) * (len(com) - 1)) / 2)
@@ -3968,18 +3967,20 @@ if __name__ == '__main__':
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
-    from cdlib import evaluation, NodeClustering
+    influent_internal_density(G, com)
     
-    com = [com[0]]
-    com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
+    # from cdlib import evaluation, NodeClustering
     
-    mod = evaluation.internal_edge_density(G, com)
+    # com = [com[0]]
+    # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
     
-    cond = evaluation.conductance(G, com)
+    # mod = evaluation.internal_edge_density(G, com)
     
-    cond = evaluation.cut_ratio(G, com)
+    # cond = evaluation.conductance(G, com)
     
-    print(mod)
+    # cond = evaluation.cut_ratio(G, com)
+    
+    # print(mod)
     
     ''' *************************************************************************************** '''
     #runRoughClustering(m=m, folder_version='NetsType_1.6', gamma=0.8, n=0, top=10, saved=True)
