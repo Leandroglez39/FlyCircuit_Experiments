@@ -3993,10 +3993,24 @@ if __name__ == '__main__':
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
-    influent_conductance(G, com)
+    #influent_conductance(G, com)
     
     from cdlib import evaluation, NodeClustering
     
+    
+    data = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
+    
+    
+    top_nodes = list(sorted(data.items(), key=lambda x: x[1], reverse=False))
+    
+    
+    plt.plot([x[1] for x in top_nodes])
+    plt.grid(True, linestyle='--', alpha=0.6)
+    #plt.show()
+    a = [ x  for x in top_nodes if x[1] <= 0.005116]
+    print(len(a))
+    
+    print(top_nodes[1999])        
     # com = [com[0]]
     # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
     
