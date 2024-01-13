@@ -3950,7 +3950,29 @@ def influent_internal_density(G: nx.DiGraph, communities: list[list[int]]) -> di
         
     pickle.dump(out_dict, open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_internal_density.pkl', 'wb'))
         
+
+def influent_cut_ratio(G: nx.DiGraph, communities: list[list[int]]) -> dict[str, float]:
+    """
+    Calculates the influent cut ratio for each node in the given communities.
+
+    Parameters:
+        G (nx.DiGraph): The directed graph.
+        communities (list[list[int]]): The list of communities, where each community is represented as a list of node IDs.
+
+    Returns:
+        dict[str, float]: A dictionary where the keys are node IDs and the values are the influent cut ratio for each node.
+
+    """
     
+    out_dict = {}
+    
+    for com in tqdm(communities):
+        subgraphCi = G.subgraph(com)
+        subgraphG_Ci = G.subgraph(list(set(G.nodes) - set(com)))
+        for v in subgraphCi.nodes:
+            out_dict[v] = abs(G.degree(v) - subgraphCi.degree(v))/(len(subgraphG_Ci.nodes)*2)
+        
+    pickle.dump(out_dict, open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_cut_ratio.pkl', 'wb'))
 
 if __name__ == '__main__':
 
@@ -3967,7 +3989,13 @@ if __name__ == '__main__':
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
-    influent_internal_density(G, com)
+    influent_cut_ratio(G, com)
+    result = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_cut_ratio.pkl', 'rb'))
+    for k , v in result.items():
+        if v > 0:
+            print(k, v)
+
+    
     
     # from cdlib import evaluation, NodeClustering
     
