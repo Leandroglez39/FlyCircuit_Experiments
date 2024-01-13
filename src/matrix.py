@@ -4009,17 +4009,17 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
     
     #nx.write_adjlist(m.G, 'dataset/adjlist.txt')
     
-    G = nx.read_adjlist('dataset/adjlist.txt')
+    #G = nx.read_adjlist('dataset/adjlist.txt')
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
     #influent_conductance(G, com)
     
-    from cdlib import evaluation, NodeClustering
+    #from cdlib import evaluation, NodeClustering
     
     
     conductance = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
@@ -4030,27 +4030,37 @@ if __name__ == '__main__':
     
     top_nodes_cut = list(sorted(cut.items(), key=lambda x: x[1], reverse=False))
     
-    top_nodes_density = list(sorted(density.items(), key=lambda x: x[1], reverse=True))
-    
-    nodesA = set()
-    nodesB = set()
+    #top_nodes_density = list(sorted(density.items(), key=lambda x: x[1], reverse=True))
     
     
-    for k, _ in top_nodes_conductance[:2000]:
-        nodesA.add(k)
-    for k, _ in top_nodes_cut[:2000]:
-        nodesB.add(k)
     
+    columns = ['id', 'eigenvector_centrality', 'eigenvector_centrality_weighted', 'pagerank', 'degree_centrality', 'core_number', 'closeness_centrality', 'clustering_coefficient', 'vertex_betweenes']
+
+    df = pd.DataFrame(columns=columns)
     
-    result = nodesA.intersection(nodesB)
+    with open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.txt', 'r') as f:
+        nodes = f.read().splitlines()
+        
+    for node in tqdm(nodes):
+        row = {}
+        data = m.G.nodes[node]
+        for col in columns:
+            
+            if col == 'id':
+                continue
+            
+            else:
+                row[col] = data[col]
+                row['id'] = node
+        
+        df = pd.concat([df, pd.DataFrame(row, columns=columns, index=[0])], ignore_index=True)
+        
     
-    print(len(result))
+    df.to_csv('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.csv', index=False)    
+        
     
-    # Export to .txt file the set with the id of the nodes
-    with open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.txt', 'w') as f:
-        for item in result:
-            f.write(f'{item}\n')
-    
+    print(df)
+        
     
     # com = [com[0]]
     # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
