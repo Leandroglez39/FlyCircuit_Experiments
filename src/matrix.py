@@ -893,6 +893,10 @@ class Matrix:
         # Find the indices where match_array is greater than or equal to b0
         i, j = np.where(match_array >= b0)
 
+        
+        #TODO: AÑADIR EL NUEVO CRITERIO
+        
+        
         # Use those indices to create the edges_list
         edges_list = [(nodes[i[k]], nodes[j[k]]) for k in range(len(i))]
 
@@ -4032,32 +4036,69 @@ if __name__ == '__main__':
 
     m = Matrix([], {},[])
     
-    #m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    m.load_matrix_obj(path='dataset/attributed_graph-1.4.fly')
+    
+    #TODO
+    #iterations = m.load_all_algorithm_communities(algorithms=['louvain', 'greedy', 'gnfomap', 'lpa'])
+
+    #runRoughClustering_on_FlyCircuit(m, '1.4', iterations=iterations)
+    #TODO
+    
+    
+    
+    
     
     #nx.write_adjlist(m.G, 'dataset/adjlist.txt')
     
-    G = nx.read_adjlist('dataset/adjlist.txt')
+    #G = nx.read_adjlist('dataset/adjlist.txt')
     
     com = read_communities_from_dat('output/FlyCircuit/FlyCircuit_1.4_RC.txt', is_number=False)
     
     influent_internal_density(G, com)
     
-    from cdlib import evaluation, NodeClustering
+    #from cdlib import evaluation, NodeClustering
     
     
-    data = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
+    conductance = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
+    cut = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_cut_ratio.pkl', 'rb'))
+    density = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_internal_density.pkl', 'rb'))
+    
+    top_nodes_conductance = list(sorted(conductance.items(), key=lambda x: x[1], reverse=False))
+    
+    top_nodes_cut = list(sorted(cut.items(), key=lambda x: x[1], reverse=False))
+    
+    #top_nodes_density = list(sorted(density.items(), key=lambda x: x[1], reverse=True))
     
     
-    top_nodes = list(sorted(data.items(), key=lambda x: x[1], reverse=False))
     
+    columns = ['id', 'eigenvector_centrality', 'eigenvector_centrality_weighted', 'pagerank', 'degree_centrality', 'core_number', 'closeness_centrality', 'clustering_coefficient', 'vertex_betweenes']
+
+    df = pd.DataFrame(columns=columns)
     
-    plt.plot([x[1] for x in top_nodes])
-    plt.grid(True, linestyle='--', alpha=0.6)
-    #plt.show()
-    a = [ x  for x in top_nodes if x[1] <= 0.005116]
-    print(len(a))
+    with open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.txt', 'r') as f:
+        nodes = f.read().splitlines()
+        
+    for node in tqdm(nodes):
+        row = {}
+        data = m.G.nodes[node]
+        for col in columns:
+            
+            if col == 'id':
+                continue
+            
+            else:
+                row[col] = data[col]
+                row['id'] = node
+        
+        df = pd.concat([df, pd.DataFrame(row, columns=columns, index=[0])], ignore_index=True)
+        
     
-    print(top_nodes[1999])        
+    df.to_csv('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.csv', index=False)    
+        
+    
+    print(df)
+        
+    
     # com = [com[0]]
     # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
     
