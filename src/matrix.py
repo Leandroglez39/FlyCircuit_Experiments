@@ -3924,6 +3924,34 @@ def calculate_nmi_mean_and_std_from_dataframe(net_version: str):
     print(result.head())
 
     result.to_csv(f'output/stability/{net_version}/nmi_stability_mean_std.csv')
+    
+
+import networkx as nx
+import pickle
+
+def influent_internal_density(G: nx.DiGraph, communities: list[list[int]]) -> dict[str, float]:
+    """
+    Calculates the influent internal density for each node in the given communities.
+
+    Parameters:
+        G (nx.DiGraph): The directed graph.
+        communities (list[list[int]]): The list of communities, where each community is represented as a list of node IDs.
+
+    Returns:
+        dict[str, float]: A dictionary where the keys are node IDs and the values are the influent internal density for each node.
+
+    """
+    
+    out_dict = {}
+    
+    for com in communities:
+        subgraph = G.subgraph(com)
+        for v in subgraph.nodes:
+            out_dict[v] = subgraph.degree(v) / ((len(com) * (len(com) - 1)) / 2)
+        
+    pickle.dump(out_dict, open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_internal_density.pkl', 'wb'))
+        
+    
 
 if __name__ == '__main__':
 
