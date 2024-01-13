@@ -4022,19 +4022,36 @@ if __name__ == '__main__':
     from cdlib import evaluation, NodeClustering
     
     
-    data = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
+    conductance = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_conductance.pkl', 'rb'))
+    cut = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_cut_ratio.pkl', 'rb'))
+    density = pickle.load(open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_internal_density.pkl', 'rb'))
+    
+    top_nodes_conductance = list(sorted(conductance.items(), key=lambda x: x[1], reverse=False))
+    
+    top_nodes_cut = list(sorted(cut.items(), key=lambda x: x[1], reverse=False))
+    
+    top_nodes_density = list(sorted(density.items(), key=lambda x: x[1], reverse=True))
+    
+    nodesA = set()
+    nodesB = set()
     
     
-    top_nodes = list(sorted(data.items(), key=lambda x: x[1], reverse=False))
+    for k, _ in top_nodes_conductance[:2000]:
+        nodesA.add(k)
+    for k, _ in top_nodes_cut[:2000]:
+        nodesB.add(k)
     
     
-    plt.plot([x[1] for x in top_nodes])
-    plt.grid(True, linestyle='--', alpha=0.6)
-    #plt.show()
-    a = [ x  for x in top_nodes if x[1] <= 0.005116]
-    print(len(a))
+    result = nodesA.intersection(nodesB)
     
-    print(top_nodes[1999])        
+    print(len(result))
+    
+    # Export to .txt file the set with the id of the nodes
+    with open('output/FlyCircuit/FlyCircuit_1.4_RC_influent_nodes.txt', 'w') as f:
+        for item in result:
+            f.write(f'{item}\n')
+    
+    
     # com = [com[0]]
     # com = NodeClustering(communities=com, graph=G, method_name='RC', method_parameters={}, overlap=True)
     
